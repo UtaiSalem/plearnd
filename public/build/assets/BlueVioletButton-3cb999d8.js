@@ -1,0 +1,1 @@
+import{o,e as r,r as s}from"./app-999134c0.js";const a=["type"],p={__name:"BlueVioletButton",props:{type:String},setup(e){return(t,l)=>(o(),r("button",{type:e.type,class:"bg-[#8581fa] py-2 px-4 rounded-lg text-white shadow-lg hover:scale-105 hover:shadow-xl hover:bg-[#615dfa] border border-gray-400"},[s(t.$slots,"default")],8,a))}};export{p as _};

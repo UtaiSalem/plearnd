@@ -1,0 +1,1 @@
+import{_ as e}from"./_plugin-vue_export-helper-c27b6911.js";import{o,e as t}from"./app-999134c0.js";const r={},c={class:"flex bg-red-900 rounded-lg p-4 mb-4"};function s(n,_){return o(),t("div",c,"xxx")}const f=e(r,[["render",s]]);export{f as default};
