@@ -50,7 +50,7 @@ const form = ref({
 
 function onChange(event) { 
     form.value.cover = event.target.files[0]; 
-    // img.value = URL.createObjectURL(file.value);
+    form.value.img = URL.createObjectURL(event.target.files[0]);
 }
 
 function formSubmit(e) {

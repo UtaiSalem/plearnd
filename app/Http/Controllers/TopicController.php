@@ -4,43 +4,17 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Topic;
-use App\Models\Course;
-use App\Models\Lesson;
-use App\Models\TopicImage;
 use Illuminate\Http\Request;
 use App\Http\Resources\TopicResource;
-use App\Http\Resources\TopicResourse;
 use App\Http\Resources\CourseResource;
 use App\Http\Resources\LessonResource;
 use App\Http\Resources\AcademyResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\QuestionResource;
 use App\Http\Resources\AssignmentResource;
-use App\Http\Resources\TopicImageResource;
-// use App\Http\Requests\StoreTopicRequest;
-// use App\Http\Requests\UpdateTopicRequest;
 
 class TopicController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -60,11 +34,14 @@ class TopicController extends Controller
 
         if($request->hasFile('images')) {
             $images = $request->file('images');
-            $fileNames = [];
+            // $fileNames = [];
             foreach ($images as $image) {
-                $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
-                $image_url = Storage::disk('public')->putFileAs('images/topics', $image, $fileName);
-                $fileNames[] = $fileName;
+                // $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+                // $image_url = Storage::disk('public')->putFileAs('images/topics', $image, $fileName);
+                // $file_path = $request->file('cover')->storeAs('logos', $file_name, 'public');
+                $image_url = $image->store('images/topics', 'public');
+
+                // $fileNames[] = $fileName;
 
                 $topic->images()->create([
                     'image_url' => $image_url
@@ -74,7 +51,7 @@ class TopicController extends Controller
 
         return response()->json([
             'success' => true,
-            'newTopic' => new TopicResourse(Topic::find($topic->id)),
+            'newTopic' => new TopicResource(Topic::find($topic->id)),
         ], 200);
     }
 
@@ -95,7 +72,7 @@ class TopicController extends Controller
             'academy'       => new AcademyResource($academy),
             'course'        => new CourseResource($lesson->course),
             'lesson'        => new LessonResource($lesson),
-            'topic'         => new TopicResourse($topic),
+            'topic'         => new TopicResource($topic),
             'assignments'   => AssignmentResource::collection($topic->assignments),
             'questions'     => QuestionResource::collection($topic->questions),
             'imagePath'     => '/../../'

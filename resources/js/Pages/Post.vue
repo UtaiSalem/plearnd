@@ -1,7 +1,6 @@
 <template>
     <div>
         <Head title="Post" />
-
         <MainNavLayout>
             Postpage
         </MainNavLayout>

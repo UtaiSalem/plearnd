@@ -21,9 +21,15 @@ class TestController extends Controller
 
         // $fileUpload = new Academy();
 
-        if($request->file()) {
-            $file_name = time().'_'.$request->cover->getClientOriginalName();
-            $file_path = $request->file('cover')->storeAs('logos', $file_name, 'public');
+        if($request->file('cover')) {
+            $file = $request->file('cover');
+            $fileName = 'profile-'.time().'.'.$file->getClientOriginalExtension();
+            $path = $file->storeAs('files', $fileName);
+
+
+            // $file_name = time().'_'.$request->cover->getClientOriginalName();
+            // $file_path = $request->file('cover')->storeAs('logos', $file_name, 'public');
+
 
             // $fileUpload->name = time().'_'.$request->file->getClientOriginalName();
             // $fileUpload->logo = '/storage/' . $file_path;
@@ -37,7 +43,7 @@ class TestController extends Controller
 
         return response()->json([
             'success'=>'File uploaded successfully.',
-            'cover' => $file_path
+            'cover' => $path
         ]);
    }
 }
