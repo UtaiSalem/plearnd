@@ -39,6 +39,7 @@ function resizeTextarea(e) {
 
 function saveUpdate(){
     emit('save-update');
+    showEditForm.value = false;
 }
 
 </script>

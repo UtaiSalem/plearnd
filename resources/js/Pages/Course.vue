@@ -107,8 +107,8 @@ async function onUpdateCourseHandler(){
         // });
 
         courseUpdateForm.append('_method', 'put');
-      let resultResp = await axios.post(`/courses/${props.course.data.id}`, courseUpdateForm ,config);
-      console.log(resultResp.data);  
+        let resultResp = await axios.post(`/courses/${props.course.data.id}`, courseUpdateForm ,config);
+        
     } catch (error) {
         console.log(error);
     }

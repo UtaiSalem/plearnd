@@ -142,7 +142,7 @@ function handleAnswerChange(answerId){
                 <button :id="`btn-hs-accordion-group${indexNumber}`"
                     class="bg-violet-200 p-6 rounded-md hs-accordion-toggle hs-accordion-active:text-blue-600 group py-3 inline-flex items-center justify-between gap-x-3 w-full font-medium text-left text-gray-800 transition hover:text-blue-900 dark:hs-accordion-active:text-blue-500 dark:text-gray-200 dark:hover:text-gray-400"
                     aria-controls="hs-basic-with-title-and-arrow-stretched-collapse-one">
-                    ข้อที่ {{ indexNumber + 1 }} {{ props.question.text }}
+                    ข้อที่ {{ indexNumber + 1 }} {{ props.question.text }} {{ ' (' + props.question.points + ' คะแนน)' }}
                     <svg class="hs-accordion-active:hidden hs-accordion-active:text-blue-600 hs-accordion-active:group-hover:text-blue-600 block w-3 h-3 text-gray-600 group-hover:text-gray-500 dark:text-gray-400"
                         width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5"
