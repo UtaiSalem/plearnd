@@ -54,8 +54,11 @@ const logout = () => {
                                 <NavLink :href="route('newsfeed')" :active="route().current('newsfeed')">
                                     กระดานข่าว
                                 </NavLink>
-                                <NavLink :href="'/courses'" active>
+                                <NavLink :href="'/courses'" :active="false">
                                     รวมรายวิชา
+                                </NavLink>
+                                <NavLink :href="`/myfeed/${$page.props.auth.user.id}`" :active="route().current('myfeed')">
+                                    กระดานของฉัน
                                 </NavLink>
                             </div>
                         </div>

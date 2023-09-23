@@ -1,12 +1,19 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { Icon } from '@iconify/vue';
 
 defineProps({
     canLogin: Boolean,
     canRegister: Boolean,
     laravelVersion: String,
     phpVersion: String,
+
+    usersCount: Number,
+    coursesCount: Number,
+    lessonsCount: Number,
+    postsCount: Number,
+    ceo: Object
 });
 
 // const secondCounter = ref(864000);
@@ -70,7 +77,7 @@ const getDayOfWeek = () => {
             </template>
         </div>
         
-        <div class="w-full h-screen mt-8 bg-gradient-to-bl from-teal-400 to-blue-500 flex flex-col justify-center items-center text-white">
+        <div class="w-full h-full mt-8 bg-gradient-to-bl from-teal-400 to-blue-500 flex flex-col justify-center items-center text-white">
 
             <p class="text-xs sm:text-2xl ">เรียนบ้าง เล่นบ้าง สร้างรายได้ด้วย</p>
             <h3 class="text-base md:text-4xl ">www.<b class="text-base md:text-6xl">plearnd</b>.com</h3>
@@ -102,40 +109,146 @@ const getDayOfWeek = () => {
             </div>
 
             <div class="min-w-32 min-h-48 p-3 mb-4 font-medium">
-                    <div class="w-32 flex-none rounded-t lg:rounded-t-none lg:rounded-l text-center shadow-lg ">
-                        <div class="block rounded-t overflow-hidden  text-center ">
-                            <div class="bg-blue-500 text-white py-1">
-                                <p>
-                                {{ months }}
-                                </p>
-                                <p>
-                                {{ years }}
-                                </p>
-                            </div>
-                            <div class="pt-1 border-l border-r border-white bg-white">
-                                <span class="text-5xl font-bold leading-tight text-gray-800">
-                                    {{ todayDate }}
-                                </span>
-                            </div>
-                            <div class="pb-2 border-l border-r border-b rounded-b-lg text-center border-white bg-white -pt-2 -mb-1">
-                                <span class="text-md text-gray-800 font-extrabold">
-                                    {{ daysNameTh }}
-                                </span>
-                            </div>
-                            <div class="mt-2 py-1 border-l border-r border-b rounded-lg text-center border-white bg-white">
-                                <span class="text-lg leading-normal text-gray-800">
-                                    {{  currentTimes }}
-                                </span>
-                            </div>
+                <div class="w-32 flex-none rounded-t lg:rounded-t-none lg:rounded-l text-center shadow-lg ">
+                    <div class="block rounded-t overflow-hidden  text-center ">
+                        <div class="bg-blue-500 text-white py-1">
+                            <p>
+                            {{ months }}
+                            </p>
+                            <p>
+                            {{ years }}
+                            </p>
+                        </div>
+                        <div class="pt-1 border-l border-r border-white bg-white">
+                            <span class="text-5xl font-bold leading-tight text-gray-800">
+                                {{ todayDate }}
+                            </span>
+                        </div>
+                        <div class="pb-2 border-l border-r border-b rounded-b-lg text-center border-white bg-white -pt-2 -mb-1">
+                            <span class="text-md text-gray-800 font-extrabold">
+                                {{ daysNameTh }}
+                            </span>
+                        </div>
+                        <div class="mt-2 py-1 border-l border-r border-b rounded-lg text-center border-white bg-white">
+                            <span class="text-lg leading-normal text-gray-800">
+                                {{  currentTimes }}
+                            </span>
                         </div>
                     </div>
                 </div>
+            </div>
 
-            <div class="mt-20 max-w-6xl text-center">
+            <section class="text-gray-700 body-font">
+                <div class="container px-5 py-12 mx-auto">
+
+                    <div class="flex flex-wrap -m-4 text-center text-blue-500">
+
+                        <div class="px-4 py-2 md:w-1/4 sm:w-1/2 w-full">
+                            <div class="w-full rounded-lg bg-white p-4 aspect ">
+                                <div class=" flex justify-center">
+                                    <Icon icon="la:users" class="text-blue-500 w-10 h-10" />
+                                </div>
+                                <div class="my-2">
+                                    <h2 class="text-2xl font-bold">
+                                        <span>{{ $page.props.usersCount }}</span> 
+                                    </h2>
+                                </div>
+                                <div>Users</div>
+                            </div>
+                        </div>
+                        <div class="px-4 py-2 md:w-1/4 sm:w-1/2 w-full">
+                            <div class="w-full rounded-lg bg-white p-4 aspect">
+                                <div class=" flex justify-center">
+                                    <Icon icon="icon-park-outline:comments" class=" text-blue-500 w-10 h-10" />
+                                </div>
+                                <div class="my-2">
+                                    <h2 class="text-2xl font-bold">
+                                        <span>{{ $page.props.postsCount }}</span> 
+                                    </h2>
+                                </div>
+                                <div>Posts</div>
+                            </div>
+                        </div>
+                        <div class="px-4 py-2 md:w-1/4 sm:w-1/2 w-full">
+                            <div class="w-full rounded-lg bg-white p-4 aspect">
+                                <div class=" flex justify-center">
+                                    <Icon icon="uil:notebooks" class="text-blue-500 w-10 h-10"/>
+                                </div>
+                                <div class="my-2">
+                                    <h2 class="text-2xl font-bold">
+                                        <span>{{ $page.props.coursesCount }}</span> 
+                                    </h2>
+                                </div>
+                                <div>Courses</div>
+                            </div>
+                        </div>
+                        <div class="px-4 py-2 md:w-1/4 sm:w-1/2 w-full">
+                            <div class="w-full rounded-lg bg-white p-4 aspect">
+                                <div class=" flex justify-center">
+                                    <Icon icon="material-symbols:library-books-outline" class="text-blue-500 w-10 h-10" />
+                                </div>
+                                <div class="my-2">
+                                    <h2 class="text-2xl font-bold">
+                                        <span>{{ $page.props.lessonsCount }}</span> 
+                                    </h2>
+                                </div>
+                                <div>Lessons</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+            <div class="mt-20 mb-4 max-w-6xl text-center">
                 <p class="text-xs sm:text-lg text-red-600">***อยู่ระหว่างการพัฒนาและทดลองใช้งาน***</p>
             </div>
         </div>
     </div>
+    <footer class="bg-gray-200 mx-auto w-full max-w-container px-4 sm:px-6 lg:px-8">
+        <div class="border-t border-slate-900/5 py-10 text-center">
+            <div class="text-center">
+                <span>www.</span>
+                <span class="text-4xl text-gray-600">plearnd</span>
+                <span>.com</span>
+            </div>
+            <p class="mt-5 text-center text-sm leading-6 text-slate-700">เล่นบ้าง เรียนบ้าง สร้างรายได้ด้วย เพลิน!!</p>
+            <div class="mt-8 flex items-center justify-center space-x-4 text-sm font-semibold leading-6 text-slate-700">
+                <img :src="ceo.data.avatar" alt="" class="rounded-full w-24 h-24">
+            </div>
+            <div class="mt-2 ml-16 flex flex-col items-center justify-center space-x-4 text-sm font-semibold leading-6 text-slate-700">
+                <div class="w-48 flex justify-start">
+                    <div class="flex items-center justify-start space-x-2">
+                        <p><Icon icon="devicon:facebook" class="w-6 h-6" /></p>
+                        <p>Utai Salem</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-2 ml-16 flex flex-col items-center justify-center space-x-4 text-sm font-semibold leading-6 text-slate-700">
+                <div class="w-48 flex justify-start">
+                    <div class="flex items-center justify-start space-x-2">
+                        <p><Icon icon="logos:messenger" class="w-6 h-6" /></p>
+                        <p>Bhupha MustaFa</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-2 ml-16 flex flex-col items-center justify-center space-x-4 text-sm font-semibold leading-6 text-slate-700">
+                <div class="w-48 flex justify-start">
+                    <div class="flex items-center justify-start space-x-2">
+                        <p><Icon icon="uil:line" class="text-green-600 w-6 h-6" /></p>
+                        <p>babobhupha</p>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="mt-2 ml-16 flex flex-col items-center justify-center space-x-4 text-sm font-semibold leading-6 text-slate-700">
+                <div class="w-48 flex justify-start">
+                    <div class="flex items-center justify-start space-x-2">
+                        <p><Icon icon="bi:telephone" class=" w-6 h-6" /></p>
+                        <p>087-2880070</p>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </footer>
 </template>
 
 <style>

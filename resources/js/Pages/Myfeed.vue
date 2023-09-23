@@ -4,18 +4,18 @@ import { Head } from '@inertiajs/vue3';
 import InfiniteLoading from "v3-infinite-loading";
 // import "v3-infinite-loading/lib/style.css";
 
-import HopeuiLayout from '@/Layouts/HopeuiLayout.vue';
+import MainLayout from '@/Layouts/DefaultLayout.vue';
 import PostViewer from '@/HopeuiComponents/partials/PostViewer.vue'
 // import PollViewer from '@/HopeuiComponents/partials/PollViewer.vue'
 import PostLoading from '@/PlearndComponents/accessories/PostLoadingSkeleton.vue'
 import axios from 'axios';
 
 defineOptions({
-    layout: HopeuiLayout
+    layout: MainLayout
 })
 
 const props = defineProps({
-    activities: Object
+    myActivities: Object
 });
 
 const newActivities = reactive([]);
@@ -43,14 +43,6 @@ const getMoreActivities = async () => {
     <div class="">
         <Head title="Newsfeed" />
 
-        <div v-for="(activity,index) in props.activities.data" :key="index">
-            <div v-if="activity.action_to === 'Post'">
-                <PostViewer :activity="activity" />
-            </div>
-            <div v-else-if="activity.action_to === 'Poll'">
-                <!-- <PollViewer :activity="activity" /> -->
-            </div>
-        </div>
         <div v-if="loading">
             <PostLoading class="my-4" v-for="(item,index) in 2" :key="index" />
         </div>

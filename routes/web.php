@@ -10,6 +10,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\AcademyController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\NewsfeedController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AssignmentController;
@@ -43,9 +44,17 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'),'verified',])->group(function () {
     Route::get('/newsfeed', [NewsfeedController::class, 'index'] )->name('newsfeed');
+    Route::get('/myfeed/{user}', [NewsfeedController::class, 'show'] )->name('myfeed');
+
+    Route::resource('/activities', ActivityController::class);
+    Route::get('users/{user}/activities', [ ActivityController::class,'show'])->name('user.activities');
 
     Route::resource('/posts', PostController::class);
+
     Route::resource('/courses', CourseController::class);
+    Route::get('courses/{courses}', [CourseController::class, 'show'])->name('courses.show');
+
+
     Route::resource('/lessons', LessonController::class);
     Route::resource('/topics', TopicController::class);
 

@@ -82,7 +82,7 @@ async function onSubmitEditAsm(asm,i) {
         });
 
         asmUpdateForm.append('_method', 'put');
-        let asmResp = await axios.post(`${props.assignmentApiRoute}/assignments/${asm.id}`, asmUpdateForm, config);
+        let asmResp = await axios.post(`${props.assignmentableId}/assignments/${asm.id}`, asmUpdateForm, config);
         if (asmResp.status===200) {
             // emit('update-assignment', asmResp.data.assignment);
             props.assignments[i] = asmResp.data.assignment;

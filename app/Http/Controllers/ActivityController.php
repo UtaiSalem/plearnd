@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Activity;
+use App\Http\Resources\ActivityResource;
 use App\Http\Requests\StoreActivityRequest;
 use App\Http\Requests\UpdateActivityRequest;
 
@@ -13,9 +15,13 @@ class ActivityController extends Controller
      */
     public function index()
     {
-        $activities = Activity::all();
-
-        // return Inertia
+        // $activities = Activity::all()->paginate(15);
+        $activities = ActivityResource::collection(Activity::latest()->paginate());
+        
+        return response()->json([
+            'success'    => true,
+            'activities' => $activities,
+        ], 200);
     }
 
     /**
@@ -44,9 +50,15 @@ class ActivityController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Activity $activity)
+    public function show(User $user)
     {
-        //
+        // $activities = ActivityResource::collection(Activity::where('')->latest()->paginate());
+        $activities = $user->activities()->latest()->paginate();
+        
+        return response()->json([
+            'success'    => true,
+            'activities' => $activities,
+        ], 200);
     }
 
     /**
@@ -99,7 +111,7 @@ class ActivityController extends Controller
             $query->with(['post', 'poll']);
         }])
         ->orderBy('created_at', 'desc')
-        ->get();
+        ->paginate(20);
 
         // Return the activities
         return $activities;

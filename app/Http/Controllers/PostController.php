@@ -48,7 +48,7 @@ class PostController extends Controller
         $activity->activityable()->associate($post);
         $activity->save();
 
-        auth()->user()->increment('pp', 1);
+        auth()->user()->decrement('pp', 1);
         // return redirect()->back()->with('success', 'Post created successfully.');
 
         return to_route('newsfeed');
