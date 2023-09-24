@@ -11,14 +11,14 @@ class Activity extends Model
     use HasFactory;
     // use HasUlids;
 
-    protected $fillable = [ 
-        'user_id', 
-        'activity_type', 
-        'activity_detail', 
-        'activityable_id', 
+    protected $fillable = [
+        'user_id',
+        'activity_type',
+        'activity_detail',
+        'activityable_id',
         'activityable_type'
     ];
-    
+
 
     /**
      * Get the user that owns the Activity
@@ -30,12 +30,9 @@ class Activity extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get the parent activityable model (user or post).
-     */
     public function activityable()
     {
         return $this->morphTo();
     }
-    
+
 }

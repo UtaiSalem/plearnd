@@ -12,7 +12,6 @@ class NewsfeedController extends Controller
 {
     public function index()
     {
-
         $activities = ActivityResource::collection(Activity::latest()->paginate());
 
         return Inertia::render('Newsfeed', [
@@ -23,10 +22,12 @@ class NewsfeedController extends Controller
 
     public function show(User $user){
 
-        $myActivities = ActivityResource::collection($user->activities()->latest()->paginate());
+        $activities = ActivityResource::collection($user->activities()->latest()->paginate());
 
         return Inertia::render('Myfeed', [
-            'myActivity' => $myActivities,
+            'user'       => $user,
+            'activities' => $activities,
         ], 200);
+        
     }
 }

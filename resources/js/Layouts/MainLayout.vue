@@ -12,7 +12,7 @@
     // import AINabarVue from '@/ChatGPTComponents/AINabar.vue';
     // import AIPostBox from '@/ChatGPTComponents/AIPostBox.vue'
     // import QuickPostBox from '@/PlearnComponents/QuickPostBox.vue'
-    
+
     // import ModalShowAllComment from '@/HopeuiComponents/partials/PostViewerPartials/ModalShowAllComment.vue';
 
     const isDarkMode = ref(false);
@@ -38,6 +38,7 @@
             </div>
 
             <div class="flex justify-center md:justify-between my-4">
+
                 <!-- Sidebar start-->
                 <div class="hidden md:block w-[23%]">
                     <div v-if="$slots.leftSideWidget">
@@ -45,11 +46,12 @@
                     </div>
                 </div>
                 <!-- Sidebar end -->
+
                 <!-- content -->
                 <div class="w-full md:w-[50%]">
                     <main>
 
-                        <slot name="mainContent"></slot> 
+                        <slot name="mainContent"></slot>
                     </main>
                 </div>
                 <!-- End content -->
@@ -67,11 +69,3 @@
     </div>
 </template>
 
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;500&display=swap');
-
-* {
-    font-family: 'Rajdhani', 'Kanit', sans-serif;
-}
-</style>

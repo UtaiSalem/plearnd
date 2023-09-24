@@ -1,3 +1,18 @@
+
+<script setup>
+import { reactive } from 'vue'
+import { router } from '@inertiajs/vue3'
+import { Icon } from '@iconify/vue';
+
+const form = reactive({
+  action: 'Created post',
+  body: 'New post on '+ new Date().toString(),
+})
+
+function handleSubmit() {
+  router.post('/newsfeed', form);
+}
+</script>
 <template>
   <div class="bg-white rounded-lg overflow-hidden shadow-lg">
     <div class="tabs flex flex-col justify-center pt-4">
@@ -83,7 +98,8 @@
                     <svg class="quick-post-footer-action-icon icon-camera w-6 h-6">
                       <use xlink:href="#svg-camera"></use>
                     </svg>
-                    <CameraIcon class="w-6 h-6"/>
+                    <!-- <CameraIcon class="w-6 h-6"/> -->
+                    <Icon icon="heroicons:camera" class="w-6 h-6" />
                     <!-- /QUICK POST FOOTER ACTION ICON -->
                   </div>
                   <!-- /QUICK POST FOOTER ACTION -->
@@ -134,17 +150,3 @@
   </div>
 </template>
 
-<script setup>
-import { CameraIcon } from '@heroicons/vue/24/solid';
-import { reactive } from 'vue'
-import { router } from '@inertiajs/vue3'
-
-const form = reactive({
-  action: 'Created post',
-  body: 'New post on '+ new Date().toString(),
-})
-
-function handleSubmit() {
-  router.post('/newsfeed', form);
-}
-</script>

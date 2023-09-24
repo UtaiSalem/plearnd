@@ -17,7 +17,7 @@ class ActivityController extends Controller
     {
         // $activities = Activity::all()->paginate(15);
         $activities = ActivityResource::collection(Activity::latest()->paginate());
-        
+
         return response()->json([
             'success'    => true,
             'activities' => $activities,
@@ -37,7 +37,7 @@ class ActivityController extends Controller
      */
     public function store(StoreActivityRequest $request)
     {
-        
+
             // $activity = new Activity();
             // $activity->user_id = Auth::id();
             // $activity->action = 'like';
@@ -53,8 +53,8 @@ class ActivityController extends Controller
     public function show(User $user)
     {
         // $activities = ActivityResource::collection(Activity::where('')->latest()->paginate());
-        $activities = $user->activities()->latest()->paginate();
-        
+        $activities = ActivityResource::collection($user->activities()->latest()->paginate());
+
         return response()->json([
             'success'    => true,
             'activities' => $activities,
@@ -82,7 +82,14 @@ class ActivityController extends Controller
      */
     public function destroy(Activity $activity)
     {
-        //
+        $activity->activityable()->delete();
+        $activity->delete();
+        
+        auth()->user()->decrement('pp', 1);
+
+        return response()->json([
+            'success' => true,
+        ], 200);
     }
 
 

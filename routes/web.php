@@ -44,10 +44,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'),'verified',])->group(function () {
     Route::get('/newsfeed', [NewsfeedController::class, 'index'] )->name('newsfeed');
-    Route::get('/myfeed/{user}', [NewsfeedController::class, 'show'] )->name('myfeed');
+    Route::get('/users/{user}/feed', [NewsfeedController::class, 'show'] )->name('myfeed');
 
     Route::resource('/activities', ActivityController::class);
-    Route::get('users/{user}/activities', [ ActivityController::class,'show'])->name('user.activities');
+    Route::get('/users/{user}/activities', [ ActivityController::class,'show'])->name('user.activities');
 
     Route::resource('/posts', PostController::class);
 
@@ -64,17 +64,17 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'),'verified',]
     Route::post('/topics/{topic}/assignments', [TopicController::class, 'assignmentsStore'])->name('topic.assignment.store');
     Route::put('/topics/{topic}/assignments/{assignment}', [TopicAssignmentController::class, 'update']);
     // Route::delete('/topics/{topic}/assignments/{assignment}', [TopicAssignmentController::class, 'destroy']);
-    
+
     Route::resource('/topics/{topic}/questions', TopicQuestionController::class);
 
     Route::resource('/assignments', AssignmentController::class);
     Route::resource('/asmimages', AssignmentImageController::class);
     Route::resource('/assignments/{assignment}/answers', AssignmentAnswerController::class);
-    
+
     Route::resource('/questions', QuestionController::class);
     Route::resource('/questions/{question}/options', QuestionOptionController::class);
     Route::resource('/options', QuestionOptionController::class);
-    
+
     Route::resource('/questions/{question}/answers', QuestionAnswerController::class);
     Route::resource('/users/{user}/answers/{answer}/questions', UserAnswerQuestionController::class);
 
@@ -95,7 +95,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'),'verified',]
 
     Route::post('/post_comments/{post_comment}/like', [PostCommentReactionController::class, 'toggleLikePostComment'])->name('toggle.like.post.comment');
     Route::post('/post_comments/{post_comment}/dislike', [PostCommentReactionController::class, 'toggleDislikePostComment'])->name('toggle.dislike.post.comment');
-    
+
     Route::get('/posts/{post}/comments', [PostCommentController::class, 'index'])->name('post.comments.index');
     Route::post('/posts/{post}/comments', [PostCommentController::class, 'store'])->name('post.comments.store');
 
@@ -103,7 +103,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'),'verified',]
     Route::get('/academies/{academy}', [AcademyController::class, 'show'])->name('academy.show');
     Route::post('/academies/upload',[AcademyController::class, 'upload'])->name('academy.upload');
     Route::get('/user/{user}/academies',[AcademyController::class, 'getAuthAcademies'])->name('user.academy.getAcademies');
-    
+
     Route::resource('/academies/{academy}/members', AcademyMemberController::class);
     Route::resource('/courses/{course}/members', CourseMemberController::class);
 

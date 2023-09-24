@@ -199,6 +199,7 @@ const getDayOfWeek = () => {
                     </div>
                 </div>
             </section>
+
             <div class="mt-20 mb-4 max-w-6xl text-center">
                 <p class="text-xs sm:text-lg text-red-600">***อยู่ระหว่างการพัฒนาและทดลองใช้งาน***</p>
             </div>
@@ -206,9 +207,9 @@ const getDayOfWeek = () => {
     </div>
     <footer class="bg-gray-200 mx-auto w-full max-w-container px-4 sm:px-6 lg:px-8">
         <div class="border-t border-slate-900/5 py-10 text-center">
-            <div class="text-center">
+            <div class="text-center flex flex-wrap">
                 <span>www.</span>
-                <span class="text-4xl text-gray-600">plearnd</span>
+                <span class="text-base md:text-4xl text-gray-600">plearnd</span>
                 <span>.com</span>
             </div>
             <p class="mt-5 text-center text-sm leading-6 text-slate-700">เล่นบ้าง เรียนบ้าง สร้างรายได้ด้วย เพลิน!!</p>

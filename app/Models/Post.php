@@ -37,7 +37,6 @@ class Post extends Model
         return $this->belongsTo(User::class);
     }
 
-
     public function activities(): MorphMany
     {
         return $this->morphMany(Activity::class, 'activityable');

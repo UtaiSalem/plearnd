@@ -41,7 +41,7 @@ class PostController extends Controller
         $post->content = $validatedData['content'];
         // $post->image = $imagePath;
         $post->save();
-        
+
         $activity = new Activity();
         $activity->user_id = $post->user_id;
         $activity->activity_type = 'เขียนโพสต์';
@@ -83,6 +83,16 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $activity = $post->activities;
+
+        $post->delete();
+        $activity->delete();
+
+        auth()->user()->decrement('pp', 1);
+
+        return response()->json([
+            'success' => true,
+        ], 200);
+
     }
 }

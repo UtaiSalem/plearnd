@@ -1,3 +1,16 @@
+<script setup>
+import { Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
+// import { MagnifyingGlassIcon } from '@heroicons/vue/24/solid'
+// import { HomeIcon } from '@heroicons/vue/24/solid'
+import { Icon } from '@iconify/vue';
+
+// import {usePage} from '@inertiajs/inertia-vue3'
+
+const isOpen = ref(false);
+
+</script>
+
 <template>
   <header class="fixed top-0 shadow-md p-2 mx-auto w-full flex bg-[#34465d] justify-between z-30">
     <!-- logo && Title -->
@@ -17,7 +30,8 @@
               placeholder="Search..." required />
             <button type="submit"
               class="absolute top-0 right-0 p-2.5 text-sm font-medium text-white bg-blue-700 rounded-r-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-              <MagnifyingGlassIcon class="w-5 h-5" />
+              <!-- <MagnifyingGlassIcon class="w-5 h-5" /> -->
+              <Icon icon="heroicons:magnifying-glass" class="w-5 h-5"/>
               <span class="sr-only">Search</span>
             </button>
           </div>
@@ -28,7 +42,8 @@
     <div class="flex items-center justify-between space-x-3">
       <Link href="/"
         class="inline-flex relative lg:left-4 items-center p-2 mx-4 text-sm font-medium text-center text-white hover:text-gray-800 rounded-full hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-      <HomeIcon class="h-6 w-6" />
+      <!-- <HomeIcon class="h-6 w-6" /> -->
+      <Icon icon="heroicons:home-solid" class="h-6 w-6" />
       </Link>
 
       <button type="button"
@@ -242,17 +257,3 @@
   </header>
 </template>
 
-<script setup>
-import { Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { MagnifyingGlassIcon } from '@heroicons/vue/24/solid'
-import { HomeIcon } from '@heroicons/vue/24/solid'
-
-
-// import {usePage} from '@inertiajs/inertia-vue3'
-
-const isOpen = ref(false);
-
-</script>
-
-<style scoped></style>
