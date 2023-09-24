@@ -1,13 +1,13 @@
 <template>
     <div>
         <Head title="Post" />
-        <MainNavLayout>
+        <MainLayout>
             Postpage
-        </MainNavLayout>
+        </MainLayout>
     </div>
 </template>
 
 <script setup>
 import { Head } from '@inertiajs/vue3';
-import MainNavLayout from '@/Layouts/MainNavLayout.vue'
+import MainLayout from '@/Layouts/MainLayout.vue'
 </script>
