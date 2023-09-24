@@ -3,7 +3,7 @@
     <!-- Sidebar start-->
     <div class="hidden lg:block w-[23%]">
       <!-- Sidebar -->
-      <LeftSideWidget />
+      <!-- <LeftSideWidget /> -->
       <!-- ./Sidebar -->
     </div>
     <!-- Sidebar end -->
@@ -13,8 +13,8 @@
       <main class="">
         <div class="h-full w-full">
 
+            <slot></slot>
 
-            
         </div>
       </main>
     </div>
@@ -28,6 +28,6 @@
   </div>
 </template>
 <script setup>
-import LeftSideWidget from "@/Components/widgets/LeftSideWidget.vue";
+// import LeftSideWidget from "@/Components/widgets/LeftSideWidget.vue";
 
 </script>

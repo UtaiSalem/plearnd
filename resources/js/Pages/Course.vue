@@ -29,6 +29,7 @@ const props = defineProps({
     assignments: Object,
     questions: Object,
     imagePath: String,
+    isCourseAdmin: Boolean
 });
 
 const tempLogo = ref(props.course.data.user.avatar || props.imagePath + 'storage/images/logos/default_logo.png');
@@ -44,14 +45,14 @@ function pushNewLesson(data){
 
 async function onCoverImageChange(coverFile) {
     const academyCoverUpdate = new FormData();
-    academyCoverUpdate.append('cover', coverFile); 
+    academyCoverUpdate.append('cover', coverFile);
     academyCoverUpdate.append('_method', 'patch');
     await axios.post(`/courses/${props.course.data.academy.data.id}/update`, academyCoverUpdate);
 }
 
 async function onLogoImageChange(logoFile) {
     const academyLogoUpdate = new FormData();
-    academyLogoUpdate.append('logo', logoFile); 
+    academyLogoUpdate.append('logo', logoFile);
     academyLogoUpdate.append('_method', 'patch');
     await axios.post(`/academies/${props.course.data.academy.data.id}/update`, academyLogoUpdate);
 }
@@ -108,7 +109,7 @@ async function onUpdateCourseHandler(){
 
         courseUpdateForm.append('_method', 'put');
       let resultResp = await axios.post(`/courses/${props.course.data.id}`, courseUpdateForm ,config);
-      console.log(resultResp.data);  
+      console.log(resultResp.data);
     } catch (error) {
         console.log(error);
     }
@@ -119,7 +120,7 @@ async function onUpdateCourseHandler(){
 
 <template>
     <Head title="รายวิชา" />
-    
+
     <MainLayout>
         <template #header>
                 <Head title="รายวิชา"></Head>
@@ -128,9 +129,9 @@ async function onUpdateCourseHandler(){
             <Navbar :isDarkMode="isDarkMode" @toggle-dark-mode="isDarkMode = !isDarkMode" />
         </template>
         <template #coverProfileCard>
-            <CourseProfileCover 
-                    :coverImage="tempCover" 
-                    :logoImage="tempLogo" 
+            <CourseProfileCover
+                    :coverImage="tempCover"
+                    :logoImage="tempLogo"
                     v-model:cover-header="tempHeader"
                     v-model:cover-subheader="tempSubheader"
 
@@ -150,8 +151,8 @@ async function onUpdateCourseHandler(){
                     @request-tobe-member="onRequestToBeAMember()"
             ></CourseProfileCover>
             <!-- <CourseProfileCover
-                :cover="tempCover" 
-                :logo="tempLogo" 
+                :cover="tempCover"
+                :logo="tempLogo"
                 :name="tempHeader"
                 :code="tempSubheader"
             /> -->
@@ -167,7 +168,7 @@ async function onUpdateCourseHandler(){
 
         <template #mainContent>
             <!-- <QuickPostBox /> -->
-            <CourseBasicInFoCard 
+            <CourseBasicInFoCard
                 v-model:name="tempHeader"
                 v-model:code="tempSubheader"
                 v-model:description="props.course.data.description"
@@ -182,8 +183,10 @@ async function onUpdateCourseHandler(){
                    </div>
                 </div>
 
-                <CourseLessonsList :lessons="props.lessons.data" />
-                
+                <CourseLessonsList
+                    :lessons="props.lessons.data"
+                />
+
                 <!-- <div class="xcard">
                     <div v-for="(lesson,idx) in $page.props.lessons.data" :key="idx" class="flex flex-col py-4">
                         <Accordion :activeIndex="0">
@@ -199,7 +202,7 @@ async function onUpdateCourseHandler(){
 
                 <!-- <LessonAccordian /> -->
 
-                <div class="text-base text-gray-600 bg-white border-t-4 border-blue-500 rounded-lg p-4 my-4 shadow-lg ">
+                <div v-if="props.isCourseAdmin" class="text-base text-gray-600 bg-white border-t-4 border-blue-500 rounded-lg p-4 my-4 shadow-lg ">
                     <CreateNewLessonWidget />
                 </div>
 
@@ -219,7 +222,7 @@ async function onUpdateCourseHandler(){
                     @add-new-assignment="(newAsm) => { onAddNewAssignmentHandler(newAsm) }"
                 />
 
-                <QuestionsListViewer 
+                <QuestionsListViewer
                         :questionableType="'courses'"
                         :questionableId="props.course.data.id"
                         :questionNameTh="'รายวิชา'"
@@ -228,7 +231,7 @@ async function onUpdateCourseHandler(){
                 />
 
             </div>
-            <!-- <ActivitiesFeed /> -->              
+            <!-- <ActivitiesFeed /> -->
         </template>
 
         <template #rightSideWidget>

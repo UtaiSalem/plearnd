@@ -9,6 +9,7 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\AcademyController;
+use App\Http\Controllers\SupportController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\NewsfeedController;
@@ -109,6 +110,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'),'verified',]
 
     Route::get('test', [TestController::class, 'index']);
     Route::post('test/upload', [TestController::class, 'upload'])->name('upload');
+
+    Route::resource('supports', SupportController::class);
 
 });
 

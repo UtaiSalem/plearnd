@@ -38,7 +38,7 @@ function onDeleteLesson(lessonId, index){
             <span>
                 บทเรียนในรายวิชา {{ props.lessons.length }} บทเรียน
             </span>
-            <span>
+            <span v-if="usePage().props.isCourseAdmin">
                 <CreateNewLessonWidget
                     @add-new-lesson="(newLesson)=> props.lessons.push(newLesson)"
                 />
