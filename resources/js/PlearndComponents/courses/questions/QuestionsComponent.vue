@@ -30,16 +30,19 @@ function decrement(){
 
 async function getTopicQuestions(){
     let qResponse = await axios.get(`/topic/${props.topicID}/questions`);
-    topicQuestions.value = qResponse.data;    
+    topicQuestions.value = qResponse.data;
 };
 
 async function addNewQuestion(){
     questionInputActive.value = !questionInputActive.value;
-    if(questionInput.value.text.length > 0){        
+    if(questionInput.value.text.length > 0){
         let newQuestionResponsed = await axios.post(`/topic/${props.topicID}/questions`, { question: questionInput.value});
-        topicQuestions.value.data.push(newQuestionResponsed.data.data);
-        questionInput.value.text='';
-        questionInput.value.score=0;
+
+        if (newQuestionResponsed.status===200) {
+            topicQuestions.value.data.push(newQuestionResponsed.data.data);
+            questionInput.value.text='';
+            questionInput.value.score=0;
+        }
     }
 }
 
@@ -51,18 +54,18 @@ async function deleteQuestion(qID,qIdx){
 </script>
 
 <template>
-    <div class="w-full">            
+    <div class="w-full">
         <div v-if="!topicQuestions"><div>ไม่มีคำถามสำหรับหัวข้อนี้ของบทเรียน</div></div>
 
         <div v-else v-for="(topicQuestion,idx) in topicQuestions.data" :key="topicQuestion.id" class="border rounded-md p-4 my-2">
-            <TopicQuestion 
-                :question="topicQuestion" 
-                :indexNumber="idx" 
-                :isCourseOwner="isCourseOwner" 
+            <TopicQuestion
+                :question="topicQuestion"
+                :indexNumber="idx"
+                :isCourseOwner="isCourseOwner"
                 @delete-question="deleteQuestion(topicQuestion.id, idx)"
             />
         </div>
-        
+
         <div class="flex flex-col items-between my-2 space-y-2 " v-if="questionInputActive ">
             <div class="flex items-center">
                 <!-- <label for="inline-input-label-with-helper-text" class="text-sm font-medium dark:text-white w-[36px]">
@@ -70,7 +73,7 @@ async function deleteQuestion(qID,qIdx){
                 </label> -->
                 <span class="w-[48px]">ข้อ {{ topicQuestions.data.length + 1 }}</span>
                 <!-- <input type="text" v-model="questionInput.text" id="inline-input-label-with-helper-text" class="py-2 border-gray-200 w-full rounded-full text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" aria-describedby="hs-inline-input-helper-text"> -->
-                <input type="text" v-model="questionInput.text" 
+                <input type="text" v-model="questionInput.text"
                 class="py-2 border-gray-200 w-full rounded-full text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400" >
             </div>
             <div class="flex items-center space-x-4">

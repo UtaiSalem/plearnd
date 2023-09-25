@@ -103,7 +103,7 @@
                                             <form method="POST" @submit.prevent="logout">
                                                 <button type="submit" :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
                                                     Logout
-                                                </button>                                     
+                                                </button>
                                             </form>
                                             </MenuItem>
                                         </MenuItems>
@@ -134,7 +134,7 @@
                                             <Link :href="route('profile.show')" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">ข้อมูลส่วนตัว</Link>
                                         </li>
                                         <li>
-                                            <a href="'/courses'" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">รวมรายวิชา</a>
+                                            <a href="/courses" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">รวมรายวิชา</a>
                                         </li>
                                         <!-- <li>
                                             <a href="'/courses'" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Earnings</a>

@@ -29,7 +29,7 @@ const years = ref(0);
 // const totalDays = ref(0);
 
 
-onMounted(()=>{  
+onMounted(()=>{
     getDayOfWeek();
     setInterval(function(){
         let datetime = new Date();
@@ -62,7 +62,7 @@ const getDayOfWeek = () => {
 
     <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-gradient-to-bl from-teal-400 to-blue-500 bg-center dark:bg-gray-900 selection:bg-red-500 selection:text-white">
         <div v-if="canLogin" class="sm:fixed sm:top-0 sm:right-0 p-6 text-center md:text-right z-10">
-            <Link v-if="$page.props.auth.user" :href="route('dashboard')" 
+            <Link v-if="$page.props.auth.user" :href="route('dashboard')"
                 class="text-sm md:text-lg font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
             Dashboard</Link>
 
@@ -76,14 +76,14 @@ const getDayOfWeek = () => {
                 สมัครสมาชิก</Link>
             </template>
         </div>
-        
+
         <div class="w-full h-full mt-8 bg-gradient-to-bl from-teal-400 to-blue-500 flex flex-col justify-center items-center text-white">
 
             <p class="text-xs sm:text-2xl ">เรียนบ้าง เล่นบ้าง สร้างรายได้ด้วย</p>
             <h3 class="text-base md:text-4xl ">www.<b class="text-base md:text-6xl">plearnd</b>.com</h3>
 
-            <div class="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mt-10 lg:mt-20 justify-between">                
-<!--                 
+            <div class="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mt-10 lg:mt-20 justify-between">
+<!--
                 <div class="bg-transparent border text-center items-center">
                         <div class="text-5xl px-10 py-5">
                             {{ totalDays }}
@@ -150,7 +150,7 @@ const getDayOfWeek = () => {
                                 </div>
                                 <div class="my-2">
                                     <h2 class="text-2xl font-bold">
-                                        <span>{{ $page.props.usersCount }}</span> 
+                                        <span>{{ $page.props.usersCount }}</span>
                                     </h2>
                                 </div>
                                 <div>Users</div>
@@ -163,7 +163,7 @@ const getDayOfWeek = () => {
                                 </div>
                                 <div class="my-2">
                                     <h2 class="text-2xl font-bold">
-                                        <span>{{ $page.props.postsCount }}</span> 
+                                        <span>{{ $page.props.postsCount }}</span>
                                     </h2>
                                 </div>
                                 <div>Posts</div>
@@ -176,7 +176,7 @@ const getDayOfWeek = () => {
                                 </div>
                                 <div class="my-2">
                                     <h2 class="text-2xl font-bold">
-                                        <span>{{ $page.props.coursesCount }}</span> 
+                                        <span>{{ $page.props.coursesCount }}</span>
                                     </h2>
                                 </div>
                                 <div>Courses</div>
@@ -189,7 +189,7 @@ const getDayOfWeek = () => {
                                 </div>
                                 <div class="my-2">
                                     <h2 class="text-2xl font-bold">
-                                        <span>{{ $page.props.lessonsCount }}</span> 
+                                        <span>{{ $page.props.lessonsCount }}</span>
                                     </h2>
                                 </div>
                                 <div>Lessons</div>
@@ -207,12 +207,17 @@ const getDayOfWeek = () => {
     </div>
     <footer class="bg-gray-200 mx-auto w-full max-w-container px-4 sm:px-6 lg:px-8">
         <div class="border-t border-slate-900/5 py-10 text-center">
-            <div class="text-center flex flex-wrap">
+            <!-- <div class="flex flex-wrap justify-center items-start">
                 <span>www.</span>
                 <span class="text-base md:text-4xl text-gray-600">plearnd</span>
                 <span>.com</span>
-            </div>
-            <p class="mt-5 text-center text-sm leading-6 text-slate-700">เล่นบ้าง เรียนบ้าง สร้างรายได้ด้วย เพลิน!!</p>
+            </div> -->
+            <h3 class="text-gray-700 ">
+                <span>www.</span>
+                <b class=" md:text-4xl">plearnd</b>
+                <span>.com</span>
+            </h3>
+            <p class="mt-5 text-center text-sm leading-6 text-gray-800">เล่นบ้าง เรียนบ้าง สร้างรายได้ด้วย เพลิน!!</p>
             <div class="mt-8 flex items-center justify-center space-x-4 text-sm font-semibold leading-6 text-slate-700">
                 <img :src="ceo.data.avatar" alt="" class="rounded-full w-24 h-24">
             </div>

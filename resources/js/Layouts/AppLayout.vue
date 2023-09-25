@@ -166,7 +166,7 @@ const logout = () => {
                                             กระดานข่าว
                                         </DropdownLink>
 
-                                        <DropdownLink :href="'/courses'">
+                                        <DropdownLink href="/courses">
                                             รวมรายวิชา
                                         </DropdownLink>
 
@@ -241,8 +241,8 @@ const logout = () => {
                             <ResponsiveNavLink :href="route('newsfeed')" :active="route().current('newsfeed')">
                                 กระดานข่าว
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink :href="'/courses'" :active="false">
-                                รวมบทเรียน
+                            <ResponsiveNavLink href="/courses" :active="false">
+                                รวมรายวิชา
                             </ResponsiveNavLink>
                             <ResponsiveNavLink v-if="$page.props.jetstream.hasApiFeatures" :href="route('api-tokens.index')" :active="route().current('api-tokens.index')">
                                 API Tokens
@@ -299,7 +299,7 @@ const logout = () => {
                 </div>
             </nav>
 
-            
+
             <!-- Page Heading -->
             <header v-if="$slots.header" class="bg-white dark:bg-gray-800 shadow">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

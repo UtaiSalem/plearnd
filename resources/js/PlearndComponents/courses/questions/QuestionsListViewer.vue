@@ -7,10 +7,10 @@ import Swal from 'sweetalert2';
 import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
-    questionableType: String, 
-    questionableId: Number, 
-    questionNameTh: String, 
-    questionApiRoute: String, 
+    questionableType: String,
+    questionableId: Number,
+    questionNameTh: String,
+    questionApiRoute: String,
     questions: Object
 });
 
@@ -28,8 +28,8 @@ const browseInputQuestionImages = () => inputQuestionImages.value.click();
 
 async function addNewQuestion(){
     questionInputActive.value = !questionInputActive.value;
-    if(questionInput.value.text.trim().length > 0 || tempImagesFile.length>0){ 
-        
+    if(questionInput.value.text.trim().length > 0 || tempImagesFile.length>0){
+
         const config = { headers: { 'Content-Type': 'multipart/form-data' } };
         let newQstForm = new FormData();
         newQstForm.append('text', questionInput.value.text);
@@ -46,6 +46,9 @@ async function addNewQuestion(){
         }
         questionInput.value.text='';
         questionInput.value.points=0;
+        tempImagesFile.splice(0);
+        tempImagesUrl.splice(0);
+
     }
 }
 
@@ -62,21 +65,22 @@ function onInputImageChange(e){
 }
 function onCancleHandler(e){
     inputQuestionImages.files = [];
-    questionInput.text = '';
-    questionInput.points = 0;
-    tempImages.splice(0);
+    questionInput.value.text = '';
+    questionInput.value.points = 0;
+    tempImagesFile.splice(0);
+    tempImagesUrl.splice(0);
     questionInputActive.value = false;
 }
 
-function deleteTempImages(index){ 
-    tempImagesFile.splice(index,1); 
-    tempImagesUrl.splice(index,1); 
+function deleteTempImages(index){
+    tempImagesFile.splice(index,1);
+    tempImagesUrl.splice(index,1);
 }
 
 </script>
 
 <template>
-    <div class="w-full">            
+    <div class="w-full">
         <div class="flex items-center justify-center bg-white border-t-4 border-blue-600 rounded-lg overflow-hidden shadow-lg">
             <div class="tabs flex flex-col justify-center py-4">
                 <div class="tabs-header px-2 w-full flex flex-col items-center justify-center">
@@ -88,10 +92,10 @@ function deleteTempImages(index){
                     </div>
                     <div v-else class="w-full">
                         <div v-for="(question,idx) in props.questions" :key="question.id" class="w-full border rounded-md p-1 my-2">
-                            <QuestionItem 
-                                :question="question" 
-                                :indexNumber="idx" 
-                                :isCourseOwner="$page.props.isCourseAdmin" 
+                            <QuestionItem
+                                :question="question"
+                                :indexNumber="idx"
+                                :isCourseOwner="$page.props.isCourseAdmin"
                                 @delete-question="deleteQuestion(question.id, idx)"
                             />
                         </div>
@@ -161,7 +165,7 @@ function deleteTempImages(index){
                         <div class=" ml-4" data-title="Insert Photo" >
                             <input type="file" accept="image/*" multiple ref="inputQuestionImages" class="hidden" @change="onInputImageChange">
                             <Icon icon="heroicons:photo" class="w-9 h-9 hover:scale-110 bg-blue-200 hover:bg-blue-300 rounded-full p-2" @click.prevent="browseInputQuestionImages" />
-                        </div> 
+                        </div>
                     </div>
                 </form>
             </div>
@@ -172,13 +176,13 @@ function deleteTempImages(index){
                     <i class="pi pi-plus-circle mx-2 text-lg font-semibold"></i>
                     เพิ่มคำถาม
                 </button>
-                <button  v-if="questionInputActive && questionInput.text.trim() !==''" type="button" @click.prevent="addNewQuestion" class="px-4 py-2 flex justify-center items-center  bg-green-400 hover:bg-green-500 focus:ring-green-400 focus:ring-offset-green-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full ">
-                    <span> <i class="pi pi-save mx-2 font-semibold"></i> </span>
-                    บันทึก
-                </button>
-                <button  v-if="questionInputActive && questionInput.text.trim() ==''" type="button" @click.prevent="addNewQuestion" class="px-4 py-2 flex justify-center items-center border-2 border-red-500 hover:bg-red-300 focus:ring-blue-500 focus:ring-offset-blue-200 text-red-500 hover:text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full ">
+                <button  v-if="questionInputActive" type="button" @click.prevent="onCancleHandler" class="px-4 py-1.5 mr-2 flex justify-center items-center border-2 border-red-500 hover:bg-red-300 focus:ring-blue-500 focus:ring-offset-blue-200 text-red-500 hover:text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full ">
                     <span> <i class="pi pi-times-circle mx-2 font-semibold"></i> </span>
                     ยกเลิก
+                </button>
+                <button  v-if="questionInputActive && (questionInput.text.trim() !=='')" type="button" @click.prevent="addNewQuestion" class="px-4 py-2 flex justify-center items-center  bg-green-400 hover:bg-green-500 focus:ring-green-400 focus:ring-offset-green-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-full ">
+                    <span> <i class="pi pi-save mx-2 font-semibold"></i> </span>
+                    บันทึก
                 </button>
             </div>
         </div>
