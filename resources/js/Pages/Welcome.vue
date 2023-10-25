@@ -200,6 +200,20 @@ const getDayOfWeek = () => {
                 </div>
             </section>
 
+            <div class="">
+                <div class="bg-white rounded-lg p-4 text-blue-500">
+                    <div class=" flex justify-center">
+                        <Icon icon="eos-icons:virtual-guest" class="text-blue-500 w-10 h-10" />
+                    </div>
+                    <div class="my-2 text-center">
+                        <h2 class="text-2xl font-bold">
+                            <span>{{ $page.props.visitCounter }}</span>
+                        </h2>
+                    </div>
+                    <div>visiters</div>
+                </div>
+            </div>
+
             <div class="mt-20 mb-4 max-w-6xl text-center">
                 <p class="text-xs sm:text-lg text-red-600">***อยู่ระหว่างการพัฒนาและทดลองใช้งาน***</p>
             </div>

@@ -9,6 +9,7 @@ use App\Models\Activity;
 use App\Models\PostComment;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 // use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use App\Models\AssignmentAnswer;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\UserAnswerQuestion;
 use Laravel\Jetstream\HasProfilePhoto;
@@ -132,5 +133,10 @@ class User extends Authenticatable
     public function answerQuestions(): HasMany
     {
         return $this->hasMany(UserAnswerQuestion::class);
+    }
+
+    public function answerAssignments(): HasMany
+    {
+        return $this->hasMany(AssignmentAnswer::class);
     }
 }

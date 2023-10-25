@@ -14,6 +14,7 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\NewsfeedController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\TopicImageController;
 use App\Http\Controllers\LessonImageController;
@@ -37,10 +38,7 @@ use App\Http\Controllers\PostCommentReactionController;
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard', ['profilePath' => '/../']);
-        // return redirect('/newsfeed');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'),'verified',])->group(function () {

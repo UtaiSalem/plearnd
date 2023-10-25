@@ -1,22 +1,21 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
-import Welcome from '@/Components/Welcome.vue';
+import { Head } from "@inertiajs/vue3";
+import Sidebar from "@/_components/Sidebar.vue";
+// import NavbarMain from '@/PlearndComponents/flowbite/NavbarMain.vue';
+import Navbar from "@/_components/Navbar.vue";
 </script>
 
 <template>
-    <AppLayout title="Dashboard">
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                แผงจัดการ
-            </h2>
-        </template>
-
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                    <Welcome />
-                </div>
-            </div>
-        </div>
-    </AppLayout>
+  <div class="h-full">
+    <Head title="Teacher Dashboard" />
+    <div class="hidden md:flex h-full w-56 flex-col fixed inset-y-0 z-50">
+      <Sidebar />
+    </div>
+    <div>
+      <Navbar />
+    </div>
+    <main>
+        <slot></slot>
+    </main>
+  </div>
 </template>
