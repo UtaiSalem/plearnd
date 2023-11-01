@@ -9,12 +9,10 @@ use App\Http\Controllers\TopicController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\AcademyController;
-use App\Http\Controllers\SupportController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\NewsfeedController;
 use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\TopicImageController;
 use App\Http\Controllers\LessonImageController;
@@ -22,6 +20,7 @@ use App\Http\Controllers\PostCommentController;
 use App\Http\Controllers\CourseMemberController;
 use App\Http\Controllers\PostReactionController;
 use App\Http\Controllers\AcademyMemberController;
+use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\TopicQuestionController;
 use App\Http\Controllers\CourseQuestionController;
 use App\Http\Controllers\LessonQuestionController;
@@ -38,15 +37,18 @@ use App\Http\Controllers\PostCommentReactionController;
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard', ['profilePath' => '/../']);
+        // return redirect('/newsfeed');
+    })->name('dashboard');
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'),'verified',])->group(function () {
     Route::get('/newsfeed', [NewsfeedController::class, 'index'] )->name('newsfeed');
-    Route::get('/users/{user}/feed', [NewsfeedController::class, 'show'] )->name('myfeed');
+    Route::get('/myfeed/{user}', [NewsfeedController::class, 'show'] )->name('myfeed');
 
     Route::resource('/activities', ActivityController::class);
-    Route::get('/users/{user}/activities', [ ActivityController::class,'show'])->name('user.activities');
+    Route::get('users/{user}/activities', [ ActivityController::class,'show'])->name('user.activities');
 
     Route::resource('/posts', PostController::class);
 
@@ -110,6 +112,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'),'verified',]
     Route::post('test/upload', [TestController::class, 'upload'])->name('upload');
 
     Route::resource('supports', SupportController::class);
+
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('forgot-pasword');
+    Route::post('/forgot-password/getuser', [ForgotPasswordController::class, 'getUser'])->name('forgot-pasword.get-user');
+    Route::post('/forgot-password/reset/{user}', [ForgotPasswordController::class, 'resetPassword'])->name('forgot-pasword.reset');
+    Route::post('/forgot-password/exchange/{user}', [ForgotPasswordController::class, 'exchangeMoney'])->name('forgot-pasword.exchange');
 
 });
 

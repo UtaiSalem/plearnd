@@ -4,6 +4,6 @@
 
 <template>
     <div>
-
+        Teacher Page
     </div>
 </template>
