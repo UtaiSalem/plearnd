@@ -34,7 +34,7 @@ async function deleteImage(index, id){
                     <div class="relative mb-2 max-h-fit overflow-hidden">
                         <!-- <a href=""> -->
                             <!-- <img :src="image.url" class="rounded-lg hover:scale-110 duration-200"/> -->
-                        <img :src="'../../storage/'+image.image_url" class="rounded-lg"/>
+                        <img :src="'/storage/'+image.image_url" class="rounded-lg"/>
                         <!-- </a> -->
                         <button v-if="edit" @click.prevent="deleteImage(index,image.id)"
                         class="absolute top-1 left-1 rounded-full cursor-pointer bg-gray-100 p-2">

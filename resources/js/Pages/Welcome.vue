@@ -13,7 +13,11 @@ defineProps({
     coursesCount: Number,
     lessonsCount: Number,
     postsCount: Number,
-    ceo: Object
+    ceo: Object,
+    visitorCounter: Number,
+
+
+    appUrl: String,
 });
 
 // const secondCounter = ref(864000);
@@ -27,7 +31,7 @@ const months = ref(0);
 const years = ref(0);
 
 // const totalDays = ref(0);
-
+// const bgUrl = ref('http://plearnd.test/storage/landing/ceo.jpg');
 
 onMounted(()=>{
     getDayOfWeek();
@@ -60,72 +64,48 @@ const getDayOfWeek = () => {
 <template>
     <Head title="Welcome" />
 
-    <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-gradient-to-bl from-teal-400 to-blue-500 bg-center dark:bg-gray-900 selection:bg-red-500 selection:text-white">
-        <div v-if="canLogin" class="sm:fixed sm:top-0 sm:right-0 p-6 text-center md:text-right z-10">
-            <Link v-if="$page.props.auth.user" :href="route('dashboard')"
-                class="text-sm md:text-lg font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
-            Dashboard</Link>
+    <div
+    class="relative flex justify-center items-center min-h-screen bg-[url('/storage/landing/joanna-kosinska-education-unsplash.png')] bg-cover bg-no-repeat dark:bg-gray-900 selection:bg-red-500 selection:text-white">
 
-            <template v-else>
-                <Link :href="route('login')"
-                    class="text-sm md:text-lg font-semibold text-gray-800 hover:text-white dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
-                เข้าใช้งาน</Link>
+        <div class="w-full h-full mt-8 flex flex-col justify-center items-center">
+            <div v-if="canLogin" class="sm:fixed sm:top-0 sm:right-0 p-6 text-center md:text-right z-10">
+                <Link v-if="$page.props.auth.user" :href="route('dashboard')"
+                    class="text-sm md:text-lg font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
+                Dashboard</Link>
 
-                <Link v-if="canRegister" :href="route('register')"
-                    class="text-sm md:text-lg ml-4 font-semibold text-gray-800 hover:text-white dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
-                สมัครสมาชิก</Link>
-            </template>
-        </div>
+                <template v-else>
+                    <Link :href="route('login')"
+                        class="bg-gray-200 bg-opacity-50 p-2 rounded-md text-sm md:text-lg font-semibold font-mali text-gray-800 hover:text-white hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
+                    เข้าใช้งาน</Link>
 
-        <div class="w-full h-full mt-8 bg-gradient-to-bl from-teal-400 to-blue-500 flex flex-col justify-center items-center text-white">
-
-            <p class="text-xs sm:text-2xl ">เรียนบ้าง เล่นบ้าง สร้างรายได้ด้วย</p>
-            <h3 class="text-base md:text-4xl ">www.<b class="text-base md:text-6xl">plearnd</b>.com</h3>
-
-            <div class="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mt-10 lg:mt-20 justify-between">
-<!--
-                <div class="bg-transparent border text-center items-center">
-                        <div class="text-5xl px-10 py-5">
-                            {{ totalDays }}
-                        </div>
-                        <hr>
-                        <p class="px-10 py-5">days</p>
-                </div>
-                <div class="bg-transparent border text-center">
-                    <p class="text-5xl px-10 py-5">{{ hour }}</p>
-                    <hr>
-                    <p class="px-10 py-5">hours</p>
-                </div>
-                <div class="bg-transparent border text-center">
-                    <p class="text-5xl px-10 py-5 w-[100px]">{{ minute }}</p>
-                    <hr>
-                    <p class="px-10 py-5">mins</p>
-                </div>
-                <div class="bg-transparent border text-center">
-                    <p class="text-5xl px-10 py-5 w-[100px]">{{ second }}</p>
-                    <hr>
-                    <p class="px-10 py-5">secs</p>
-                </div> -->
+                    <Link v-if="canRegister" :href="route('register')"
+                        class="bg-gray-200 bg-opacity-50 p-2 rounded-md text-sm md:text-lg ml-4 font-semibold font-mali text-gray-800 hover:text-white hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
+                    สมัครสมาชิก</Link>
+                </template>
             </div>
+
+            <p class="text-xs sm:text-2xl sm:mt-6 font-mali text-white ">เรียนบ้าง เล่นบ้าง สร้างรายได้ด้วย</p>
+            <h3 class="text-base md:text-4xl text-white ">www.<b class="text-base md:text-6xl ">plearnd</b>.com</h3>
+
 
             <div class="min-w-32 min-h-48 p-3 mb-4 font-medium">
                 <div class="w-32 flex-none rounded-t lg:rounded-t-none lg:rounded-l text-center shadow-lg ">
-                    <div class="block rounded-t overflow-hidden  text-center ">
-                        <div class="bg-blue-500 text-white py-1">
-                            <p>
-                            {{ months }}
+                    <div class="block rounded-t overflow-hidden  text-center font-mali">
+                        <div class="bg-blue-500 py-1">
+                            <p class="font-mali text-white ">
+                                {{ months }}
                             </p>
-                            <p>
-                            {{ years }}
+                            <p class="font-mali text-white ">
+                                {{ years }}
                             </p>
                         </div>
                         <div class="pt-1 border-l border-r border-white bg-white">
-                            <span class="text-5xl font-bold leading-tight text-gray-800">
+                            <span class="text-5xl font-bold leading-tight text-blue-500">
                                 {{ todayDate }}
                             </span>
                         </div>
                         <div class="pb-2 border-l border-r border-b rounded-b-lg text-center border-white bg-white -pt-2 -mb-1">
-                            <span class="text-md text-gray-800 font-extrabold">
+                            <span class="text-md text-blue-500 font-extrabold">
                                 {{ daysNameTh }}
                             </span>
                         </div>
@@ -140,7 +120,6 @@ const getDayOfWeek = () => {
 
             <section class="text-gray-700 body-font">
                 <div class="container px-5 py-12 mx-auto">
-
                     <div class="flex flex-wrap -m-4 text-center text-blue-500">
 
                         <div class="px-4 py-2 md:w-1/4 sm:w-1/2 w-full">
@@ -149,7 +128,7 @@ const getDayOfWeek = () => {
                                     <Icon icon="la:users" class="text-blue-500 w-10 h-10" />
                                 </div>
                                 <div class="my-2">
-                                    <h2 class="text-2xl font-bold">
+                                    <h2 class="text-2xl font-bold text-blue-500">
                                         <span>{{ $page.props.usersCount }}</span>
                                     </h2>
                                 </div>
@@ -162,7 +141,7 @@ const getDayOfWeek = () => {
                                     <Icon icon="icon-park-outline:comments" class=" text-blue-500 w-10 h-10" />
                                 </div>
                                 <div class="my-2">
-                                    <h2 class="text-2xl font-bold">
+                                    <h2 class="text-2xl font-bold text-blue-500">
                                         <span>{{ $page.props.postsCount }}</span>
                                     </h2>
                                 </div>
@@ -175,7 +154,7 @@ const getDayOfWeek = () => {
                                     <Icon icon="uil:notebooks" class="text-blue-500 w-10 h-10"/>
                                 </div>
                                 <div class="my-2">
-                                    <h2 class="text-2xl font-bold">
+                                    <h2 class="text-2xl font-bold text-blue-500">
                                         <span>{{ $page.props.coursesCount }}</span>
                                     </h2>
                                 </div>
@@ -188,7 +167,7 @@ const getDayOfWeek = () => {
                                     <Icon icon="material-symbols:library-books-outline" class="text-blue-500 w-10 h-10" />
                                 </div>
                                 <div class="my-2">
-                                    <h2 class="text-2xl font-bold">
+                                    <h2 class="text-2xl font-bold text-blue-500">
                                         <span>{{ $page.props.lessonsCount }}</span>
                                     </h2>
                                 </div>
@@ -199,23 +178,26 @@ const getDayOfWeek = () => {
                     </div>
                 </div>
             </section>
-
-            <div class="">
-                <div class="bg-white rounded-lg p-4 text-blue-500">
-                    <div class=" flex justify-center">
-                        <Icon icon="eos-icons:virtual-guest" class="text-blue-500 w-10 h-10" />
+            
+            <section class="container flex w-full justify-center">
+                <div class="w-full sm:w-40 flex justify-center items-center rounded-lg bg-white m-5">
+                    <div class="p-3 space-y-2">
+                        <div class="text-center">
+                            <Icon icon="mdi:home-group" class="text-blue-500 w-10 h-10 mx-auto" />
+                        </div>
+                        <div class="my-2 text-center">
+                            <h2 class="text-2xl font-bold text-blue-500">
+                                <span>{{ $page.props.visitorCounter }}</span>
+                            </h2>
+                        </div>
+                        <div class="text-center text-blue-500">ผู้เข้าชม</div>
+                        <div class="text-center text-sm text-red-500">ตั้งแต่ {{ new Date('1/1/2024').toLocaleDateString() }}</div>
                     </div>
-                    <div class="my-2 text-center">
-                        <h2 class="text-2xl font-bold">
-                            <span>{{ $page.props.visitCounter }}</span>
-                        </h2>
-                    </div>
-                    <div>visiters</div>
                 </div>
-            </div>
+            </section>
 
             <div class="mt-20 mb-4 max-w-6xl text-center">
-                <p class="text-xs sm:text-lg text-red-600">***อยู่ระหว่างการพัฒนาและทดลองใช้งาน***</p>
+                <p class="text-md sm:text-lg text-white font-mali">***อยู่ระหว่างการพัฒนาและทดลองใช้งาน***</p>
             </div>
         </div>
     </div>
@@ -231,9 +213,9 @@ const getDayOfWeek = () => {
                 <b class=" md:text-4xl">plearnd</b>
                 <span>.com</span>
             </h3>
-            <p class="mt-5 text-center text-sm leading-6 text-gray-800">เล่นบ้าง เรียนบ้าง สร้างรายได้ด้วย เพลิน!!</p>
+            <p class="mt-5 text-center text-sm leading-6 text-gray-800 font-mali">เล่นบ้าง เรียนบ้าง สร้างรายได้ด้วย เพลิน!!</p>
             <div class="mt-8 flex items-center justify-center space-x-4 text-sm font-semibold leading-6 text-slate-700">
-                <img :src="ceo.data.avatar" alt="" class="rounded-full w-24 h-24">
+                <img :src="'/storage/landing/ceo.jpg'" alt="" class="rounded-full w-24 h-24">
             </div>
             <div class="mt-2 ml-16 flex flex-col items-center justify-center space-x-4 text-sm font-semibold leading-6 text-slate-700">
                 <div class="w-48 flex justify-start">
@@ -271,13 +253,3 @@ const getDayOfWeek = () => {
     </footer>
 </template>
 
-<style>
-.bg-dots-darker {
-    background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.22676 0C1.91374 0 2.45351 0.539773 2.45351 1.22676C2.45351 1.91374 1.91374 2.45351 1.22676 2.45351C0.539773 2.45351 0 1.91374 0 1.22676C0 0.539773 0.539773 0 1.22676 0Z' fill='rgba(0,0,0,0.07)'/%3E%3C/svg%3E");
-}
-
-@media (prefers-color-scheme: dark) {
-    .dark\:bg-dots-lighter {
-        background-image: url("data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.22676 0C1.91374 0 2.45351 0.539773 2.45351 1.22676C2.45351 1.91374 1.91374 2.45351 1.22676 2.45351C0.539773 2.45351 0 1.91374 0 1.22676C0 0.539773 0.539773 0 1.22676 0Z' fill='rgba(255,255,255,0.07)'/%3E%3C/svg%3E");
-    }
-}</style>

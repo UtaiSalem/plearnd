@@ -72,7 +72,7 @@ function onLogoInputChange(event) {
 </template>
 
 <style>
-.page-header{
+/* .page-header{
     background-image: url('../storage/images/pages/01-page.png');
-}
+} */
 </style>

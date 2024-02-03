@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('academies', function (Blueprint $table) {
             $table->id();
+            // $table->ulid('id')->primary();            
             $table->foreignId('user_id')->constrained();
             $table->string('name');
             $table->string('slogan')->nullable();
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->string('accreditation_body')->nullable();
             $table->unsignedInteger('total_students')->default(0);
             $table->unsignedInteger('total_teachers')->default(0);
+            $table->unsignedInteger('membership_fees_points')->default(0);
             $table->text('courses_offered')->nullable();
             $table->text('facilities')->nullable();
             $table->text('academy_timings')->nullable();

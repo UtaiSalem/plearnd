@@ -5,3 +5,39 @@
 [x-cloak] {
     display: none;
 }
+
+@layer reset, primevue;
+
+@layer components {
+    .plearnd-btn-primary {
+        @apply w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75;
+    }
+
+    .plearnd-btn-success {
+        @apply w-full py-2 px-4 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75;
+    }
+
+    .plearnd-btn-secondary {
+        @apply w-full py-2 px-4 bg-gray-400 text-white font-semibold rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75;
+    }
+
+    .plearnd-btn-warning {
+        @apply w-full py-2 px-4 bg-yellow-400 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-75;
+    }
+    
+    .plearnd-btn-danger {
+        @apply bg-red-400 px-4 py-2 rounded-lg text-white hover:bg-red-600 border  shadow-lg; 
+    }
+
+    .plearn-navbar-icon {
+        @apply flex items-center justify-between space-x-1 pr-2 text-sm font-bold text-yellow-600 bg-indigo-100 rounded-full hover:bg-indigo-200 focus:outline-none focus:ring
+    }
+
+    .plearnd-sidebar-link {
+        @apply flex items-center p-2 space-x-2 rounded-md bg-indigo-100 hover:bg-indigo-200 text-indigo-500 hover:text-indigo-700
+    }
+
+    .plearnd-card {
+        @apply bg-white p-4 rounded-lg shadow-xl
+    }
+}

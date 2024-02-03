@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\AcademyResource;
 use App\Http\Resources\AssignmentResource;
+use App\Http\Resources\CourseMemberResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CourseResource extends JsonResource
@@ -21,12 +22,14 @@ class CourseResource extends JsonResource
             'code'              => $this->code,
             'description'       => $this->description,
             'logo'              => $this->logo,
-            'cover'              => $this->cover,
+            'cover'             => $this->cover,
             'duration'          => $this->duration,
             'start_date'        => $this->start_date,
             'end_date'          => $this->end_date,
-            'tuition_fee'       => $this->tuition_fee,
+            'tuition_fees'      => $this->tuition_fees,
             'price'             => $this->price,
+            'credit_units'      => $this->credit_units,
+            'hours_per_week'    => $this->hours_per_week,
             'category'          => $this->category,
             'instructor'        => $this->instructor,
             'capacity'          => $this->capacity,
@@ -43,7 +46,13 @@ class CourseResource extends JsonResource
             'syllabus'          => $this->syllabus,
             'certificate'       => $this->certificate,
             'isMember'          => $this->isMember(auth()->user()),
-            'lessons_count'     => count($this->lessons)
+            'member_status'     => $this->member_status($this->id), //Course member status
+            // 'member_details'    => $this->member_details($this->id),
+            'lessons_count'     => count($this->lessons),
+            'total_score'       => $this->total_score,
+            'setting'           => $this->courseSettings,
+            'saleable'          => $this->saleable,
+            // 'member_detail'     => new CourseMemberResource(),
             // 'assignments'       => AssignmentResource::collection($this->assignments),
         ];
     }

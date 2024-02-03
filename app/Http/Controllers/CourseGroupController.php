@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use App\Models\CourseGroup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\CourseGroupResource;
 
 class CourseGroupController extends Controller
 {
@@ -26,9 +29,38 @@ class CourseGroupController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Course $course, Request $request)
     {
-        //
+        try {
+            $request->validate([
+                'name'              => 'required|string|max:255',
+                'description'       => 'nullable|string|max:255',
+                // 'cover'             => 'nullable|image|mimes:jpg,jpeg,png,gif,svg|max:4096',
+            ]);
+
+            // $newGroups = $validated;
+            if($request->file('cover')) {
+                $cover_file = $request->file('cover');
+                $cover_filename =  uniqid().'.'.$cover_file->getClientOriginalExtension();
+                Storage::disk('public')->putFileAs('images/courses/groups', $cover_file, $cover_filename);
+                // $validated['image_url'] = $cover_filename;
+            }
+
+            $newGroup = $course->courseGroups()->create([
+                'user_id'           => auth()->id(),
+                'name'              => $request->name,
+                'description'       => $request->get('description', null),
+                'image_url'         => $cover_filename ?? null,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'newGroup' => new CourseGroupResource(CourseGroup::find($newGroup->id)),
+            ], 200);
+
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
@@ -50,16 +82,33 @@ class CourseGroupController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, CourseGroup $courseGroup)
+    public function update(Course $course, CourseGroup $group, Request $request)
     {
-        //
+        try {
+            $currentGroup = $group->update($request->all());
+
+            return response()->json([
+                'success' => true,
+                'group' => $currentGroup,
+            ], 200);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CourseGroup $courseGroup)
+    public function destroy(Course $course, CourseGroup $group)
     {
-        //
+        if ($group->image_url) {
+            Storage::disk('public')->delete('images/courses/groups/'. $group->image_url); 
+        }
+
+        $group->delete();
+
+        return response()->json([
+            'success' => true,
+        ], 200);
     }
 }

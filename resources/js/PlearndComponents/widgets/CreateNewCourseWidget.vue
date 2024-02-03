@@ -2,8 +2,8 @@
 import { ref, onMounted } from 'vue';
 import { Icon } from '@iconify/vue';
 import axios from 'axios';
-
 import { useForm, usePage, router, Link } from '@inertiajs/vue3';
+
 import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue';
 

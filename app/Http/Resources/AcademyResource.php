@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\AcademyMember;
 use App\Http\Resources\UserResource;
@@ -20,15 +21,15 @@ class AcademyResource extends JsonResource
     {
         return [
             'id'                    => $this->id,
-            'author'                => new UserResource($this->user),
-            'user'                  => new UserResource($this->user),
+            // 'author'                => new UserResource($this->user),
+            // 'user'                  => new UserResource($this->user),
             'creater'               => new UserResource($this->user),
             'name'                  => $this->name,
             'slogan'                => $this->slogan,
             'address'               => $this->address,
             'email'                 => $this->email,
             'phone'                 => $this->phone,
-            'director'              => $this->director,
+            'director'              => new UserResource(User::find($this->director)),
             'established_year'      => $this->established_year,
             'type'                  => $this->type,
             'accreditation'         => $this->accreditation,
@@ -42,13 +43,10 @@ class AcademyResource extends JsonResource
             'social_media_links'    => $this->social_media_links,
             'logo'                  => $this->logo,
             'cover'                 => $this->cover,
-            'isMember'              => $this->isMember(auth()->user()),
-            // 'isMember'              => $this->isMember($this->id, auth()->id()),
+            // 'isMember'           => $this->isMember(auth()->user()),
+            'setting'               => $this->academySetting,
+            'memberStatus'          => $this->member_status($this->id),
+            // 'authIsAcademyAdmin'    => auth()->id() == $this->user_id
         ];
     }
-
-    // public function isMember($acaId, $uId)
-    // {
-    //     return AcademyMember::where('academy_id', $acaId)->where('user_id', $uId)->exists();
-    // }
 }

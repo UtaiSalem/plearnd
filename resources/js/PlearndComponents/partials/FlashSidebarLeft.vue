@@ -1,6 +1,12 @@
+
+<script setup>
+import { Link } from "@inertiajs/vue3";
+
+</script>
+
 <template>
   <div
-    class="fixed flex flex-col top-[64px] left-0 w-16 hover:w-64 bg-white dark:bg-gray-900 h-full transition-all duration-300 shadow-lg sidebar z-20"
+    class="fixed flex flex-col top-[64px] left-0 w-16 lg:w-56 bg-white dark:bg-gray-900 h-full transition-all duration-300 shadow-lg  z-20"
   >
     <div
       class="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow"
@@ -174,9 +180,4 @@
   </div>
 </template>
 
-<script setup>
-import { Link } from "@inertiajs/vue3";
 
-</script>
-
-<style scoped></style>

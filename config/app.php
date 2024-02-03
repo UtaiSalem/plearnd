@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'http://plearnd.test'),
 
     'asset_url' => env('ASSET_URL'),
 
@@ -70,7 +70,6 @@ return [
     |
     */
 
-    // 'timezone' => 'UTC+7',
     'timezone' => 'Asia/Bangkok',
 
     /*
@@ -85,7 +84,7 @@ return [
     */
 
     'locale' => 'th',
-    
+
     /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale
@@ -142,7 +141,7 @@ return [
 
     'maintenance' => [
         'driver' => 'file',
-        // 'store'  => 'redis',
+        // 'store' => 'redis',
     ],
 
     /*
@@ -160,7 +159,7 @@ return [
         /*
          * Package Service Providers...
          */
-
+        // Intervention\Image\ImageServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -171,6 +170,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\FortifyServiceProvider::class,
         App\Providers\JetstreamServiceProvider::class,
+
     ])->toArray(),
 
     /*
@@ -186,6 +186,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
+        // 'Image' => \Intervention\Image\Facades\Image::class,
     ])->toArray(),
 
 ];

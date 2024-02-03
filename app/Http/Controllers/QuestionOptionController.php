@@ -99,6 +99,7 @@ class QuestionOptionController extends Controller
         if($question->correct_option_id === $option->id){
             $question->update([
                 'correct_option_id' => null,
+                'correct_answers' => null,
             ]);
         };
 

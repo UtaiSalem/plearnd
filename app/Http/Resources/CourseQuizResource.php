@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class CourseQuizResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        $member_achieved_score = $this->userResults()->where('user_id', auth()->id())->where('course_id', $this->course_id)->first();
+        return [
+            'id'                => $this->id,
+            'course_id'         => $this->course_id,
+            'title'             => $this->title,
+            'description'       => $this->description,
+            'time_limit'        => $this->time_limit,
+            'total_score'       => $this->total_score,
+            // 'achieved_score'    => $this->achieved_score,
+            'is_active'         => $this->is_active,
+            'start_date'        => $this->start_date,
+            'end_date'          => $this->end_date,
+            'shuffle_questions' => $this->shuffle_questions,
+            'passing_score'     => $this->passing_score,
+            'questions'         => QuestionResource::collection($this->questions),
+            'member_achieved_score' => $member_achieved_score ? $member_achieved_score->score : 0,
+            // 'start_date'        => $this->start_date->format('Y-m-d H:i:s'), // Format start_date
+            // 'end_date'          => $this->end_date->format('Y-m-d H:i:s'), // Format end_date
+        ];
+    }
+}

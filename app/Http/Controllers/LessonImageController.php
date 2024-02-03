@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Lesson;
 use App\Models\LessonImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class LessonImageController extends Controller
 {
@@ -29,7 +30,20 @@ class LessonImageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if($request->hasFile('images')) {
+            $images = $request->file('images');
+            foreach ($images as $image) {
+                $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+                Storage::disk('public')->putFileAs('images/courses/lessons', $image, $fileName);
+                $lesson->images()->create([
+                    'image_url' => $fileName,
+                ]);
+            }
+        }
+
+        return response()->json([
+            
+        ], 200);
     }
 
     /**
@@ -61,6 +75,7 @@ class LessonImageController extends Controller
      */
     public function destroy(Lesson $lesson, LessonImage $image)
     {
+        Storage::disk('public')->delete('images/courses/lessons/'. $image->image_url);
         $image->delete();
     }
 }

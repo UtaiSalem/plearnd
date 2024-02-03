@@ -15,14 +15,23 @@ class AssignmentResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $courseUserId   = $this->assignmentable->user_id;
+
+        if ($courseUserId === auth()->id()) {
+            $answers = $this->answers;
+        }else{
+            $answers = $this->answers->where('user_id', auth()->id());
+        }
+
         return [
             'id'                    => $this->id,
+            'assignmentable'        => $courseUserId,
             'assignmentable_id'     => $this->assignmentable_id,
             'assignmentable_type'   => $this->assignmentable_type,
             'title'                 => $this->title,
             'description'           => $this->description,
             'images'                => $this->images,
-            'answers'               => AssignmentAnswerResource::collection($this->answers),  
+            'answers'               => AssignmentAnswerResource::collection($answers),    
             'due_date'              => $this->due_date,
             'start_date'            => $this->start_date,
             'end_date'              => $this->end_date,

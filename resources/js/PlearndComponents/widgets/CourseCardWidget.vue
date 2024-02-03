@@ -11,7 +11,7 @@
                 </p>
             </div>
         </div>
-    </link>
+    </Link>
 </template>
 
 <script setup>

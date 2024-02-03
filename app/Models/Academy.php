@@ -6,7 +6,10 @@ use App\Models\User;
 use App\Models\Course;
 use App\Models\AcademyAdmin;
 use App\Models\AcademyMember;
+use App\Models\AcademySetting;
+// use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,11 +18,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Academy extends Model
 {
     use HasFactory;
-
+    // use HasUlids;
+    
     // protected $fillable = [];
     protected $guarded = [];
 
     
+    /**
+     * Get the academySetting associated with the Academy
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function academySetting(): HasOne
+    {
+        return $this->hasOne(AcademySetting::class, 'academy_id');
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -35,13 +49,24 @@ class Academy extends Model
         return $this->hasMany(AcademyAdmin::class);
     }
 
-    public function members(): BelongsToMany
+    public function academyMembers(): HasMany
     {
-        return $this->belongsToMany(User::class, 'academy_members', 'academy_id', 'user_id');
+        return $this->hasMany(AcademyMember::class);
     }
 
-    public function isMember(User $user)
+    public function members(): BelongsToMany
     {
-        return $this->members->contains($user);
+        return $this->belongsToMany(User::class, 'academy_members', 'academy_id', 'user_id')->withPivot('status');
     }
+
+    public function member_status($id)
+    {
+        // auth()->user()->academiesMember->pivot->status;
+        // return $this->members->contains(auth()->user());
+        // return $this->members->where('user_id', auth()->id());
+        $academy = AcademyMember::where('academy_id', $id)->where('user_id', auth()->id())->get();
+        // $status = $academy->pluck('status')->all();
+        return $academy->pluck('status')->first();
+    }
+
 }

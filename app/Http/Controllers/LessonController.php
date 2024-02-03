@@ -16,15 +16,22 @@ use App\Http\Resources\QuestionResource;
 use App\Http\Requests\StoreLessonRequest;
 use App\Http\Requests\UpdateLessonRequest;
 use App\Http\Resources\AssignmentResource;
+use App\Http\Resources\CourseGroupResource;
 
 class LessonController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Course $course)
     {
-        //
+        // $isCourseAdmin = $course->user_id == auth()->id() ? true: false;
+        return Inertia::render('Learn/Course/Lesson/Lessons',[
+            'isCourseAdmin' => $course->user_id === auth()->id(),
+            'course'        => new CourseResource($course),
+            'lessons'       => LessonResource::collection($course->lessons),
+            'groups'        => CourseGroupResource::collection($course->courseGroups),
+        ]);
     }
 
     /**
@@ -42,19 +49,37 @@ class LessonController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required',
-            'description' => 'required',
-            // 'content' => 'required',
-            // 'duration' => 'nullable|string',
-            // 'status' => 'required|string',
-            // 'creater' => auth()->id()
+            'description' => 'nullable',
+            'content' => 'required',
+            'youtube_url' => '',
+            'status' => 'required',
         ]);
-
         $validated['user_id'] = auth()->id();
 
-        // $lesson = new Lesson();
-        // $lesson->fill($request->all());
-        // $lesson->save();
-        $lesson = $course->lessons()->create($validated);
+        $lesson = $course->lessons()->create([
+            'user_id'       =>  $validated['user_id'],
+            'title'         =>  $validated['title'],
+            'description'   =>  $validated['description'],
+            'content'       =>  $validated['content'],
+            'youtube_url'   =>  $validated['youtube_url'],
+            'status'        =>  $validated['status'],
+            // 'video_url'     =>  $validated['video_url'],
+        ]);
+
+        if($request->hasFile('images')) {
+            $images = $request->file('images');
+            // $fileNames = [];
+            foreach ($images as $image) {
+                $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+                Storage::disk('public')->putFileAs('images/courses/lessons', $image, $fileName);
+                // $fileNames[] = $fileName;
+
+                $lesson->images()->create([
+                    // 'image_url' => $image_url
+                    'image_url' => $fileName,
+                ]);
+            }
+        }
 
         // return redirect()->route('lessons.index')->with('success', 'Lesson created successfully!');
         return response()->json([
@@ -66,24 +91,26 @@ class LessonController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Lesson $lesson)
+    public function show(Course $course, Lesson $lesson)
     {
-        $lesson->user_id == auth()->id() ? $isCourseAdmin = true: $isCourseAdmin = false;
+        // $lesson->user_id == auth()->id() ? $isCourseAdmin = true: $isCourseAdmin = false;
+        $isCourseAdmin = $lesson->user_id == auth()->id() ? true: false;
         $questions = $lesson->questions;
         $assignments = $lesson->assignments;
         $topics = $lesson->topics;
-        $course = $lesson->course;
+        // $course = $lesson->course;
         $academy = $course->academy;
 
-        return Inertia::render('Lesson',[
+        return Inertia::render('Learn/Lesson/Lesson',[
             'isCourseAdmin' => $isCourseAdmin,
-            'academy'       => new AcademyResource($academy),
+            'academy'       => $academy ? new AcademyResource($academy) : null,
             'course'        => new CourseResource($course),
+            'lessons'       => LessonResource::collection($course->lessons),
             'lesson'        => new LessonResource($lesson),
+            'groups'        => CourseGroupResource::collection($course->courseGroups),
             'topics'        => TopicResource::collection($topics),
             'assignments'   => AssignmentResource::collection($assignments),
             'questions'     => QuestionResource::collection($questions),
-            'imagePath'     => '/../../'
         ]);
     }
 
@@ -110,8 +137,8 @@ class LessonController extends Controller
             $fileNames = [];
             foreach ($images as $image) {
                 $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
-                $image_url = Storage::disk('public')->putFileAs('images/lessons', $image, $fileName);
-                $fileNames[] = $fileName;
+                $image_url = Storage::disk('public')->putFileAs('images/courses/lessons', $image, $fileName);
+                // $fileNames[] = $fileName;
 
                 $lessonImages[] = $lesson->images()->create([
                     'image_url' => $image_url
@@ -129,6 +156,18 @@ class LessonController extends Controller
      */
     public function destroy(Lesson $lesson)
     {
+
+        if ($lesson->images) {
+            foreach ($lesson->images as $image) {
+                Storage::disk('public')->delete('images/courses/lessons/'. $image->image_url);
+                $image->delete();   
+            }
+        }
+
         $lesson->delete();
+
+        return response()->json([
+            'success' => true
+        ], 200);
     }
 }

@@ -6,6 +6,7 @@ use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 
 class ForgotPasswordController extends Controller
@@ -21,10 +22,12 @@ class ForgotPasswordController extends Controller
     public function getUser(Request $request){
         $email = $request->email;
 
-        $user = User::where('email','LIKE','%'. $email . '%')->limit(10)->get();
+        $users = UserResource::collection(User::where('email','like','%'. $email . '%')
+        ->orWhere('name','like','%'. $email . '%')
+        ->limit(10)->get());
 
         return response()->json([
-            'user' => $user,
+            'users' => $users,
             'success' => true,
         ], 200);
 
@@ -32,18 +35,17 @@ class ForgotPasswordController extends Controller
 
     public function resetPassword(User $user)
     {
-        if ($user->pp < 3400) {
+        if ($user->pp < 4800) {
             return redirect()->back()->with([
                 'success' => false,
                 'message' => 'แต้มสะสมไม่เพียงพอ'
             ]);
         }
+
         $user->update([
             'password' => Hash::make('0000'),
-            'pp' => $user->pp - 3400,
+            'pp' => $user->pp - 4800,
         ]);
-
-        // $user->decrement('pp', 3400);
 
         DB::table('password_reset_tokens')->where(['email'=> $user->email])->delete();
 
@@ -64,7 +66,7 @@ class ForgotPasswordController extends Controller
                 ]);
             }
 
-            $user->increment('pp', $request->money*680);
+            $user->increment('pp', $request->money*1080);
 
             return response()->json([
                 'success' => true,

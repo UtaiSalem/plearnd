@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CourseGroupMember;
+use App\Models\Course;
+use App\Models\CourseGroup;
+use App\Models\CourseMember;
 use Illuminate\Http\Request;
+use App\Models\CourseGroupMember;
+use App\Http\Resources\CourseGroupResource;
 
 class CourseGroupMemberController extends Controller
 {
@@ -26,9 +30,44 @@ class CourseGroupMemberController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Course $course, CourseGroup $group)
     {
-        //
+        if (auth()->user()->pp < $course->tuition_fees) {
+            return response()->json([
+                'success' => false,
+                'msg'     => 'แต้มสะสมไม่เพียงพอ กรุณาเติมแต้มสะสมก่อนสมัครสมาชิก'
+            ], 201);
+        }
+
+        $course_member = CourseMember::where('course_id', $course->id)
+                                    ->where('user_id', auth()->id())
+                                    ->first();
+
+        if (!$course_member) {
+            $new_course_member = new CourseMember();
+            $new_course_member->user_id                 = auth()->id();
+            $new_course_member->course_id               = $course->id;
+            $new_course_member->course_member_status    = $course->courseSettings->auto_accept_members === 0 ? 0 : 1;
+            $new_course_member->group_id                = $group->id;
+            $new_course_member->group_member_status     = $group->auto_accept_member === 0 ? 0: 1;
+            $new_course_member->save();
+            $new_course_member->refresh();
+
+            if ($new_course_member->status == 1) { $course->increment('enrolled_students'); }
+
+        }else{           
+            $course_member->course_member_status    = $course->courseSettings->auto_accept_members === 0 ? 0 : 1;
+            $course_member->group_id                = $group->id;
+            $course_member->group_member_status     = $group->auto_accept_member === 0 ? 0: 1;
+            $course_member->save();
+            $course_member->refresh();
+        }
+
+        return response()->json([
+            'success' => true,
+            'courseMemberOfAuth'    => $course->courseMembers()->where('user_id', auth()->id())->first(),
+            'group'                => new CourseGroupResource($group),
+        ], 200);
     }
 
     /**
@@ -61,5 +100,24 @@ class CourseGroupMemberController extends Controller
     public function destroy(CourseGroupMember $courseGroupMember)
     {
         //
+    }
+
+    public function unMemberGroup(Course $course, CourseGroup $group, CourseMember $member)
+    {
+        $member->group_id               = null;
+        $member->group_member_status    = 0;
+        $member->save();
+        $member->refresh();
+
+        // $courseGroupMember = CourseGroupMember::where('group_id', $group->id)->where('user_id', auth()->id())->first();
+        // $courseGroupMember->group_id    = null;
+        // $courseGroupMember->status      = 0;
+        // $courseGroupMember->save();
+
+        return response()->json([
+            'success'       => true,
+            'courseMember'  => $member,
+            'group'         => new CourseGroupResource($group),
+        ], 200);
     }
 }

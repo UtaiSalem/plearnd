@@ -27,9 +27,14 @@ class QuestionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Course $course, Question $question, Request $request)
     {
-        //
+        $question = $request->all();
+        
+        return response()->json([
+            'success' => true,
+            'question' => $question,
+        ], 200);
     }
 
     /**
@@ -55,6 +60,7 @@ class QuestionController extends Controller
     {
         $question->update([
             'correct_option_id' => $request->answer,
+            'correct_answers' => $request->answer,
         ]);        
     }
 
@@ -63,6 +69,31 @@ class QuestionController extends Controller
      */
     public function destroy(Question $question)
     {
-        //
+        if ($question->images) {
+            foreach ($question->images as $image) {
+                Storage::disk('public')->delete($image->image_url);
+            }
+            $question->images()->delete();
+        }
+
+        if ($question->options) {
+            foreach ($question->options as $option) {
+                if ($option->images) {
+                    foreach ($option->images as $image) {
+                        Storage::disk('public')->delete($image->image_url);
+                    }
+                    $option->images()->delete();
+                }
+            }
+            $question->options()->delete();
+        }
+        $course = $question->course;
+        $course->decrement('total_score', $question->points);
+        $question->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Question deleted successfully',
+        ], 204);
     }
 }

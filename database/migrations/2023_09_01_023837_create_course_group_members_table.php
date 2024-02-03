@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('course_group_members', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('course_id')->constrained();
+            $table->foreignId('group_id')->constrained();
+            $table->foreignId('user_id')->constrained();
+            $table->enum('status', [0, 1])->default(0); //[0=>'รอการตอบรับ', 1=>'เป็นสมาชิก']
             $table->timestamps();
         });
     }

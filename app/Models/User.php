@@ -5,11 +5,12 @@ namespace App\Models;
 use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Academy;
+use App\Models\Support;
 use App\Models\Activity;
-use App\Models\PostComment;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 // use Illuminate\Database\Eloquent\Concerns\HasUlids;
-use App\Models\AssignmentAnswer;
+use App\Models\PostComment;
+use App\Models\AcademyMember;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\UserAnswerQuestion;
 use Laravel\Jetstream\HasProfilePhoto;
@@ -71,7 +72,10 @@ class User extends Authenticatable
 
     public function academyMembers(): BelongsToMany
     {
-        return $this->belongsToMany(Academy::class, 'academy_members', 'user_id', 'academy_id');
+        return $this->belongsToMany(Academy::class, 'academy_members', 'user_id', 'academy_id')
+                    ->withPivot(
+                        'status',
+                    )->withTimestamps();
     }
 
     public function academyAdmins(): BelongsToMany
@@ -83,6 +87,7 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Course::class, 'course_members', 'user_id', 'course_id');
     }
+
 
     public function activities(): HasMany
     {
@@ -135,8 +140,8 @@ class User extends Authenticatable
         return $this->hasMany(UserAnswerQuestion::class);
     }
 
-    public function answerAssignments(): HasMany
+    public function supports(): HasMany
     {
-        return $this->hasMany(AssignmentAnswer::class);
+        return $this->hasMany(Support::class);
     }
 }

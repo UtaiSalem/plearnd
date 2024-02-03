@@ -27,6 +27,9 @@ class AssignmentController extends Controller
             Storage::disk('public')->delete($image->image_url);
         }
 
+        $course = $assignment->assignmentable;
+        $course->decrement('total_score', $assignment->points);
+
         // $answers->delete();
         $assignment->answers()->delete();
         $assignment->images()->delete();

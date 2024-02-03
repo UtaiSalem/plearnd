@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Carbon\Carbon;
+use App\Models\CourseMember;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -18,8 +19,11 @@ class AssignmentAnswerResource extends JsonResource
         return [
             'id' => $this->id,
             // 'assignment'        => new AssignmentResource($this->assignment),
+            // 'assignment'        => $this->assignment->assignmentable,
             'student'           => new UserResource($this->user),
+            'user'              => $this->user->id,
             // 'user'              => new UserResource($this->user),
+            'course_group'      => CourseMember::where('user_id', $this->user->id)->where('course_id', $this->assignment->assignmentable->id)->pluck('group_id')->first(),
             'submission_date'   => $this->submission_date,
             'content'           => $this->content,
             'status'            => $this->status,

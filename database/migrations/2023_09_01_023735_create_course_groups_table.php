@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('course_groups', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->nullable();
+            $table->foreignId('course_id')->constrained();
             $table->string('name');
-            $table->string('description');
+            $table->string('description')->nullable();
+            $table->string('image_url')->nullable();
             $table->timestamps();
         });
     }

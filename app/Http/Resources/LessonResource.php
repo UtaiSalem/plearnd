@@ -18,16 +18,18 @@ class LessonResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'            => $this->id,
-            'creater'       => new UserResource($this->user),
-            'course'        => new CourseResource($this->course),
-            'title'         => $this->title,
-            'description'   => $this->description,
-            'content'       => $this->content,
-            'duration'      => $this->duration,
-            'status'        => $this->status,
-            'order'         => $this->order,
-            'images'        => $this->images,
+            'id'                    => $this->id,
+            'creater'               => new UserResource($this->user),
+            'course'                => new CourseResource($this->course),
+            'title'                 => $this->title,
+            'description'           => $this->description,
+            'content'               => $this->content,
+            'youtube_url'           => $this->youtube_url,
+            'duration'              => $this->duration,
+            'status'                => $this->status,
+            'point_tuition_fee'     => $this->point_tuition_fee,
+            'order'                 => $this->order,
+            'images'                => $this->images,
             // 'assignments'   => AssignmentResource::collection($this->assignments),
         ];
     }

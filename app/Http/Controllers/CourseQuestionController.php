@@ -18,6 +18,8 @@ class CourseQuestionController extends Controller
             'points' => $request->points,
         ]);
 
+        $course->increment('total_score', $request->points);
+
         if($request->hasFile('images')) {
             $images = $request->file('images');
             $fileNames = [];
@@ -32,6 +34,7 @@ class CourseQuestionController extends Controller
             }
         }
         return response()->json([
+            'success' => true,
             'question' => new QuestionResource($question),
         ], 200);
     }
@@ -56,7 +59,7 @@ class CourseQuestionController extends Controller
             }
             $question->options()->delete();
         }
-        
+        $course->decrement('total_score', $question->points);
         $question->delete();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Assignment;
+use App\Models\CourseMember;
 use Illuminate\Http\Request;
 use App\Models\AssignmentAnswer;
 use Illuminate\Support\Facades\Storage;
@@ -31,10 +32,26 @@ class AssignmentAnswerController extends Controller
      */
     public function store(Assignment $assignment, Request $request)
     {
-        $answer = $assignment->answers()->create([
-            'user_id'   => auth()->id(),
-            'content' => $request->content,
-        ]);
+        
+        $answer = $assignment->answers()->where('user_id', auth()->id())->first();
+        if( $answer ){
+            $oldPoints = $answer->points ?? 0;
+            $courseMember = CourseMember::where('course_id', $request->course_id)->where('user_id', $answer->user_id)->first();
+            $courseMember->achieved_score -= $oldPoints;
+
+            $answer->update([
+                'content' => $request->content, 
+                'points' => 0
+            ]);
+            $answer->images()->delete();
+        }else{
+            $answer = $assignment->answers()->create([
+                'user_id' => auth()->id(),
+                'content' => $request->content, 
+                'points' => 0
+            ]);
+
+        }
 
         if($request->hasFile('images')) {
             $images = $request->file('images');
@@ -49,6 +66,7 @@ class AssignmentAnswerController extends Controller
                 ]);
             }
         }
+
         return response()->json([
             'success' => true,
             'newAnswer' => new AssignmentAnswerResource($answer),
@@ -74,8 +92,44 @@ class AssignmentAnswerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Assignment $assignment, AssignmentAnswer $answer, Request $request, )
+    public function update(Assignment $assignment, AssignmentAnswer $answer, Request $request)
     {
+
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Assignment $assignment, AssignmentAnswer $answer, Request $request)
+    {
+        $courseMember = CourseMember::where('course_id', $request->course_id)->where('user_id', $answer->user_id)->first();
+        $courseMember->achieved_score -= $answer->points;
+        $courseMember->save();
+
+        foreach ($answer->images as $image) {
+            Storage::disk('public')->delete($image->image_url);
+        }
+        
+        $answer->images()->delete();
+        $answer->delete();
+    }
+
+    public function setAnswerPoints(Assignment $assignment, AssignmentAnswer $answer, Request $request)
+    {
+        $courseMember = CourseMember::where('course_id', $request->course_id)->where('user_id', $answer->user_id)->first();
+        $oldAnswer = $assignment->answers()->where('user_id', $answer->user_id)->orderBy('updated_at', 'desc')->get();
+        if (count($oldAnswer) > 1) {
+            $oldPoints = $oldAnswer[0]->points;
+            $newPoints = $request->points ?? 0;
+        }else{
+            $oldPoints = $answer->points ?? 0;
+            $newPoints = $request->points ?? 0;      
+        }
+
+        $courseMember->achieved_score -= $oldPoints;
+        $courseMember->achieved_score += $newPoints;
+        $courseMember->save();
+
         $answer->update([
             'points' => $request->points
         ]);
@@ -83,17 +137,5 @@ class AssignmentAnswerController extends Controller
         return response()->json([
             'success' => true,
         ], 200);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Assignment $assignment, AssignmentAnswer $answer)
-    {
-        foreach ($answer->images as $image) {
-            Storage::disk('public')->delete($image->image_url);
-        }
-        $answer->images()->delete();
-        $answer->delete();
     }
 }
