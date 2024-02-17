@@ -1,8 +1,9 @@
-<script lang="ts" setup>
+<script setup>
 import { ref } from 'vue';
 import { Icon } from '@iconify/vue';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import DotsDropdownMenu from '@/PlearndComponents/accessories/DotsDropdownMenu.vue';
 
 const props = defineProps({
     user: Object
@@ -10,6 +11,7 @@ const props = defineProps({
 
 const userPoints = ref(props.user.points);
 const moneyQnt = ref(null);
+const isLoading = ref(false);
 
 async function handleResetButtonClicked() {
     try {
@@ -44,11 +46,51 @@ async function handleExchangeButtonClick() {
     }
 }
 
+const handleDeleteModel = () => {
+    Swal.fire({
+        title: 'ยืนยันการลบบัญชีผู้ใช้',
+        text: "คุณต้องการลบบัญชีผู้ใช้นี้หรือไม่?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'ใช่, ยืนยันการลบ!',
+        cancelButtonText: 'ยกเลิก'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            isLoading.value = true;
+            confirmDeleteUser();
+        }
+    });
+}
+
+/* eslint-disable no-unused-vars */
+async function confirmDeleteUser() {
+    try {
+        let delResp = await axios.delete(`/forgot-password/users/${props.user.id}`);
+        if (delResp.data.success) {
+            Swal.fire("เสร็จสมบูรณ์" , delResp.data.message, 'success' );
+            location.reload();
+        }else{
+            Swal.fire("เกิดข้อผิดพลาด", delResp.data.message, 'warning' );
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
 </script>
 
 <template>
-    <div
-        class="max-w-2xl sm:max-w-sm md:max-w-sm lg:max-w-sm xl:max-w-sm sm:mx-auto md:mx-auto lg:mx-auto xl:mx-auto  bg-white shadow-xl rounded-lg text-gray-900">
+    <div class="relative max-w-2xl sm:max-w-sm md:max-w-sm lg:max-w-sm xl:max-w-sm sm:mx-auto md:mx-auto lg:mx-auto xl:mx-auto  bg-white shadow-xl rounded-lg text-gray-900">
+        <!-- <div class=" absolute top-0 right-0 m-2">
+            <DotsDropdownMenu @delete-model="handleDeleteModel">
+                <template #deleteModel>
+                    <div>
+                        ลบบัญชีผู้ใช้
+                    </div>
+                </template>
+            </DotsDropdownMenu>
+        </div> -->
         <div class="rounded-t-lg h-32 overflow-hidden">
             <img class="object-cover object-top w-full"
                 src='https://images.unsplash.com/photo-1549880338-65ddcdfd017b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjE0NTg5fQ'

@@ -87,9 +87,9 @@ async function storeAttendance() {
                 :class="{'bg-red-200': form.status === 0}"
             >
                 <div class="flex items-center ps-3">
-                    <input :id="`ingredient-absent-${attendanceId}`" type="radio" :value="0" v-model="form.status" @click="handleClick"
+                    <input :id="`ingredient-absent-${attendanceDetail.id}`" type="radio" :value="0" v-model="form.status" @click="handleClick"
                         class="w-6 h-6  text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                    <label :for="`ingredient-absent-${attendanceId}`" 
+                    <label :for="`ingredient-absent-${attendanceDetail.id}`" 
                         class="ms-2 text-sm font-medium w-full text-gray-900 dark:text-gray-300">
                         <Icon v-if="isLoading[0]" icon="svg-spinners:8-dots-rotate" class="w-6 h-6 text-gray-600" />
                         <span v-else>ขาด</span>
@@ -100,9 +100,9 @@ async function storeAttendance() {
                 :class="{'bg-yellow-200': form.status === 1}"
             >
                 <div class="flex items-center ps-3">
-                    <input :id="`ingredient-leave-${attendanceId}`" type="radio" :value="1" v-model="form.status" @click="handleClick"
+                    <input :id="`ingredient-leave-${attendanceDetail.id}`" type="radio" :value="1" v-model="form.status" @click="handleClick"
                         class="w-6 h-6  text-yellow-400 bg-gray-100 border-gray-300 focus:ring-yellow-500 dark:focus:ring-yellow-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                    <label :for="`ingredient-leave-${attendanceId}`"
+                    <label :for="`ingredient-leave-${attendanceDetail.id}`"
                         class="ms-2 text-sm font-medium w-full text-gray-900 dark:text-gray-300">
                         <Icon v-if="isLoading[1]" icon="svg-spinners:8-dots-rotate" class="w-6 h-6 text-gray-600" />
                         <span v-else>ลา</span>
@@ -113,9 +113,9 @@ async function storeAttendance() {
                 :class="{'bg-green-200': form.status === 2}"
             >
                 <div class="flex items-center ps-3">
-                    <input :id="`ingredient-present-${attendanceId}`" type="radio" :value="2" v-model="form.status" @click="handleClick"
+                    <input :id="`ingredient-present-${attendanceDetail.id}`" type="radio" :value="2" v-model="form.status" @click="handleClick"
                         class="w-6 h-6  text-green-600 bg-gray-100 border-gray-300 focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                    <label :for="`ingredient-present-${attendanceId}`"
+                    <label :for="`ingredient-present-${attendanceDetail.id}`"
                         class="ms-2 text-sm font-medium w-full text-gray-900 dark:text-gray-300">
                         <Icon v-if="isLoading[2]" icon="svg-spinners:8-dots-rotate" class="w-6 h-6 text-gray-600" />
                         <span v-else>มา</span>
@@ -126,9 +126,9 @@ async function storeAttendance() {
                 :class="{'bg-orange-200': form.status === 3}"
             >
                 <div class="flex items-center ps-3">
-                    <input :id="`ingredient-late-${attendanceId}`" type="radio" :value="3" v-model="form.status" @click="handleClick"
+                    <input :id="`ingredient-late-${attendanceDetail.id}`" type="radio" :value="3" v-model="form.status" @click="handleClick"
                         class="w-6 h-6  text-orange-500 bg-gray-100 border-gray-300 focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                    <label :for="`ingredient-late-${attendanceId}`"
+                    <label :for="`ingredient-late-${attendanceDetail.id}`"
                         class="ms-2 text-sm font-medium w-full text-gray-900 dark:text-gray-300">
                         <Icon v-if="isLoading[3]" icon="svg-spinners:8-dots-rotate" class="w-6 h-6 text-gray-600" />
                         <span v-else>สาย</span>

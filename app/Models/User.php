@@ -9,8 +9,13 @@ use App\Models\Support;
 use App\Models\Activity;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 // use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use App\Models\CourseQuiz;
+use App\Models\CourseGroup;
 use App\Models\PostComment;
 use App\Models\AcademyMember;
+use App\Models\AssignmentAnswer;
+use App\Models\CourseQuizResult;
+use App\Models\CourseGroupMember;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\UserAnswerQuestion;
 use Laravel\Jetstream\HasProfilePhoto;
@@ -130,9 +135,34 @@ class User extends Authenticatable
         return $this->hasMany(Course::class);
     }
 
+    public function coursesGroups(): HasMany
+    {
+        return $this->hasMany(CourseGroup::class);
+    }
+
+    public function coursesGroupMembers(): HasMany
+    {
+        return $this->hasMany(CourseGroupMember::class);
+    }
+
+    public function courseQuizzes(): HasMany
+    {
+        return $this->hasMany(CourseQuiz::class);
+    }
+
+    public function courseQuizResults(): HasMany
+    {
+        return $this->hasMany(CourseQuizResult::class);
+    }
+
     public function lessons(): HasMany
     {
-        return $this->hasMany(Lesson::class);
+        return $this->hasMany(Lesson::class, 'user_id');
+    }
+
+    public function assignmentAnswers(): HasMany
+    {
+        return $this->hasMany(AssignmentAnswer::class);
     }
 
     public function answerQuestions(): HasMany

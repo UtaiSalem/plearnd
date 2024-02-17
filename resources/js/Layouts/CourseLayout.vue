@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, Link } from "@inertiajs/vue3";
 import { Icon } from '@iconify/vue';
 // import Swal from 'sweetalert2';
@@ -80,14 +80,28 @@ async function onSubheaderChange(courseCode) {
             </CourseProfileCover>
             <div class=" bg-white shadow-xl w-full rounded-lg overflow-hidden mt-4">
                 <div class="flex flex-row justify-around">
-                    <Link :href="`/courses/${props.course.data.id}`" as="button" type="button" @click.prevent="setActiveTab(5)"
+
+                    <Link :href="`/courses/${props.course.data.id}/lessons`"
                     class="tab-item border-b-4 hover:border-gray-400 rounded-none w-full text-center flex-row justify-center "
+                    :class="{'border-b-4 border-cyan-500 bg-cyan-100': $page.url === `/courses/${$page.props.course.data.id}/lessons`}"
                     >
                         <div class="flex flex-col items-center py-2 justify-center text-slate-600/80 ">
                             <Icon icon="icon-park-outline:view-grid-detail" class="w-6 md:w-8 h-6 md:h-8"
-                                :class="{'text-cyan-500': activeTab === 1}" />
+                                :class="{'text-cyan-500': $page.url === `/courses/${props.course.data.id}`}" />
                             <span class="hidden md:block"
-                                :class="{'text-cyan-500': activeTab === 1}">บทเรียน</span>
+                                :class="{'text-cyan-500': $page.url === `/courses/${props.course.data.id}`}">บทเรียน</span>
+                        </div>
+                    </Link>
+
+                    <Link :href="`/courses/${props.course.data.id}/progress`"
+                    class="tab-item border-b-4 hover:border-gray-400 rounded-none w-full text-center flex-row justify-center "
+                    :class="{'border-b-4 border-cyan-500 bg-cyan-100': $page.url === `/courses/${$page.props.course.data.id}/progress`}"
+                    >
+                        <div class="flex flex-col items-center py-2 justify-center text-slate-600/80 ">
+                            <Icon icon="mdi:graph-box-plus-outline" class="w-6 md:w-8 h-6 md:h-8"
+                                :class="{'text-cyan-500': $page.url === `/courses/${props.course.data.id}/progress`}" />
+                            <span class="hidden md:block"
+                                :class="{'text-cyan-500': $page.url === `/courses/${props.course.data.id}/progress`}">บทเรียน</span>
                         </div>
                     </Link>
                     

@@ -30,14 +30,44 @@ const activeGroupMembers = computed(()=> {
 });
 
 
-function requestToBeUnMember() {
-    emit('request-unmember-course');
-}
-
 function setActiveGroupTab(tab){
     activeGroupTab.value = tab;
     // console.log(props.groups[tab].id);
     // console.log(tab);
+}
+
+function requestToBeUnMember(memberId, memberIndx) {
+
+Swal.fire({
+    title: 'ยืนยันการลบสมาชิกออกจากรายวิชาหรือไม่?',
+    text: "คุณจะไม่สามารถกู้คืนข้อมูลสมาชิกนี้ได้อีกครั้ง!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'ใช่, ลบออก!',
+    cancelButtonText: 'ยกเลิก'
+}).then(async (result) => {
+    if (result.isConfirmed) {
+        try {
+            let unmemberCourseResp = await axios.delete(`/courses/${usePage().props.course.data.id}/members/${memberId}/delete`);
+            if (unmemberCourseResp.data && unmemberCourseResp.data.success) {
+                props.groups[activeGroupTab.value].members.splice(memberIndx, 1);
+                console.log(unmemberCourseResp.data.success);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ลบสมาชิกเรียบร้อย!',
+                    text: 'สมาชิกถูกลบออกจากรายวิชาแล้ว',
+                    showConfirmButton: false,
+                    timer: 1200
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+});
+
 }
 </script>
 
@@ -69,7 +99,7 @@ function setActiveGroupTab(tab){
                         <MemberCard v-for="(member, index) in props.members" :key="index"
                             :data-index="index" 
                             :member="member"
-                            @request-unmember-course="onRequestToBeUnMember(props.courseMemberOfAuth.id, index)" />
+                            @request-unmember-course="requestToBeUnMember(member.id, index)" />
                     </staggered-fade>
                             <!-- :groups="props.groups"  -->
                 </div>

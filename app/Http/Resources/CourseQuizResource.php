@@ -15,6 +15,8 @@ class CourseQuizResource extends JsonResource
     public function toArray(Request $request): array
     {
         $member_achieved_score = $this->userResults()->where('user_id', auth()->id())->where('course_id', $this->course_id)->first();
+        $course_members_score = $this->userResults()->where('course_id', $this->course_id)->get();
+
         return [
             'id'                => $this->id,
             'course_id'         => $this->course_id,
@@ -30,6 +32,7 @@ class CourseQuizResource extends JsonResource
             'passing_score'     => $this->passing_score,
             'questions'         => QuestionResource::collection($this->questions),
             'member_achieved_score' => $member_achieved_score ? $member_achieved_score->score : 0,
+            'course_members_score' => $course_members_score,
             // 'start_date'        => $this->start_date->format('Y-m-d H:i:s'), // Format start_date
             // 'end_date'          => $this->end_date->format('Y-m-d H:i:s'), // Format end_date
         ];

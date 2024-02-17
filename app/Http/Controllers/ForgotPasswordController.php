@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Course;
 use Illuminate\Http\Request;
+use App\Models\AcademyMember;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
@@ -77,6 +79,50 @@ class ForgotPasswordController extends Controller
         } catch (\Throwable $th) {
             throw $th;
         }
+    }
+
+    public function destroy(User $user)
+    {
+        if ($user->id === 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่สามารถลบผู้ดูแลระบบได้'
+            ]);
+        }
+
+        // $user->academies()->delete();
+
+        // AcademyMember::where('user_id', $user->id)->delete();
+        // Course::where('user_id', $user->id)->delete();
+        // CourseGroup::where('user_id', $user->id)->delete();
+        // CourseGroupMember::where('user_id', $user->id)->delete();
+        // CourseMember::where('user_id', $user->id)->delete();
+        // CourseQuiz::where('user_id', $user->id)->delete();
+        // CourseQuizResult::where('user_id', $user->id)->delete();
+        // Lesson::where('user_id', $user->id)->delete();
+
+        // Question::where('user_id', $user->id);
+        // $questions = Question::where('user_id', $user->id)->get();
+        // foreach ($questions as $question) {
+        //     $question->answers()->delete();
+        // }
+
+
+        // Post::where('user_id', $user->id)->delete();
+        // PostComment::where('user_id', $user->id)->delete();
+        // PostLike::where('user_id', $user->id)->delete();
+        // PostDislike::where('user_id', $user->id)->delete();
+        // PostCommentLike::where('user_id', $user->id)->delete();
+        // PostCommentDislike::where('user_id', $user->id)->delete();
+
+
+        // $user->delete();
+        
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'User deleted successfully'
+        // ]);
+
     }
 
 }

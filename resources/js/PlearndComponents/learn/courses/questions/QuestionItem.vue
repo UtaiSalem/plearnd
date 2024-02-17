@@ -21,6 +21,7 @@ const correctAnswer = ref(null);
 const showConfirmAnswerButton = ref(false);
 const showEditAnswerButton = ref(false);
 const canEditAnswer = ref(false);
+const isLoading = ref(false);
 
 onMounted(() => {
     selectedOption.value = props.question.isAnsweredByAuth;
@@ -55,7 +56,7 @@ function setCanEditAnswer(){
 async function handleConfirmAnswer() {
     try {
         let resultResp = null;
-
+        isLoading.value = true;
         // Store new user answer
         if (props.question.isAnsweredByAuth === null) { 
             resultResp = await axios.post(`/users/${usePage().props.auth.user.id}/questions/${props.question.id}/answers`,
@@ -92,9 +93,10 @@ async function handleConfirmAnswer() {
             canEditAnswer.value = true;
             
             Swal.fire('สำเร็จ', resultResp.data.message + 'คำตอบเสร็จเรียบร้อยแล้ว.','success' );
-
+            isLoading.value = false;
         }else{
             Swal.fire('บันทึกล้มเหลว','กรุณาลองใหม่','error' );
+            isLoading.value = false;
         }
         
         // if (resultResp.data.message === 'แก้ไข') {
@@ -104,7 +106,7 @@ async function handleConfirmAnswer() {
     } catch (error) {
         console.log(error);
         Swal.fire('ล้มเหลว','เกิดข้อผิดพลาด รอการตรวจสอบ','error' );
-
+        isLoading.value = false;
     }
 }
 
@@ -228,10 +230,12 @@ function handleAnswerChange(answerId){
                             :id="`btn-confirm-answer${props.question.id}`" 
                             v-if="showConfirmAnswerButton && props.question.options" 
                             @click.prevent="handleConfirmAnswer()" 
-                            :disabled="!selectedOption"
+                            :disabled="!selectedOption || isLoading"
                             class="m-2 py-2 px-4 inline-flex justify-center items-center gap-2 rounded-full bg-violet-200 border border-violet-700 text-violet-700 ring-offset-white transition-all text-sm dark:focus:ring-offset-gray-800"
                             :class="{'hover:text-white hover:bg-violet-600': selectedOption}">
-                            ยืนยันคำตอบ
+                            <span v-if="isLoading"><Icon icon="uiw:loading" class="animate-spin h-6 w-6 text-white"/></span>
+                            <span>ยืนยันคำตอบ</span>
+                            
                         </button>
                         <button type="button" :id="`btn-confirm-answer${props.question.id}`" v-if="canEditAnswer" @click.prevent="setCanEditAnswer"
                             class="m-2 py-2 px-4 inline-flex justify-center items-center gap-2 rounded-full bg-red-200 border border-red-700 text-red-700 hover:text-white hover:bg-red-600 ring-offset-white transition-all text-sm dark:focus:ring-offset-gray-800">

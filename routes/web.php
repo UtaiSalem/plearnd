@@ -1,9 +1,9 @@
 <?php
 
 use Inertia\Inertia;
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
-
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\TopicController;
@@ -44,6 +44,7 @@ use App\Http\Controllers\CourseGroupMemberController;
 use App\Http\Controllers\CourseQuizQuestionController;
 use App\Http\Controllers\UserAnswerQuestionController;
 use App\Http\Controllers\PostCommentReactionController;
+use App\Http\Controllers\UserController;
 
 
 /*
@@ -62,6 +63,12 @@ Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
     Route::get('/dashboard', function () { return Inertia::render('Dashboard'); })->name('dashboard');
 });
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () { 
+    // route resource /users
+    // Route::delete('/users/{user}', [UserController::class, 'destroy']);
+});
+
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->prefix('/academies')->group(function () {
     Route::get('/', [AcademyController::class, 'index'])->name('academies');
@@ -87,6 +94,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::put('/{course}', [CourseController::class, 'update'])->name('course.update');
     Route::patch('/{course}', [CourseController::class, 'update'])->name('course.part.update');
     Route::delete('/{course}', [CourseController::class, 'destroy'])->name('course.destroy');
+    Route::get('/{course}/progress', [CourseController::class, 'progress'])->name('course.progress');
     
     // Route::patch('/{course}/update', [CourseController::class, 'update'])->name('course.cover.update');
 
@@ -98,8 +106,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::get('/{course}/members/{member}/progress', [CourseMemberController::class, 'show'])->name('course.member.show');
     Route::post('/{course}/members', [CourseMemberController::class, 'storemember']);
     Route::delete('/{course}/members/{member}', [CourseMemberController::class, 'destroy']);
+    Route::delete('/{course}/members/{member}/delete', [CourseMemberController::class, 'deleteCourseMember']);
     Route::post('/{course}/members/{member}/set-active-tab', [CourseMemberController::class, 'setActiveTab']);
+    Route::post('/{course}/members/{member}/set-active-group-tab', [CourseMemberController::class, 'setActiveGroupTab']);
     Route::patch('/{course}/members/{member}/update', [CourseMemberController::class, 'update']);
+    Route::patch('/{course}/members/{member}/bonus-points', [CourseMemberController::class, 'updateBonusPoints']);
 
     Route::get('/{course}/groups', [CourseGroupController::class, 'show']);
     Route::post('/{course}/groups', [CourseGroupController::class, 'store'])->name('course.groups.store');
@@ -160,7 +171,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::post('/forgot-password/getuser', [ForgotPasswordController::class, 'getUser'])->name('forgot-pasword.get-user');
     Route::post('/forgot-password/reset/{user}', [ForgotPasswordController::class, 'resetPassword'])->name('forgot-pasword.reset');
     Route::post('/forgot-password/exchange/{user}', [ForgotPasswordController::class, 'exchangeMoney'])->name('forgot-pasword.exchange');
-
+    Route::delete('/forgot-password/users/{user}', [ForgotPasswordController::class, 'destroy']);
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {

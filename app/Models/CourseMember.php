@@ -40,4 +40,9 @@ class CourseMember extends Model
         return $this->hasMany(Course::class, 'id');
     }
 
+    //members accessors sort by order_number
+    public function getMembersAttribute()
+    {
+        return $this->members()->orderBy('order_number')->get();
+    }
 }

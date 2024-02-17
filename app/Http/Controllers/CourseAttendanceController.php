@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
 use App\Models\CourseAttendance;
 use App\Http\Resources\CourseMemberResource;
 use App\Http\Resources\AttendanceDetailResource;
+use App\Http\Resources\CourseAttendanceResource;
 use App\Http\Requests\StoreCourseAttendanceRequest;
 use App\Http\Requests\UpdateCourseAttendanceRequest;
 use App\Http\Resources\CourseGroupAttendanceResource;
@@ -50,22 +51,10 @@ class CourseAttendanceController extends Controller
             'description'   => $request->description,
         ]);
 
-        // Create attendance details
-        // $group_members = $group->members;
-
-        // foreach ($group_members as $member) {
-        //     $attendance_details[] = $attendance->details()->create([
-        //         'course_id'             => $course->id,
-        //         'group_id'              => $group->id,
-        //         'course_attendance_id'  => $attendance->id,
-        //         'course_member_id'      => $member->id,
-        //         'status'                => 0,
-        //     ]);
-        // }
-
         return response()->json([
             'success'       => true,
             'attendance'    => $attendance,
+            'attendace_details'  => new CourseAttendanceResource($attendance),
             // 'attendace_member_details'  => AttendanceDetailResource::collection($attendance_details),
         ], 200);
 

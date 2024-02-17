@@ -103,9 +103,42 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         // Delete the user
+        $user->academies()->delete();
+        $user->academyAdmins()->delete();
+        $user->academyMembers()->delete();
+
+
+        $user->courses()->delete();
+        // $user->courses()->lessons()->delete();
+        // $user->courses()->quizzes()->delete();
+        // $user->courses()->assignments()->delete();
+
+        $user->courseAdmins()->delete();
+        $user->courseGroups()->delete();
+        $user->coursesGroupMembers()->delete();
+        $user->courseMembers()->delete();
+
+        $user->assignmentAnswers()->delete();
+        $user->answerQuestions()->delete();
+
+        $user->courseQuizzes()->delete();
+        $user->courseQuizResults()->delete();
+
+        $user->lessons()->delete();
+        $user->lessons()->images()->delete();
+
+        
+        // $user->courseProgresses()->delete();
+        
         $user->delete();
+        
+        //response json
+        return response()->json([
+            'success' => true,
+            'message' => 'User deleted successfully'
+        ]);
 
         // Redirect to the user listing page
-        return redirect()->route('users.index');
+        // return redirect()->route('users.index');
     }
 }

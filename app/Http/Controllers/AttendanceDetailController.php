@@ -20,7 +20,7 @@ class AttendanceDetailController extends Controller
         return response()->json([
             'success' => true,
             // 'attendace_details' => AttendanceDetailResource::collection($attendance->details),
-            'attendace_resource' => new CourseAttendanceResource($attendance),
+            'attendance_resource' => new CourseAttendanceResource($attendance),
         ], 200);
     }
 
@@ -37,27 +37,6 @@ class AttendanceDetailController extends Controller
      */
     public function store(CourseAttendance $attendance, Request $request)
     {
-        // $detail = $attendance->details()->create([
-        //     'course_id'             => $attendance->course_id,
-        //     'group_id'              => $attendance->group_id,
-        //     'course_attendance_id'  => $attendance->id,
-        //     'course_member_id'      => $request->course_member_id,
-        //     'status'                => 0,
-        // ]);
-        //Create or update attendance detail
-        // $detail = AttendanceDetail::updateOrCreate(
-        //     [
-        //         'course_id'             => $attendance->course_id,
-        //         'group_id'              => $attendance->group_id,
-        //         'course_attendance_id'  => $attendance->id,
-        //         'course_member_id'      => $request->course_member_id,
-        //     ],
-        //     [
-        //         'status'                => $request->status,
-        //         'comments'              => $request->comments,
-        //     ]
-        // );
-        //Create or update attendance detail by attendanceable
         $detail = $attendance->details()->updateOrCreate(
             [
                 'course_id'             => $attendance->course_id,
@@ -73,7 +52,8 @@ class AttendanceDetailController extends Controller
 
         return response()->json([
             'success' => true,
-            // 'attendace_detail' => new AttendanceDetailResource($detail),
+            'detail' => $detail,
+            'attendace_detail' => new AttendanceDetailResource($detail),
         ], 200);
     }
 

@@ -20,6 +20,7 @@ class AssignmentAnswerResource extends JsonResource
             'id' => $this->id,
             // 'assignment'        => new AssignmentResource($this->assignment),
             // 'assignment'        => $this->assignment->assignmentable,
+            'assignment_id'     => $this->assignment_id,
             'student'           => new UserResource($this->user),
             'user'              => $this->user->id,
             // 'user'              => new UserResource($this->user),

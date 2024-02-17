@@ -19,6 +19,7 @@ import CourseGroupList from '@/PlearndComponents/learn/courses/groups/CourseGrou
 import CourseAttendance from '@/PlearndComponents/learn/courses/attendances/CourseAttendance.vue';
 import CourseSettings from '@/PlearndComponents/learn/courses/CourseSettings.vue';
 import CourseMemberSetting from '@/PlearndComponents/learn/courses/members/CourseMemberSetting.vue';
+import CourseMembersProgress from '@/PlearndComponents/learn/courses/progress/CourseMembersProgress.vue';
 
 const props = defineProps({
     course: Object,
@@ -289,17 +290,7 @@ async function onUpdateCourseHandler(courseData){
                         </div>
                     </button>
 
-                    <!-- <Link :href="`/courses/${$page.props.course.data.id}/members/${props.courseMemberOfAuth.id}/progress`"
-                        class="tab-item border-b-4 hover:border-gray-400 rounded-none w-full text-center flex-row justify-center "
-                        :class="{'border-b-4 border-cyan-500 bg-cyan-100': activeTab === 8}">
-                        <div class="flex flex-col items-center py-2 justify-center text-slate-600/80 ">
-                            <Icon icon="mdi-light:settings" class="w-6 md:w-8 h-6 md:h-8"
-                                :class="{'text-cyan-500': activeTab === 8}" />
-                            <span class="hidden md:block" :class="{'text-cyan-500': activeTab === 8}">ผลการเรียน</span>
-                        </div>
-                    </Link> -->
-
-                    <button type="button" @click.prevent="setActiveTab(8)"
+                    <button type="button" @click.prevent="setActiveTab(8)" v-if="props.isCourseAdmin"
                         class="tab-item border-b-4 hover:border-gray-400 rounded-none w-full text-center flex-row justify-center "
                         :class="{'border-b-4 border-cyan-500 bg-cyan-100': activeTab === 8}">
                         <div class="flex flex-col items-center py-2 justify-center text-slate-600/80 ">
@@ -308,7 +299,37 @@ async function onUpdateCourseHandler(courseData){
                             <span class="hidden md:block" :class="{'text-cyan-500': activeTab === 8}">การตั้งค่า</span>
                         </div>
                     </button>
-                    
+
+                    <button type="button" @click.prevent="setActiveTab(9)" v-if="!props.isCourseAdmin"
+                        class="tab-item border-b-4 hover:border-gray-400 rounded-none w-full text-center flex-row justify-center "
+                        :class="{'border-b-4 border-cyan-500 bg-cyan-100': activeTab === 9}">
+                        <div class="flex flex-col items-center py-2 justify-center text-slate-600/80 ">
+                            <Icon icon="mdi:graph-box-plus-outline" class="w-6 md:w-8 h-6 md:h-8"
+                                :class="{'text-cyan-500': activeTab === 9}" />
+                            <span class="hidden md:block" :class="{'text-cyan-500': activeTab === 9}">ผลการเรียน</span>
+                        </div>
+                    </button>
+
+                    <button type="button" @click.prevent="setActiveTab(10)" v-if="props.isCourseAdmin"
+                        class="tab-item border-b-4 hover:border-gray-400 rounded-none w-full text-center flex-row justify-center "
+                        :class="{'border-b-4 border-cyan-500 bg-cyan-100': activeTab === 10}">
+                        <div class="flex flex-col items-center py-2 justify-center text-slate-600/80 ">
+                            <Icon icon="mdi:graph-box-plus-outline" class="w-6 md:w-8 h-6 md:h-8"
+                                :class="{'text-cyan-500': activeTab === 10}" />
+                            <span class="hidden md:block" :class="{'text-cyan-500': activeTab === 10}">ผลการเรียน</span>
+                        </div>
+                    </button>
+
+                    <!-- <Link v-if="props.isCourseAdmin" :href="`/courses/${$page.props.course.data.id}/progress`"
+                        class="tab-item border-b-4 hover:border-gray-400 rounded-none w-full text-center flex-row justify-center "
+                        :class="{'border-b-4 border-cyan-500 bg-cyan-100': $page.url === `/courses/${$page.props.course.data.id}/progress`}">
+                        <div class="flex flex-col items-center py-2 justify-center text-slate-600/80 ">
+                            <Icon icon="mdi-light:settings" class="w-6 md:w-8 h-6 md:h-8"
+                                :class="{'text-cyan-500': $page.url === `/courses/${$page.props.course.data.id}/progress`}" />
+                            <span class="hidden md:block" :class="{'text-cyan-500': $page.url === `/courses/${$page.props.course.data.id}/progress`}">เกรด</span>
+                        </div>
+                    </Link> -->
+
                     <!-- <Link :href="`/course/${$page.props.course.data.id}/attendaces`"
                         class="tab-item border-b-4 hover:border-gray-400 rounded-none w-full text-center flex-row justify-center "
                         >
@@ -379,18 +400,12 @@ async function onUpdateCourseHandler(courseData){
                 <CreateNewCourseQuize 
                     :course="props.course.data"
                     @add-new-quiz="(newQuiz) => handleAddNewQuiz(newQuiz)"
-                />
-                
+                />               
             </div>
 
             <div v-if="activeTab===4" class=" mt-4">
                 <staggered-fade :duration="50" tag="ul" class="flex flex-col w-full ">
-                    <GroupedMemberList 
-                        :groups="props.groups.data"
-                    />
-                    <!-- <GroupedMemberList 
-                        :groups="usePage().props.groups.data.find((group)=> group.id === usePage().props.courseMemberOfAuth.group_id)"
-                    /> -->
+                    <GroupedMemberList :groups="props.groups.data" />
                 </staggered-fade>
             </div>
 
@@ -403,7 +418,6 @@ async function onUpdateCourseHandler(courseData){
                     @add-new-group="(group)=> props.groups.data.push(group)"
                     @delete-group="(index) => props.groups.data.splice(index,1)"
                 />
-
             </div>
 
             <div v-if="activeTab===6 && props.isCourseAdmin" class=" mt-4">
@@ -416,28 +430,26 @@ async function onUpdateCourseHandler(courseData){
             </div>
 
             <div v-if="activeTab===7 && props.isCourseAdmin" class=" mt-4">
-                <CourseAttendance 
-                    :groups="props.groups.data"
+                <CourseAttendance :groups="props.groups.data" />
+            </div>
+
+            <div v-if="activeTab===8 && props.isCourseAdmin" class=" mt-4">
+                <CourseSettings 
+                    :course="props.course.data" 
+                    :isCourseAdmin="props.isCourseAdmin"
+
+                    @update-course="(formData)=> onUpdateCourseHandler(formData)"
                 />
             </div>
 
-            <div v-if="activeTab===8" class=" mt-4">
-                <div v-if="props.isCourseAdmin">
-                    <CourseSettings 
-                        :course="props.course.data" 
-                        :isCourseAdmin="props.isCourseAdmin"
+            <div v-if="activeTab===9" class=" mt-4">
+                <CourseMemberSetting 
+                    :member_info="usePage().props.members.data.find((member)=> member.id === usePage().props.courseMemberOfAuth.id)"
+                />
+            </div>
 
-                        @update-course="(formData)=> onUpdateCourseHandler(formData)"
-                    />
-                </div>
-                <div v-else>
-                    <!-- <CourseMemberSetting 
-                        :member_info="props.courseMemberOfAuth"
-                    /> -->
-                    <CourseMemberSetting 
-                        :member_info="usePage().props.members.data.find((member)=> member.id === usePage().props.courseMemberOfAuth.id)"
-                    />
-                </div>
+            <div v-if="activeTab===10" class=" mt-4">
+                <CourseMembersProgress />
             </div>
 
         </template>

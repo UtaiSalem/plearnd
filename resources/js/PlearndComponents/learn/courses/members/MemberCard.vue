@@ -4,6 +4,7 @@ import { usePage } from "@inertiajs/vue3";
 import { Icon } from '@iconify/vue';
 
 import ProgressBar from 'primevue/progressbar';
+import DotsDropdownMenu from '@/PlearndComponents/accessories/DotsDropdownMenu.vue';
 
 const props = defineProps({
     member: {
@@ -26,38 +27,31 @@ const percentage = computed(() => {
   }
 });
 
-// Grade calculator
-// const grade = computed(() => {
-//       // Assuming a simple grading scale for this example
-//       if (props.member.grade_progress >= 90) {
-//         return 'A';
-//       } else if (props.member.grade_progress >= 80) {
-//         return 'B';
-//       } else if (props.member.grade_progress >= 70) {
-//         return 'C';
-//       } else if (props.member.grade_progress >= 60) {
-//         return 'D';
-//       } else {
-//         return 'F';
-//       }
-// });
-
-
 </script>
 
 <template>
-    <li class="bg-white shadow-lg p-2 rounded-lg flex flex-wrap justify-between items-center w-full mb-3">
+    <li :class="props.member.role === 3 ? 'hidden':''"
+    class="relative bg-white shadow-lg p-2 rounded-lg flex flex-wrap justify-between items-center w-full mb-3">
+      <div class=" absolute top-0 right-0.5" v-if="$page.props.isCourseAdmin">
+        <DotsDropdownMenu @delete-model="emit('request-unmember-course')">
+          <template #deleteModel>
+            <div>
+              <!-- <button @click="requestToBeUnMember" class="flex items-center w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-100 dark:hover:bg-red-800 hover:text-red-700 dark:text-red-100 dark:hover:text-red-200 focus:outline-none focus:ring focus:ring-red-500"> -->
+              <!-- <Icon icon="bi:trash" class="w-5 h-5" /> -->
+              <span class="ml-2">ลบสมาชิก</span>
+              <!-- </button> -->
+            </div>
+          </template>
+        </DotsDropdownMenu>
+      </div>
+      
       <div class="flex items-center min-w-fit">
         <img class="w-12 h-12 rounded-full" :src="member.user.avatar" :alt="member.user.name">
         <div class="ml-2">
           <p class="text-gray-900  tracking-wide text-sm">{{member.user.name}}</p>
-          <div class="flex items-center mt-2">
-            <span class="text-slate-600">No.# {{ props.member.order_number }}</span>
-            <!-- <select class="block text-white bg-green-500 font-medium transition duration-75 rounded-lg h-6 w-12 mx-2 " >
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-            </select> -->
+          <div class="flex items-center mt-2 space-x-2">
+            <span class="text-slate-600">No.{{ props.member.order_number?? '#' }}</span>
+            <span class="text-slate-600">กลุ่ม/ห้อง {{ props.member.group ? props.member.group.name : '-' }}</span>
           </div>
         </div>
       </div>

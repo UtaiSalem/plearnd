@@ -23,6 +23,7 @@ use App\Http\Resources\AssignmentResource;
 use App\Http\Resources\CourseQuizResource;
 use App\Http\Resources\CourseGroupResource;
 use App\Http\Resources\CourseMemberResource;
+use App\Http\Resources\CourseMemberGradeProgressResource;
 
 class CourseController extends Controller
 {
@@ -260,4 +261,32 @@ class CourseController extends Controller
             'success' => true,
         ], 200);
     }
+
+    //function to process all member progrss and grade
+    public function progress(Course $course)
+    {
+        $courseMembers = $course->courseMembers;
+        $courseMembersProgress = [];
+        foreach ($courseMembers as $member) {
+            $memberProgress = $member->memberProgress;
+            $courseMembersProgress[] = [
+                'member' => $member,
+                'progress' => $memberProgress,
+            ];
+        }
+
+        return Inertia::render('Learn/Course/Progress/CourseMembersProgress', [
+            'isCourseAdmin' => $course->user_id === auth()->id(),
+            'course'        => new CourseResource($course),
+            'lessons'       => LessonResource::collection($course->lessons),
+            'groups'        => CourseGroupResource::collection($course->courseGroups),
+            'assignments'       => AssignmentResource::collection($course->assignments),      
+            'questions'         => QuestionResource::collection($course->questions),
+            'quizzes'           => CourseQuizResource::collection($course->courseQuizzes),
+            'members'           => CourseMemberResource::collection($course->courseMembers),
+            'courseMembersProgress' => $courseMembersProgress,
+        ]);
+
+    }
+
 }

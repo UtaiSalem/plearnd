@@ -59,12 +59,12 @@ function onDeleteLesson(lessonId, index){
                     </Link>
                 </div>
                 <div class="p-3 m-2 border-2 border-gray-200 rounded-md ">
-                    <p class="">
+                    <p class="" v-if="lesson.description">
                         {{ lesson.description.length > 100 ? lesson.description.substring(0, 100) + '...' : lesson.description }}
                     </p>
                 </div>
                 <div class="p-3 m-2 border-2 border-gray-200 rounded-md ">
-                    <p class="">
+                    <p class="" v-if="lesson.description">
                         {{ lesson.content.length > 150 ? lesson.content.substring(0, 150) + '...' : lesson.description }}
                     </p>
                 </div>

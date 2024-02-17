@@ -7,7 +7,9 @@ use App\Models\Course;
 use App\Models\CourseGroup;
 use App\Models\CourseMember;
 use Illuminate\Http\Request;
+use App\Models\CourseQuizResult;
 use App\Models\CourseGroupMember;
+use App\Models\UserAnswerQuestion;
 use App\Http\Resources\CourseResource;
 use App\Http\Resources\LessonResource;
 use App\Http\Resources\CourseGroupResource;
@@ -101,15 +103,16 @@ class CourseMemberController extends Controller
     {     
         try {
 
-            $member_group = CourseGroupMember::where('group_id', $member->group_id)->where('user_id', auth()->id())->first();
+            $member_group = CourseGroupMember::where('group_id', $member->group_id)->where('user_id', $member->user_id)->first();
             $member_group->delete();
             
-            $member->delete();
             
             if ($member->status == 1) {
                 if($course->enrolled_students > 0){ $course->decrement('enrolled_students'); };
             }
 
+            $member->delete();
+            
             return response()->json([
                 'success' => true,
                 // 'course_member' => $member,
@@ -129,6 +132,16 @@ class CourseMemberController extends Controller
             'last_accessed_tab' => $request->tab
         ]);
     }
+    public function setActiveGroupTab(Course $course, CourseMember $member, Request $request)
+    {
+        $member->update([
+            'last_accessed_group_tab' => $request->group_tab
+        ]);
+
+        return response()->json([
+            'success' => true,
+        ], 200);
+    }
 
     //function update
     public function update(Course $course, CourseMember $member, Request $request)
@@ -136,12 +149,99 @@ class CourseMemberController extends Controller
         $member->update([
             'member_name'   => $request->member_name,
             'order_number'  => $request->order_number,
+            'member_code'   => $request->member_code,
         ]);
 
         return response()->json([
             'success' => true,
-            'request' => $request->all(),
         ], 200);
     }
 
+    // function delete course's member
+    public function deleteCourseMember(Course $course, CourseMember $member)
+    {
+        
+        try {
+            $member_groups = CourseGroupMember::where('group_id', $member->group_id)->where('user_id', $member->user_id)->get();
+            if ($member_groups->count() > 0){
+                foreach ($member_groups as $group_member) {
+                    $group_member->delete();
+                }
+            }
+            
+            if ($member->status == 1) {
+                if($course->enrolled_students > 0){ $course->decrement('enrolled_students'); };
+            }
+
+            $user_answer_questions = UserAnswerQuestion::where('course_id', $course->id)->where('user_id', $member->user_id)->get();
+            if ($user_answer_questions->count() > 0) {
+                foreach ($user_answer_questions as $user_answer_question) {
+                    // $user_answer_question->answers()->delete();
+                    $user_answer_question->delete();
+                }
+            }
+
+            $course_quiz_results = CourseQuizResult::where('course_id', $course->id)->where('user_id', $member->user_id)->get();
+            if ($course_quiz_results->count() > 0) {
+                foreach ($course_quiz_results as $course_quiz_result) {
+                    $course_quiz_result->delete();
+                }
+            }
+
+            $assignments = $course->assignments;
+            foreach ($assignments as $assignment) {
+                $user_assignment_answers =  $assignment->answers()->where('user_id', $member->user_id)->get();
+                foreach ($user_assignment_answers as $user_assignment_answer) {
+                    $user_assignment_answer->images()->delete();
+                    $user_assignment_answer->delete();
+                }
+            }
+
+            $member->delete();
+            
+            return response()->json([
+                'success' => true,
+            ], 200);
+
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+    //function update member bonus points
+    public function updateBonusPoints(Course $course, CourseMember $member, Request $request)
+    {
+        $member->update([
+            'bonus_points' => $request->bonus_points,
+            'achieved_score' => $member->achieved_score + $request->bonus_points,
+        ]);
+
+        $member->update([
+            'grade_progress' => $this->calculateGrade(($member->achieved_score / $course->total_score) * 100),
+        ]);
+        
+        return response()->json([
+            'success' => true,
+        ], 200);
+    }
+
+    public function calculateGrade($score) {
+        if ($score >= 80) {
+            return '4';
+        } else if ($score >= 75) {
+            return '3.5';
+        } else if ($score >= 70) {
+            return '3';
+        } else if ($score >= 65) {
+            return '2.5';
+        } else if ($score >= 60) {
+            return '2';
+        } else if ($score >= 55) {
+            return '1.5';
+        } else if ($score >= 50) {
+            return '1';
+        } else {
+            return '0';
+        }
+    }
 }
