@@ -22,6 +22,7 @@ class DonateResource extends JsonResource
             'donor'                 => $this->donor_id ? new UserResource($this->donor) : null,
             'donor_name'            => $this->donor_name ?? 'ไม่ประสงค์ออกนาม',
             'amounts'               => Number::currency($this->amounts, 'THB', 'th_TH'), 
+            'total_points'          => $this->total_points,
             'slip'                  => $this->slip,
             'transfer_date'         => $this->transfer_date,
             'transfer_time'         => $this->transfer_time,

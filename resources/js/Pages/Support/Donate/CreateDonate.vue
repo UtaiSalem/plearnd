@@ -9,7 +9,7 @@
     import "@vuepic/vue-datepicker/dist/main.css";
     const isDarkMode = ref(false);
     const isLoading = ref(false);
-    const totalMoneySupport = ref(20);
+    const totalMoneySupport = ref(10);
     const moneyIndexSelected = ref(0);
     const slipImage = ref(null);
     const transferDate = ref(new Date());

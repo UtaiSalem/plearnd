@@ -3,28 +3,29 @@
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
-use App\Http\Controllers\PostController;
 
+use Illuminate\Foundation\Application;
+use App\Http\Controllers\AcademyController;
+use App\Http\Controllers\AcademyPostController;
+use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseGroupController;
+use App\Http\Controllers\CoursePostController;
+use App\Http\Controllers\CourseQuizController;
 use App\Http\Controllers\DonateController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\LessonController;
-use App\Http\Controllers\AcademyController;
-use App\Http\Controllers\SupportController;
-use App\Http\Controllers\WelcomeController;
-use App\Http\Controllers\NewsfeedController;
-use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\PostImageController;
-use App\Http\Controllers\SuggesterController;
-use App\Http\Controllers\AssignmentController;
-use App\Http\Controllers\CoursePostController;
-use App\Http\Controllers\CourseQuizController;
-use App\Http\Controllers\MentalMathController;
-use App\Http\Controllers\AcademyPostController;
-use App\Http\Controllers\CourseGroupController;
 use App\Http\Controllers\LessonImageController;
+use App\Http\Controllers\MentalMathController;
+use App\Http\Controllers\NewsfeedController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostCommentController;
+use App\Http\Controllers\PostImageController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\SupportController;
+use App\Http\Controllers\SuggesterController;
+use App\Http\Controllers\WelcomeController;
+
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\CourseLessonController;
 use App\Http\Controllers\CourseMemberController;
@@ -80,6 +81,9 @@ Route::get('/register/{user:reference_code}',[SuggesterController::class, 'index
 // })->name('register.reference');
 
 Route::get('/suggester/check/{user:personal_code}', [SuggesterController::class, 'checkSuggesterExist'])->name('suggester.check');
+
+Route::get('/check-username-exists/{name}', [UserProfileController::class, 'checkUsernameExists'])->name('profile.username.check');
+Route::get('/check-email-exists/{email}', [UserProfileController::class, 'checkEmailExists'])->name('profile.username.check');
 
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {

@@ -141,4 +141,5 @@ class UserController extends Controller
         // Redirect to the user listing page
         // return redirect()->route('users.index');
     }
+
 }

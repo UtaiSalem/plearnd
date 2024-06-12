@@ -40,5 +40,6 @@ class SuggesterController extends Controller
                 'error' => 'Suggester has reached the maximum number of referrals/ผู้แนะนำได้รับจำนวนการแนะนำสูงสุดแล้ว',
             ]);
         }
-    }    
+    } 
+    
 }

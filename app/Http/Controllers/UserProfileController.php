@@ -52,51 +52,32 @@ class UserProfileController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+    function checkUsernameExists($name) {
+        $user = User::where('name', $name)->first();
+        if ($user) {
+            return response()->json([
+                'exists' => true,
+                'message' => 'name already exists'
+            ]);
+        } else {
+            return response()->json([
+                'exists' => false,
+                'message' => 'name is available'
+            ]);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreUserProfileRequest $request)
-    {
-        //
+    function checkEmailExists($email) {
+        $user = User::where('email', $email)->first();
+        if ($user) {
+            return response()->json([
+                'exists' => true,
+            ]);
+        } else {
+            return response()->json([
+                'exists' => false,
+            ]);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(UserProfile $userProfile)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(UserProfile $userProfile)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateUserProfileRequest $request, UserProfile $userProfile)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(UserProfile $userProfile)
-    {
-        //
-    }
 }

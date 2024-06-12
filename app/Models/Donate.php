@@ -40,6 +40,10 @@ class Donate extends Model
         'donation_date' => 'datetime',
     ];
 
+    protected $appends = [
+        'total_points',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -62,7 +66,7 @@ class Donate extends Model
 
     public function getSlipAttribute($value)
     {
-        return $value ? '/storage/images/supports/donates/slips/'.$value : null;
+        return $value ? '/storage/images/donates/'.$value : null;
     }
 
     public function getTransferDateAttribute($value)
@@ -79,6 +83,11 @@ class Donate extends Model
     public function donateRecipients(): HasMany
     {
         return $this->hasMany(DonateRecipient::class, 'donate_id');
+    }
+
+    public function getTotalPointsAttribute()
+    {
+        return $this->amounts * 1080;
     }
 
 }

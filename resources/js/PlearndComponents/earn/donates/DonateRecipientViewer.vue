@@ -63,16 +63,10 @@ const reciever = ref(props.activity.target_resource.reciever);
                         </div>
                     </div>
                     <div class="mt-2">
-                        <div
-                            class="bg-green-100 rounded-lg flex items-center justify-center text-base font-bold tracking-tight">
-                            <div class="flex items-center justify-center space-x-1 w-14 h-14">
-                                <div>
-                                    <span class="text-[36px] text-yellow-400">
-                                        <!-- {{ donation.remaining_points }} -->
-                                        240
-                                    </span>
-                                </div>
-                                <span class="text-[18px] text-green-500 mt-2">แต้ม</span>
+                        <div class="bg-green-100 rounded-lg flex items-center justify-center text-base font-bold tracking-tight">
+                            <div class="flex items-center justify-center space-x-1 p-2">
+                                    <span class="text-[28px] text-yellow-400"> 240</span>
+                                    <span class="text-[12px] text-green-500 mt-1.5"> แต้ม</span>
                             </div>
                         </div>
                     </div>

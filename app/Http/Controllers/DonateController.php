@@ -55,7 +55,9 @@ class DonateController extends Controller
         if($request->file('slip')) {
             $slip_file = $request->file('slip');
             $slip_filename =  uniqid().'.'.$slip_file->getClientOriginalExtension();
-            $slip_file->storeAs('public/images/supports/donates/slips', $slip_filename);
+            // $slip_file->storeAs('public/images/supports/donates/slips', $slip_filename);
+            $slip_file->storeAs('public/images/donates', $slip_filename);
+
         }
 
         $donate = new Donate();
@@ -156,7 +158,7 @@ class DonateController extends Controller
     public function getDonate(Donate $donate)
     {
         try {
-            if($donate->remaining_points >= 270){
+            if($donate->remaining_points > 269){
                 $authUser = auth()->user();
 
                 $donate->recipients()->attach($authUser->id);
@@ -166,7 +168,7 @@ class DonateController extends Controller
                 
                 $authUser->increment('pp', 240);
                  
-                $suggesterCode = $authUser->suggester_code ?? 33333333;
+                $suggesterCode = $authUser->suggester_code ?? 99999999;
                 
                 $suggester = User::where('personal_code', $authUser->suggester_code)->first();
 
@@ -197,9 +199,9 @@ class DonateController extends Controller
         } catch (\Throwable $th) {
             // throw $th;
             return response()->json([
-                'success' => false,
-                'message' => 'ไม่สามารถสนับสนุนได้',
-                'error' => $th->getMessage(),
+                'success'   => false,
+                'message'   => 'ไม่สามารถสนับสนุนได้',
+                'error'     => $th->getMessage(),
             ]);
         }
     }

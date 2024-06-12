@@ -38,13 +38,17 @@ const donate = ref(props.activity.target_resource);
             </div>    
             <div class="mt-2">
                 <div class="bg-green-100 rounded-lg flex items-center justify-center text-base font-bold tracking-tight">
-                    <div class="flex items-center justify-center space-x-1 w-14 h-14">
-                        <div>
-                            <span class="text-[36px] text-yellow-400">
+                    <div class="flex items-center justify-center space-x-1">
+                        <div class="p-2">
+                            <span class="text-[28px] text-yellow-400">
+                                {{ donate.total_points }}
+                            </span>
+                            <span class="text-[12px] text-yellow-400">
+                                <span class="text-green-500 ">/เหลือ </span>
                                 {{ donate.remaining_points }}
+                                <span class="text-green-500 ">แต้ม</span>
                             </span>
                         </div>    
-                        <span class="text-[18px] text-green-500 mt-2">แต้ม</span>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
-import { Icon } from '@iconify/vue';
+import { usePage } from '@inertiajs/vue3';
 import Swal from 'sweetalert2';
 
 import DonateItemCard from '@/PlearndComponents/widgets/donates/DonateItemCard.vue';
@@ -61,7 +60,6 @@ const getDonate = async (id) => {
             alertGetDonateError();
         }
     } catch (error) {
-        console.log(error);
         alertGetDonateError();
     }
 };
@@ -69,10 +67,10 @@ const getDonate = async (id) => {
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 const countdown = () => {
-    timeLeft.value -= 18.51;
-    if (timeLeft.value > 18.51) {
+    timeLeft.value -= 20.83;
+    if (timeLeft.value > 20.83) {
         donateRecieved.value += 1;
-        wait(18.5).then(countdown);
+        wait(20.84).then(countdown);
     } else {
         isGetDonateLoading.value = false;
         handleGetDonateSuccess();
@@ -81,11 +79,11 @@ const countdown = () => {
 
 const handleGetDonateSuccess = () => {
     // if (donateResponse.value){
-        if (usePage().props.auth.user) { usePage().props.auth.user.pp += 270 };
+        if (usePage().props.auth.user) { usePage().props.auth.user.pp += 240 };
 
         props.donates.data[currentIndex.value].remaining_points = donateResponse.value.remaining_points;
 
-        if (props.donates.data[currentIndex.value].remaining_points < 270) {
+        if (props.donates.data[currentIndex.value].remaining_points < 240) {
             props.donates.data.splice(currentIndex.value, 1);
         }
         emit('add-new-donate-activity', recieveDonateActivity.value);
@@ -97,7 +95,7 @@ const handleGetDonateSuccess = () => {
 const alertGetDonateSuccess = () => {
     Swal.fire({
         title: 'รับการสนับสนุนสำเร็จ',
-        text: 'คุณได้รับการสนับสนุนเรียบร้อยแล้ว' + ' 270' + ' แต้ม',
+        text: 'คุณได้รับการสนับสนุนเรียบร้อยแล้ว' + ' 240' + ' แต้ม',
         icon: 'success',
         showConfirmButton: false,
         timer: 1200
@@ -129,7 +127,6 @@ const alertGetDonateError = () => {
         <hr class="my-2">
 
         <div v-if="props.donates.data[currentIndex].donor" :class="{'hidden' : !showDonorProgress}" class="fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full modal bg-gray-900/75 modal-overlay">
-        <!-- <div class="fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full modal bg-gray-900/75 modal-overlay"> -->
             <div class="relative w-[40rem] h-[22rem] z-30 bg-white rounded-lg mx-auto overflow-hidden">
                 <figure class="flex items-center p-2 mb-4 bg-gray-300 rounded-md">
                     <div class="flex-shrink-0">
@@ -152,7 +149,8 @@ const alertGetDonateError = () => {
             </div>
         </div>
 
-        <div v-else :class="{'hidden' : !showDonorProgress}" class="fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full modal bg-gray-900/75 modal-overlay">
+        <!-- <div v-else :class="{'hidden' : !showDonorProgress}" class="fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full modal bg-gray-900/75 modal-overlay"> -->
+        <div v-show="!props.donates.data[currentIndex].donor" :class="{'hidden' : !showDonorProgress}" class="fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full modal bg-gray-900/75 modal-overlay">
             <div class="relative w-[40rem] h-[39rem] z-30 bg-white rounded-lg mx-auto  overflow-hidden">
                 <img :src="'/storage/images/supports/donates/plearnd_poster.png'" alt="" srcset="" class="w-full">
                 <ProgressBar mode="indeterminate" style="height: 16px"></ProgressBar>
@@ -160,8 +158,8 @@ const alertGetDonateError = () => {
             </div>
         </div>
 
-        <div class="hidden fixed top-0 left-0 z-20 items-center justify-center w-full h-full modal bg-gray-900/75 modal-overlay">
-        <img :src="'/storage/images/supports/donates/plearnd_poster.png'" alt="" srcset="" class="w-full">
+        <div class="hidden">
+            <img :src="'/storage/images/supports/donates/plearnd_poster.png'" alt="" srcset="" class="">
         </div>
         
     </div>

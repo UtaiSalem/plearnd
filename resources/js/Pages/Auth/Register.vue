@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Head, Link, useForm, router } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import Checkbox from '@/Components/Checkbox.vue';
@@ -20,22 +20,31 @@ const refSuggester = ref(props.suggester ? props.suggester.data : null);
 
 const refIsSuggesterActive = ref(props.isSuggesterActive);
 const isLoadingSuggester = ref(false);
+const isLoadingSubmit = ref(false);
+
 
 const showPassword = ref(false);
 
 const form = useForm({
     suggester: refSuggester ? refSuggester.personal_code :'11111111',
-    name: '',
-    email: '',
+    name: 'Plearnd',
+    email: 'aplearnd@gmail.com',
     phone: '',
-    password: '',
-    password_confirmation: '',
+    password: '12345678',
+    password_confirmation: '12345678',
     terms: false,
 });
 
+const handleSubmit = () => {
+    isLoadingSubmit.value = true;
+    // console.log(form.name);
+    checkUserNameIsAlreadyExists(form.name);
+    // checkEmailIsAlreadyExists(form.email);
+};
 
 const submit = async () => {
     const suggesterResponse = await axios.get('/suggester/check/'+ form.suggester);
+
     if(suggesterResponse.data && !suggesterResponse.data.isSuggesterActive){
         Swal.fire({
             title: 'ไม่สามารถใช้รหัสผู้แนะนำนี้ได้',
@@ -46,12 +55,16 @@ const submit = async () => {
 
         refIsSuggesterActive.value = false;
         isLoadingSuggester.value = false;
+        isLoadingSubmit.value = false;
         form.referral = '';
     }else{
         form.post('/register', {
-            onFinish: () => form.reset('password', 'password_confirmation'),
+            onFinish: () => { 
+                form.reset('password', 'password_confirmation')
+                isLoadingSubmit.value = false;},
         });
     }
+    isLoadingSubmit.value = false;
 };
 
 onMounted(() => {
@@ -113,6 +126,36 @@ const checkSuggester = (suggesterParam) => {
     }
 };
 
+const checkUserNameIsAlreadyExists = async (name) => {
+    const usernameResponse = await axios.get('/check-username-exists/'+ name);
+    if (usernameResponse.data && usernameResponse.data.exists){
+        Swal.fire({
+            title: 'ชื่อนี้มีผู้ใช้แล้ว',
+            text: ' กรุณาลงชื่อเข้าใช้ หรือใช้ชื่อผู้ใช้อื่น',
+            icon: 'error',
+            confirmButtonText: 'ตกลง'
+        });
+        isLoadingSubmit.value = false;
+    }else{
+        checkEmailIsAlreadyExists(form.email);
+    }
+};
+        
+const checkEmailIsAlreadyExists = async (email) => {
+    const emailResponse = await axios.get('/check-email-exists/'+ email);
+    if (emailResponse.data && emailResponse.data.exists){
+        Swal.fire({
+            title: 'อีเมลนี้มีผู้ใช้งานแล้ว',
+            text: 'กรุณาลงชื่อเข้าใช้ หรือใช้อีเมลอื่น',
+            icon: 'error',
+            confirmButtonText: 'ตกลง'
+        });
+        isLoadingSubmit.value = false;
+    }else{
+        submit();
+    }
+};
+
 
 </script>
 
@@ -162,10 +205,10 @@ const checkSuggester = (suggesterParam) => {
         <!-- <InputError class="mt-2" :message="over_limit" /> -->
          <!-- loading spinner icon -->
         <div v-if="isLoadingSuggester" class="flex justify-center mt-4">
-            <Icon icon="svg-spinners:6-dots-rotate" class="w-20 h-20 text-gray-500 animate-spin" />
+            <Icon icon="svg-spinners:6-dots-rotate" class="w-20 h-20 text-violet-500 animate-spin" />
         </div>
 
-        <form @submit.prevent="submit" v-if="refIsSuggesterActive && !isLoadingSuggester">
+        <form @submit.prevent="handleSubmit" v-if="refIsSuggesterActive && !isLoadingSuggester">
             <input type="hidden" name="suggester" v-model="form.suggester" >
             <div>
                 <InputLabel for="name" value="Name / ชื่อ - สกุล" />
@@ -195,7 +238,7 @@ const checkSuggester = (suggesterParam) => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="phone" value="หมายเลขโทรศัพท์" />
+                <InputLabel for="phone" value="หมายเลขโทรศัพท์ (ไม่บังคับใส่)" />
                 <TextInput
                     id="phone"
                     v-model="form.phone"
@@ -254,7 +297,8 @@ const checkSuggester = (suggesterParam) => {
                 </Link>
 
                 <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    สมัครสมาชิก
+                    <Icon v-if="isLoadingSubmit" icon="svg-spinners:6-dots-rotate" class="w-5 h-5 mr-1 animate-spin" />
+                    <span>สมัครสมาชิก</span>
                 </PrimaryButton>
             </div>
         </form>
