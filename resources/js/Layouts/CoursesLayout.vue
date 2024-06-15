@@ -43,10 +43,11 @@ const handleLoadingPage = (option) => {
                     </div>
                 </div>
             
-                <div class="flex items-center max-w-7xl mx-auto jusb mt-2 mb-4 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat">
+                <div class="hidden md:flex items-center max-w-7xl mx-auto mt-2 mb-4 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg">
                     <img class="section-banner-icon" :src="'/storage/images/banner/forums-icon.png'" alt="forums-icon">
-                    <p class="text-4xl font-bold text-white">รวมรายวิชา</p>
+                    <p class="text-xl lg:text-4xl font-bold text-white">รวมรายวิชา</p>
                 </div>
+                
                 <div class="w-full mx-auto mt-4 overflow-hidden bg-white rounded-lg shadow-xl max-w-7xl">
                     <div class="flex flex-row justify-around">
                         <!-- <Link :href="`/courses`" v-if="$page.url===`/courses/feeds`" class="flex-row justify-center w-full text-center border-b-4 rounded-none hover:border-cyan-500"

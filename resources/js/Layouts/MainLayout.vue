@@ -8,6 +8,7 @@
     import Dropdown from '@/Components/Dropdown.vue';
     import DropdownLink from '@/Components/DropdownLink.vue';
     import LoadingPage from '@/PlearndComponents/accessories/LoadingPage.vue';
+    import MobileNavbar from '@/PlearndComponents/accessories/MobileNavbar.vue';
 
     defineProps({
         title: String,
@@ -26,7 +27,7 @@
         // { name: 'แหล่งเรียนรู้',        href: '/academies', icon: 'teenyicons:school-outline'},
         { name: 'รายวิชา',           href: '/courses',   icon: 'fluent-mdl2:publish-course'},
         // { name: 'ประชาสัมพันธ์สินค้า',   href: '/supports/advertise', icon: 'solar:card-send-broken'},
-        // { name: 'สนับสนุนทุนการศึกษา', href: '/supports/loan', icon: 'solar:card-send-broken'},
+        { name: 'รับทุน', href: '/donates', icon: 'solar:card-send-broken'},
 
     ];
 
@@ -68,7 +69,7 @@
         </Head>
 
         <!-- Navbar -->
-        <header class="fixed top-0 h-[56px] shadow-md px-2 flex justify-between w-full items-center z-30 bg-[#34465d]">
+        <header class="fixed top-0 h-[56px] sm:shadow-md pl-2 flex justify-between w-full items-center z-30 bg-[#34465d]">
             <!-- logo && Title -->
             <div class="flex items-center md:justify-between min-w-fit">
                 <Link :href="route('welcome')"> 
@@ -105,10 +106,12 @@
             </div>
 
             <!-- User wallet -->
-            <div class="items-center hidden space-x-1 text-white xs:flex">
+            <div class="items-center space-x-1 text-white flex">
                 <div class="plearn-navbar-icon min-w-fit">
-                    <img :src="'/storage/images/badge/completedq.png'" alt="completedq-b" class="w-8 h-8">
-                    <span>{{ authUser.pp.toLocaleString() }}</span><span class="hidden ml-1 md:flex">แต้ม</span>
+                    <Link :href="route('donates.list')" class="flex items-center">
+                        <img :src="'/storage/images/badge/completedq.png'" alt="completedq-b" class="w-8 h-8">
+                        <span>{{ authUser.pp.toLocaleString() }}</span><span class="hidden ml-1 md:flex">แต้ม</span>
+                    </Link>
                 </div>
                 <div class="plearn-navbar-icon min-w-fit">
                     <img :src="'/storage/images/badge/goldc.png'" alt="completedq-b" class="w-8 h-8">
@@ -135,8 +138,7 @@
                         <button v-if="$page.props.jetstream.managesProfilePhotos"
                             class="flex overflow-hidden text-sm transition border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300">
                             <!-- <img class="object-cover w-8 h-8 rounded-full" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name"> -->
-                            <div
-                                class="inline-flex items-center p-1 text-sm font-medium leading-4 text-gray-200 transition duration-150 ease-in-out border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700">
+                            <div class="inline-flex items-center p-1 text-sm font-medium leading-4 text-gray-200 transition duration-150 ease-in-out border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700">
                                 <!-- {{ $page.props.auth.user.name }} -->
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                                     class="w-6 h-6">
@@ -270,23 +272,33 @@
                                     <span>ออกจากระบบ</span>
                                 </button>
                             </div>
+
                         </div>
                     </template>
                 </Dropdown>
             </div>
 
-            <div>
-                <!-- <button type="button" title="Plearnd-dark-mode-Setting" class="mt-1 text-gray-200" @click.prevent="isDarkMode = !isDarkMode">
+            <!-- <div>
+                
+                <button type="button" title="Plearnd-dark-mode-Setting" class="mt-1 text-gray-200" @click.prevent="isDarkMode = !isDarkMode">
                     <Icon icon="line-md:moon-loop" class="w-8 h-8" v-if="!isDarkMode" />
                     <Icon icon="line-md:sun-rising-loop" class="w-8 h-8" v-if="isDarkMode" />
-                </button> -->
-            </div>
+                </button> 
+               
+            </div> -->
 
+            <!-- 
             <div class="items-center justify-between hidden space-x-3 md:flex">
 
-            </div>
+            </div> 
+            -->
 
         </header>
+
+        <MobileNavbar 
+            :navigation
+            @go-to-page="(url)=>handleLinkToPage(url)"
+        />
 
         <!-- left Sidbar -->
         <div class="fixed flex flex-col top-[56px] bg-white dark:bg-gray-900 h-full transition-all duration-300 shadow-lg z-10"
@@ -395,7 +407,7 @@
         </div>
 
         <!-- Main content -->
-        <div class="flex flex-col justify-between mx-4 pt-16 sm:ml-[80px] rounded-lg">
+        <div class="flex flex-col justify-between sm:mx-4 md:pt-16 sm:ml-[80px] rounded-lg">
 
             <div v-if="$slots.coverProfileCard" class="w-full" >
                 <slot name="coverProfileCard"></slot>

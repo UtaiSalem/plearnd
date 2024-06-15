@@ -31,6 +31,8 @@ class UserResource extends JsonResource
             'is_plearnd_admin'          => $this->is_plearnd_admin,
             // 'is_friend_with'            => $this->isFriendWith($this->id),
             'is_friend'                 => $this->isFriendWithAuth($this->id),
+            'profile_picture'           => $this->profile()->profile_picture ?? $this->profile_photo_url,
+            'cover_image'               => $this->profile()->cover_image ?? '/storage/images/banner/banner-profile-stats.jpg',
         ];
     }
 

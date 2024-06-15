@@ -120,15 +120,14 @@ const handleGetDonate = async (donateId, idx) => {
     <div
     class="relative flex justify-center items-center min-h-screen bg-[url('/storage/landing/joanna-kosinska-education-unsplash.png')] bg-cover bg-no-repeat dark:bg-gray-900 selection:bg-red-500 selection:text-white">
 
-
         <div class="flex flex-col items-center justify-center w-full h-full mt-8">
             <div v-if="canLogin" class="z-10 p-6 text-center sm:fixed sm:top-0 sm:right-0 md:text-right">
                 <!-- <Link v-if="$page.props.auth.user" :href="route('dashboard')"
                     class="text-sm font-semibold text-gray-600 md:text-lg hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
                 Dashboard</Link> -->
                 <Link v-if="$page.props.auth.user" :href="'/newsfeed'"
-                    class="text-sm font-semibold text-gray-600 md:text-lg hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
-                    Dashboard
+                    class="text-md font-semibold text-gray-700 md:text-lg bg-gray-300 p-4 rounded-md dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
+                    <span class="">กระดานข่าว</span>
                 </Link>
 
                 <template v-else>
@@ -316,15 +315,13 @@ const handleGetDonate = async (donateId, idx) => {
             </div>
         </div>
         <div class="container mx-auto mb-20 text-center rounded-lg">
-            <p class="">
-                <button @click.prevent="handleLinkToCreateDonate" class="px-12 py-5 text-lg text-white bg-teal-500 rounded hover:bg-teal-600 hover:scale-105">
-                    <div class="flex items-center justify-center space-x-2">
-                        <!--Icon  spinner -->
-                        <Icon icon="svg-spinners:bars-rotate-fade" class="w-10 h-10" v-if="isCreateDonatePageLoading" />
-                        <span>สนับสนุนทุนการเรียนรู้</span>   
-                    </div>
-                </button>
-            </p>
+            <button @click.prevent="handleLinkToCreateDonate" class="px-12 py-5 text-lg text-white bg-teal-500 rounded hover:bg-teal-600 hover:scale-105">
+                <div class="flex items-center justify-center space-x-2">
+                    <!--Icon  spinner -->
+                    <Icon icon="svg-spinners:bars-rotate-fade" class="w-10 h-10" v-if="isCreateDonatePageLoading" />
+                    <span>สนับสนุนทุนการเรียนรู้</span>   
+                </div>
+            </button>
         </div>
     </section>
 

@@ -102,57 +102,50 @@ const handleRejectDonate = () => {
 </script>
 
 <template>
-  <div>
-        <div class="text-gray-900 bg-white rounded-lg shadow-xl pb-2">
-            <div class="overflow-hidden rounded-t-lg">
-                <img
-                class="object-cover object-top"
-                :src="donate.slip"
-                alt="Slip"
-                />
-            </div>
-            
-            <div class="m-4">
-                <table class="w-full">
-                    <thead>
-                        <tr>
-                            <th class="font-bold text-left text-gray-700">รายการ</th>
-                            <th class="font-bold text-right text-gray-700">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-left text-gray-700">วันที่ทำรายการ</td>
-                            <td class="text-right text-gray-700">{{ donate.transfer_date }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-left text-gray-700">เวลาทำรายการ</td>
-                            <td class="text-right text-gray-700">{{ donate.transfer_time }}</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td class="font-bold text-left text-gray-700">จำนวนเงิน</td>
-                            <td class="font-bold text-right text-gray-700">{{ donate.amounts }}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-            <div class="flex justify-between m-4">
-                <p class="py-2 text-sm text-gray-700">สถานะ: {{ donate.status === 0 ? 'รอการตอบรับ' : 'ตอบรับแล้ว' }}</p>
-                <button v-if="edit" @click.prevent="edit = !edit" class="px-2 bg-orange-300 rounded-lg">{{ 'แก้ไข' }}</button>
-                <button v-if="!edit && donate.status !== 0" @click.prevent="edit = !edit" class="px-2 bg-orange-300 rounded-lg">ยกเลิก</button>
-            </div>
-            <div class="flex p-4 mx-4 space-x-2 border-t mt-2" v-if="!edit" >
-                <button @click.prevent="handleRejectDonate" v-if="donate.status !==2" class="block w-1/2 px-4 py-2 mx-auto font-semibold text-white bg-pink-500 rounded-full hover:shadow-lg">
-                    ปฏิเสธ
-                </button>
-                <button @click.prevent="handleRecieveDonate" v-if="donate.status !==1" class="block w-1/2 px-4 py-2 mx-auto font-semibold text-white bg-green-500 rounded-full hover:shadow-lg">
-                    ตอบรับ
-                </button>
-            </div>
-        </div>
+  <div class="text-gray-900 bg-white border border-gray-400 rounded-lg shadow-xl pb-2">
+      <div class="overflow-hidden rounded-t-lg">
+          <img class="object-cover object-top" :src="donate.slip" alt="Slip" />
+      </div>
+      
+      <div class="m-4">
+          <table class="w-full">
+              <thead>
+                  <tr>
+                      <th class="font-bold text-left text-gray-700">รายการ</th>
+                      <th class="font-bold text-right text-gray-700">Amount</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td class="text-left text-gray-700">วันที่ทำรายการ</td>
+                      <td class="text-right text-gray-700">{{ donate.transfer_date }}</td>
+                  </tr>
+                  <tr>
+                      <td class="text-left text-gray-700">เวลาทำรายการ</td>
+                      <td class="text-right text-gray-700">{{ donate.transfer_time }}</td>
+                  </tr>
+              </tbody>
+              <tfoot>
+                  <tr>
+                      <td class="font-bold text-left text-gray-700">จำนวนเงิน</td>
+                      <td class="font-bold text-right text-gray-700">{{ donate.amounts }}</td>
+                  </tr>
+              </tfoot>
+          </table>
+      </div>
+      <div class="flex justify-between m-4">
+          <p class="py-1.5 text-sm text-gray-700">สถานะ: {{ donate.status === 0 ? 'รอการตอบรับ' : 'ตอบรับแล้ว' }}</p>
+          <button v-if="edit" @click.prevent="edit = !edit" class="px-2 bg-orange-300 rounded-lg">{{ 'แก้ไข' }}</button>
+          <button v-if="!edit && donate.status !== 0" @click.prevent="edit = !edit" class="px-2 bg-orange-300 rounded-lg">ยกเลิก</button>
+      </div>
+      <div class="flex p-4 mx-4 space-x-2 border-t mt-2" v-if="!edit" >
+          <button @click.prevent="handleRejectDonate" v-if="donate.status !==2" class="block w-1/2 px-2 py-1 mx-auto font-base text-sm text-white bg-pink-500 rounded-lg hover:shadow-lg">
+              ปฏิเสธ
+          </button>
+          <button @click.prevent="handleRecieveDonate" v-if="donate.status !==1" class="block w-1/2 px-2 py-1 mx-auto font-base text-sm text-white bg-green-500 rounded-lg hover:shadow-lg">
+              ตอบรับ
+          </button>
+      </div>
   </div>
 </template>
 
-<style lang="scss" scoped></style>

@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted,ref } from 'vue';
+import { ref } from 'vue';
+import { router } from '@inertiajs/vue3';
 import MainLayout from '@/Layouts/MainLayout.vue';
 import InfiniteLoading from "v3-infinite-loading";
 
@@ -16,6 +17,7 @@ import DonationListWidget from '@/PlearndComponents/widgets/DonationListWidget.v
 import DonationsViewer from '@/PlearndComponents/earn/donates/DonationsViewer.vue';
 import DonateRecipientViewer from '@/PlearndComponents/earn/donates/DonateRecipientViewer.vue';
 import LoadingPage from '@/PlearndComponents/accessories/LoadingPage.vue';
+// import MobileNavbar from '@/PlearndComponents/accessories/MobileNavbar.vue';
 
 const props = defineProps({
     activities: Object,
@@ -60,23 +62,32 @@ const handleAddNewDonateActivity = (activity) => {
     newsfeedActivities.value.unshift(activity);
 };
 
+const handleLinkToPage = (href) => {
+    isLoading.value = true;
+    router.visit(href);
+};
+
 </script>
 
 <template>
     <div class="">
         <MainLayout title="Newsfeed">
             <template #coverProfileCard>
-                <div class="flex items-center mx-auto mt-2 mb-4 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg">
+                <div class="hidden md:flex items-center mx-auto mt-2 mb-4 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg">
                     <img class="section-banner-icon " :src="'/storage/images/banner/forums-icon.png'" alt="forums-icon">
                     <p class="text-white font-bold text-4xl">กระดานข่าว</p>
                 </div>
+                <!-- <div class="">
+                    <MobileNavbar />
+                </div> -->
             </template>
 
             <template #leftSideWidget>
                 <!-- Donation List -->
                 <DonationListWidget v-if="donates.data.length"
                     :donates
-                    @add-new-donate-activity="(newActivity)=> newsfeedActivities.unshift(newActivity)"
+                    @add-new-donate-activity="(newActivity)=> newsfeedActivities.value.unshift(newActivity)"
+                    @go-to-create-donate="handleLinkToPage('/supports/donates/create')"
                 />
             </template>
 

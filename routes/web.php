@@ -12,7 +12,6 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseGroupController;
 use App\Http\Controllers\CoursePostController;
 use App\Http\Controllers\CourseQuizController;
-use App\Http\Controllers\DonateController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\LessonImageController;
@@ -25,7 +24,6 @@ use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SupportController;
 use App\Http\Controllers\SuggesterController;
 use App\Http\Controllers\WelcomeController;
-
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\CourseLessonController;
 use App\Http\Controllers\CourseMemberController;
@@ -371,24 +369,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 });
 
 
-// Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'plearnd_admin'])->prefix('/plearnd-admin')->group(function () {
-//     Route::get('/donates', [DonateController::class, 'index'])->name('plearnd-admin.index');
-// });
-Route::get('/supports/donates/create', [DonateController::class, 'create'])->name('support.donate.create');
-Route::post('/supports/donates', [DonateController::class, 'store'])->name('support.donate.store');
-Route::get('/supports/donates/donor/{user:personal_code}', [DonateController::class, 'getDonor'])->name('donate.get-donor');
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified', 'plearnd_admin'])->prefix('/plearnd-admin/supports/donates')->group(function () {
-    Route::get('/', [DonateController::class, 'index'])->name('admin.support.donate.index');
-    Route::patch('/{donate}/recieve', [DonateController::class, 'recieve'])->name('admin.support.donate.recieve');
-    Route::patch('/{donate}/reject', [DonateController::class, 'reject'])->name('admin.support.donate.reject');
-
-});
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
-    Route::get('/donates/{donate}/get-donate', [DonateController::class, 'getDonate'])->name('donate.get-donate');
-});
-
-
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
     Route::post('/friends/{recipient}', [FriendController::class, 'addFriendRequest'])->name('friend-request');
     Route::delete('/friends/{friend}', [FriendController::class, 'deleteFriendRequest'])->name('delete-friend-request');   
@@ -400,3 +380,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 });
 
 Route::get('/mental-math', [MentalMathController::class, 'index'])->name('mental-math');
+
+
+require __DIR__ . '/donates/donate.php';

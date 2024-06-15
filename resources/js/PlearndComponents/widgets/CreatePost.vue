@@ -171,7 +171,7 @@ const privacyOptions = reactive([
 </script>
 
 <template>
-    <div class="relative hs-accordion-group bg-white rounded-lg shadow-lg px-4 py-2  border-t-4 border-blue-500">
+    <div class="relative hs-accordion-group bg-white rounded-lg shadow-lg p-2  border-t-4 border-blue-500">
         <div class="hs-accordion active" id="hs-basic-with-title-and-arrow-stretched-heading-one">
             <button class="hs-accordion-toggle hs-accordion-active:text-blue-600 group py-2 inline-flex items-center justify-between gap-x-3 w-full font-base text-left text-gray-800 transition hover:text-gray-500 dark:hs-accordion-active:text-blue-500 dark:text-gray-200 dark:hover:text-gray-400" aria-controls="hs-basic-with-title-and-arrow-stretched-collapse-one">
                 <div class="flex items-center space-x-6">
@@ -205,9 +205,9 @@ const privacyOptions = reactive([
                         <div class="mt-4 mx-1 flex items-center justify-between">
                             <div class="flex items-center">
                                 <input type="file" accept="image/*" multiple ref="inputPostImages" class="hidden" @change="onInputImageInput">
-                                <button @click.prevent="browseInputPostImages" class="flex gap-2 p-1.5 shadow-sm rounded-full bg-violet-200 text-violet-600 text-lg dark:bg-dark-strip dark:text-white">
+                                <button @click.prevent="browseInputPostImages" class="flex gap-2 p-1.5 shadow-sm rounded-full bg-violet-200 text-violet-600 text-sm md:text-lg dark:bg-dark-strip dark:text-white">
                                     <!-- <span class="text-sm">Photo</span> -->
-                                    <svg class="w-6" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <svg class="w-4 md:w-6" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                         <path
                                             d="M21.9999 14.7024V16.0859C21.9999 16.3155 21.9899 16.5471 21.9699 16.7767C21.6893 19.9357 19.4949 22 16.3286 22H7.67126C6.06806 22 4.71535 21.4797 3.74341 20.5363C3.36265 20.1864 3.042 19.7753 2.7915 19.3041C3.12217 18.9021 3.49291 18.462 3.85363 18.0208C4.46485 17.289 5.05603 16.5661 5.42677 16.0959C5.97788 15.4142 7.43078 13.6196 9.44481 14.4617C9.85563 14.6322 10.2164 14.8728 10.547 15.0833C11.3586 15.6247 11.6993 15.7851 12.2705 15.4743C12.9017 15.1335 13.3125 14.4617 13.7434 13.76C13.9739 13.388 14.2043 13.0281 14.4548 12.6972C15.547 11.2736 17.2304 10.8926 18.6332 11.7348C19.3346 12.1559 19.9358 12.6872 20.4969 13.2276C20.6172 13.3479 20.7374 13.4592 20.8476 13.5695C20.9979 13.7198 21.4989 14.2211 21.9999 14.7024Z"
                                             fill="currentColor"></path>
@@ -234,10 +234,10 @@ const privacyOptions = reactive([
                                     More...
                                 </div> -->
                                 <div class="mx-4 flex items-center relative">
-                                    <Icon :icon="privacyOptions[selectedPrivacy-1].icon" class="w-6 h-6"/>
-                                    <select @input="handleSelectPrivacySetting" v-model="selectedPrivacy" id="privacy" class="absolute -right-8 opacity-50 w-16 text-white border border-violet-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm text-left inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    <Icon :icon="privacyOptions[selectedPrivacy-1].icon" class="w-4 md:w-6 h-4 md:h-6"/>
+                                    <select @input="handleSelectPrivacySetting" v-model="selectedPrivacy" id="privacy" class="absolute -right-8 opacity-50 w-10 md:w-16 h-7 md:h-10 text-white border border-violet-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text[11px] md:text-sm text-left inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                         <option v-for="(item, index) in privacyOptions" :key="index" 
-                                            class="py-2 text-sm text-gray-700 dark:text-gray-200" 
+                                            class="py-0 md:py-2 text-[11px] md:text-sm text-gray-700 dark:text-gray-200" 
                                             :value="item.id"
                                             >
                                             {{ item.label }}
@@ -246,8 +246,8 @@ const privacyOptions = reactive([
                                 </div>
                             </div>
                             <div class="flex space-x-2">
-                                <button type="button" @click.prevent="handleCancleCreatePost" class="px-2 py-1 rounded-lg bg-gray-100 border border-red-500 text-sm text-red-500 dark:text-white hover:scale-110">ยกเลิก</button>
-                                <button type="submit" :disabled="waiting || !canBePosted" class="px-2 py-1 rounded-lg bg-blue-100 border border-blue-500 text-sm text-blue-500 dark:text-white disabled:cursor-not-allowed" :class="canBePosted ? 'hover:scale-110' : 'cursor-not-allowed'">เขียนกระดาน</button>
+                                <button type="button" @click.prevent="handleCancleCreatePost" class="px-2 py-1 rounded-lg bg-gray-100 border border-red-500 text-[11px] md:text-sm text-red-500 dark:text-white hover:scale-110">ยกเลิก</button>
+                                <button type="submit" :disabled="waiting || !canBePosted" class="px-2 py-1 rounded-lg bg-blue-100 border border-blue-500 text-[11px] md:text-sm text-blue-500 dark:text-white disabled:cursor-not-allowed" :class="canBePosted ? 'hover:scale-110' : 'cursor-not-allowed'">เขียนกระดาน</button>
                             </div>
                         </div>
                     </form>

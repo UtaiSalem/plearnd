@@ -25,6 +25,14 @@ class DonateController extends Controller
         ]);
     }
 
+    public function allAvailableDonates()
+    {
+        return Inertia::render('Support/Donate/Donates', [
+            // 'donates' => DonateResource::collection(Donate::whereNotIn('status',[2])->where('remaining_points', '>=', 270)->latest()->paginate()),
+            'donates' => DonateResource::collection(Donate::whereNotIn('status',[2])->orderBy('remaining_points', 'desc')->latest()->paginate()),
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

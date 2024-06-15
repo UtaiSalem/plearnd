@@ -1,16 +1,18 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { usePage } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { Icon } from '@iconify/vue';
 import Swal from 'sweetalert2';
 
+import MainLayout from '@/Layouts/MainLayout.vue';
 import DonateItemCard from '@/PlearndComponents/widgets/donates/DonateItemCard.vue';
+import DonationCard from '@/PlearndComponents/earn/donates/DonationCard.vue';
+import DonationListWidget from '@/PlearndComponents/widgets/DonationListWidget.vue';
+import LoadingPage from '@/PlearndComponents/accessories/LoadingPage.vue';
 
 const props = defineProps({
     donates: Object,
 });
-
-const emit = defineEmits(['add-new-donate-activity', 'go-to-create-donate']);
 
 const isCreateDonatePageLoading = ref(false);
 const isGetDonateLoading = ref(false);
@@ -26,11 +28,6 @@ const recieveDonateActivity = ref();
 const showDonorProgress = computed(()=>{
     return timeLeft.value >= 0 && isGetDonateLoading.value;
 });
-
-const handleLinkToCreateDonate = () => {
-    isCreateDonatePageLoading.value = true;
-    window.location.href = "/supports/donates/create";
-};
 
 const handleGetDonate = (donateId, idx) => {
     isGetDonateLoading.value = true;
@@ -76,7 +73,7 @@ const countdown = () => {
         isGetDonateLoading.value = false;
         handleGetDonateSuccess();
     }    
-};    
+};  
 
 const handleGetDonateSuccess = () => {
     // if (donateResponse.value){
@@ -87,7 +84,7 @@ const handleGetDonateSuccess = () => {
         if (props.donates.data[currentIndex.value].remaining_points < 240) {
             props.donates.data.splice(currentIndex.value, 1);
         }
-        emit('add-new-donate-activity', recieveDonateActivity.value);
+        // emit('add-new-donate-activity', recieveDonateActivity.value);
         recieveDonateActivity.value = null;
         alertGetDonateSuccess();
     // }
@@ -96,7 +93,7 @@ const handleGetDonateSuccess = () => {
 const alertGetDonateSuccess = () => {
     Swal.fire({
         title: 'รับการสนับสนุนสำเร็จ',
-        text: 'คุณได้รับการสนับสนุนเรียบร้อยแล้ว 240 แต้ม',
+        text: 'คุณได้รับการสนับสนุนเรียบร้อยแล้ว' + ' 240' + ' แต้ม',
         icon: 'success',
         showConfirmButton: false,
         timer: 1200
@@ -113,26 +110,69 @@ const alertGetDonateError = () => {
     });
 };
 
-</script>
-<template>
-    <div class="bg-white p-1 rounded-lg shadow-lg border-t-4 border-blue-500">
-        <p class="text-lg font-bold mb-2 p-2">รายการทุนสนับสนุนการเรียนรู้</p>
-        <hr class="mb-2">
-        <div v-for="(donate, index) in props.donates.data" :key="index"
-            class="border mb-2 rounded-lg hover:shadow-indigo-300 hover:shadow-md bg-indigo-50/30">
-            <DonateItemCard 
-                :donate
-                :isProcessing="showDonorProgress"
-                @getDonateRequest="handleGetDonate(donate.id, index)" 
-            />
-        </div>
-        <hr class="my-2">
+const handleLinkToPage = (href) => {
+    isCreateDonatePageLoading.value = true;
+    router.visit(href);
+};
 
-        <button class="flex items-center justify-center w-full py-2 my-1 font-medium text-center text-white rounded-md bg-green-500"
-            @click.prevent="emit('go-to-create-donate')">
-            <Icon icon="flat-color-icons:donate" class="w-7 h-7" />
-            <span>ให้การสนับสนุน</span>
-        </button>
+</script>
+
+<template>
+    <div>
+        <MainLayout title="Newsfeed">
+            <template #coverProfileCard>
+                <div class="hidden md:flex items-center mx-auto mt-2 mb-4 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg">
+                    <img class="section-banner-icon " :src="'/storage/images/banner/badges-icon.png'" alt="forums-icon">
+                    <p class="text-white font-bold text-2xl">ทุนสนับสนุนการเรียนรู้</p>
+                </div>
+                <div class="">
+                    <!-- <MobileNavbar /> -->
+                </div>
+            </template>
+
+            <template #leftSideWidget>
+                <!-- Donation List -->
+                <!-- <DonationListWidget v-if="donates.data.length"
+                    :donates
+                    @add-new-donate-activity=""
+                    @go-to-create-donate="handleLinkToPage('/supports/donates/create')"
+                /> -->
+            </template>
+
+            <template #rightSidebar>
+                <!-- <PendingFriendsWidget :pendingFriends="props.pendingFriends" /> -->
+            </template>
+
+            <template #mainContent>
+
+                <LoadingPage v-if="isCreateDonatePageLoading" />
+
+                <div class="mt-2 md:mt-0 mb-2 bg-white p-2 rounded-lg border-t-4 border-blue-500">
+                    <button class="flex items-center justify-center w-full py-2 my-1 font-medium text-center text-white rounded-md bg-green-400"
+                        @click.prevent="handleLinkToPage('/supports/donates/create')">
+                        <!-- <span><img :src="'/storage/images/badge/completedq.png'" alt="completedq-b" class="w-8 h-8"></span> -->
+                        <Icon icon="flat-color-icons:donate" class="w-7 h-7" />
+                        <span>ให้การสนับสนุน</span>
+                    </button>
+                </div>
+                <template v-if="donates.data.length">
+                    <div class=" grid md:grid-cols-2 gap-4">
+                        <DonationCard 
+                            v-for="(donate, index) in props.donates.data" 
+                            :key="index"
+                            :donate 
+                            @getDonateRequest="handleGetDonate(donate.id, index)" 
+                        />
+                    </div>
+                </template>  
+                <template v-else>
+                    <div class="flex justify-center items-center h-96">
+                        <p class="text-2xl font-bold text-gray-400">No Donations</p>
+                    </div>
+                </template>
+            </template>
+
+        </MainLayout>
 
         <div v-if="props.donates.data[currentIndex].donor" :class="{'hidden' : !showDonorProgress}" class="fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full modal bg-gray-900/100 modal-overlay">
             <div class="relative w-[40rem] h-[22rem] z-30 bg-white rounded-lg mx-auto overflow-hidden">
@@ -164,6 +204,5 @@ const alertGetDonateError = () => {
                 <div class="absolute top-[30%] left-[14rem] text-[60px] text-yellow-300/80 ">{{ donateRecieved}} แต้ม</div>
             </div>
         </div>
-        
     </div>
 </template>

@@ -3,7 +3,9 @@ import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     donate: Object,
+    isProcessing: Boolean,
 });
+
 const emit = defineEmits(['getDonateRequest']);
 
 </script>
@@ -45,7 +47,7 @@ const emit = defineEmits(['getDonateRequest']);
                     class="w-full py-2 mt-3 font-medium text-center text-white bg-orange-400 rounded-md">
                     รออนุมัต
                 </button>
-                <button v-if="donate.status === 1 && $page.props.auth.user"
+                <button v-if="donate.status === 1 && $page.props.auth.user && donate.remaining_points>0" :disabled="isProcessing"
                     class="w-full py-2 mt-3 font-medium text-center text-white rounded-md bg-sky-400"
                     @click.prevent="emit('getDonateRequest')">
                     รับการสนับสนุน

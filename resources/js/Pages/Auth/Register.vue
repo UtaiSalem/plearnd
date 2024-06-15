@@ -27,11 +27,11 @@ const showPassword = ref(false);
 
 const form = useForm({
     suggester: refSuggester ? refSuggester.personal_code :'11111111',
-    name: 'Plearnd',
-    email: 'aplearnd@gmail.com',
+    name: '',
+    email: '',
     phone: '',
-    password: '12345678',
-    password_confirmation: '12345678',
+    password: '',
+    password_confirmation: '',
     terms: false,
 });
 
