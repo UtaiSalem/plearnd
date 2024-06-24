@@ -70,4 +70,19 @@ class FriendController extends Controller
             'message' => 'Friend removed successfully.'
         ], 200);
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function deleteFriendRequest(User $friend)
+    {
+        $user = auth()->user();
+
+        $user->unfriend($friend);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Friend removed successfully.'
+        ], 200);
+    }
 }

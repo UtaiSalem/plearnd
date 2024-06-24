@@ -137,9 +137,9 @@ function handleCancle() { window.location = '/';}
     <div>
         <MainLayout title="Support Plearnd.com">
             <template #coverProfileCard>
-                <div class="flex items-center max-w-7xl mx-auto jusb mt-2 mb-4 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg overflow-hidden">
+                <div class="hidden md:flex items-center max-w-7xl mx-auto jusb mt-2 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg overflow-hidden">
                     <img class="" :src="'/storage/images/banner/badges-icon.png'" alt="forums-icon">
-                    <p class="text-white font-bold text-4xl">สนับสนุน เว็บไซต์ เพลินด์</p>
+                    <p class="text-white font-bold text-xl">สนับสนุน เว็บไซต์ เพลินด์</p>
                 </div>
             </template>
             <template #leftSideWidget>
@@ -148,7 +148,7 @@ function handleCancle() { window.location = '/';}
             </template>
 
             <template #mainContent>
-                <div class="plearnd-card">
+                <div class="plearnd-card mt-4">
                     <h2 class="text-xl font-semibold text-gray-700 dark:text-white mb-2">
                         ข้อมูลการสนับสนุน
                     </h2>
@@ -185,7 +185,7 @@ function handleCancle() { window.location = '/';}
                         </div>
                         <div class="grid grid-cols-1 gap-4 mt-4">
                             <div>
-                                <p class="block text-gray-700 dark:text-white mb-1">จำนวนที่จะแสดงผลสื่อประชาสัมพันธ์สินค้า</p>
+                                <p class="block text-gray-700 dark:text-white mb-1">จำนวนครั้งที่ผู้ใช้สามารถกดรับและแสดงผลสื่อประชาสัมพันธ์สินค้า</p>
                                 <p  class="w-full rounded-lg border border-gray-400 bg-gray-300 text-center py-2 px-3 dark:bg-gray-700 dark:text-white dark:border-none">
                                     <!-- {{ quantityToShowProductMedia }}  (+{{ timeToShowProductMedia }} ) -->
                                     {{ bonus }}

@@ -5,9 +5,9 @@ import { Icon } from '@iconify/vue';
 import Swal from 'sweetalert2';
 
 import MainLayout from '@/Layouts/MainLayout.vue';
-import DonateItemCard from '@/PlearndComponents/widgets/donates/DonateItemCard.vue';
+
 import DonationCard from '@/PlearndComponents/earn/donates/DonationCard.vue';
-import DonationListWidget from '@/PlearndComponents/widgets/DonationListWidget.vue';
+
 import LoadingPage from '@/PlearndComponents/accessories/LoadingPage.vue';
 
 const props = defineProps({
@@ -16,7 +16,7 @@ const props = defineProps({
 
 const isCreateDonatePageLoading = ref(false);
 const isGetDonateLoading = ref(false);
-const isGetDonateSuccess = ref(false);
+
 const timeLeft = ref();
 const donateRecieved = ref(0);
 
@@ -76,7 +76,7 @@ const countdown = () => {
 };  
 
 const handleGetDonateSuccess = () => {
-    // if (donateResponse.value){
+
         if (usePage().props.auth.user) { usePage().props.auth.user.pp += 240 };
 
         props.donates.data[currentIndex.value].remaining_points = donateResponse.value.remaining_points;
@@ -84,10 +84,10 @@ const handleGetDonateSuccess = () => {
         if (props.donates.data[currentIndex.value].remaining_points < 240) {
             props.donates.data.splice(currentIndex.value, 1);
         }
-        // emit('add-new-donate-activity', recieveDonateActivity.value);
+
         recieveDonateActivity.value = null;
         alertGetDonateSuccess();
-    // }
+
 };
 
 const alertGetDonateSuccess = () => {
@@ -115,11 +115,12 @@ const handleLinkToPage = (href) => {
     router.visit(href);
 };
 
+
 </script>
 
 <template>
     <div>
-        <MainLayout title="Newsfeed">
+        <MainLayout title="ทุนสนับสนุนการเรียนรู้">
             <template #coverProfileCard>
                 <div class="hidden md:flex items-center mx-auto mt-2 mb-4 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg">
                     <img class="section-banner-icon " :src="'/storage/images/banner/badges-icon.png'" alt="forums-icon">
@@ -147,12 +148,11 @@ const handleLinkToPage = (href) => {
 
                 <LoadingPage v-if="isCreateDonatePageLoading" />
 
-                <div class="mt-2 md:mt-0 mb-2 bg-white p-2 rounded-lg border-t-4 border-blue-500">
-                    <button class="flex items-center justify-center w-full py-2 my-1 font-medium text-center text-white rounded-md bg-green-400"
+                <div class="mt-2 md:mt-0 mb-4 flex justify-center bg-white p-2 rounded-lg border-t-4 border-blue-500">
+                    <button class="flex items-center justify-center max-w-fit px-4 py-2 my-1 font-medium text-center text-white rounded-md bg-green-400"
                         @click.prevent="handleLinkToPage('/supports/donates/create')">
-                        <!-- <span><img :src="'/storage/images/badge/completedq.png'" alt="completedq-b" class="w-8 h-8"></span> -->
                         <Icon icon="flat-color-icons:donate" class="w-7 h-7" />
-                        <span>ให้การสนับสนุน</span>
+                        <span>ให้การสนับสนุนทุนการเรียนรู้</span>
                     </button>
                 </div>
                 <template v-if="donates.data.length">
@@ -160,8 +160,9 @@ const handleLinkToPage = (href) => {
                         <DonationCard 
                             v-for="(donate, index) in props.donates.data" 
                             :key="index"
-                            :donate 
-                            @getDonateRequest="handleGetDonate(donate.id, index)" 
+                            :donate
+                            :isProcessing="false"
+                            @getDonateRequest="handleGetDonate(donate.id, index)"
                         />
                     </div>
                 </template>  

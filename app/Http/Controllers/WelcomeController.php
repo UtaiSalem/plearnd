@@ -33,7 +33,8 @@ class WelcomeController extends Controller
             'postsCount'        => Post::count(),
             'visitorCounter'    => $visitorCounter,
 
-            'donates'           => DonateResource::collection(Donate::whereNotIn('status',[2])->where('remaining_points', '>=', 270)->latest()->paginate()),
+            'donates'           => DonateResource::collection(Donate::whereNotIn('status',[2])->orderBy('remaining_points', 'DESC')->latest()->paginate(8)),
+            'donateRecipients'  => UserResource::collection(User::whereNotIn('id',[1])->orderBy('pp', 'DESC')->latest()->paginate(12)),    
 
             'ceo'               => new UserResource(User::find(1)),
 

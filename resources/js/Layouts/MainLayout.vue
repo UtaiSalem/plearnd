@@ -18,16 +18,17 @@
     const isOpenSettingMenu = ref(false);
     const isSidebarOpen = ref(false);
     const isLoadingPage = ref(false);
-        
+    const currentColumn = ref(2);
+
     const isDarkMode = ref(false);
 
     const navigation = [
         // { name: 'แผงจัดการ',     href: '/dashboard', },
-        { name: 'กระดานข่าว',        href: '/newsfeed',  icon: 'fluent:feed-24-regular'},
-        // { name: 'แหล่งเรียนรู้',        href: '/academies', icon: 'teenyicons:school-outline'},
-        { name: 'รายวิชา',           href: '/courses',   icon: 'fluent-mdl2:publish-course'},
-        // { name: 'ประชาสัมพันธ์สินค้า',   href: '/supports/advertise', icon: 'solar:card-send-broken'},
-        { name: 'รับทุน', href: '/donates', icon: 'solar:card-send-broken'},
+        // { name: 'แหล่งเรียนรู้',     href: '/academies', icon: 'teenyicons:school-outline'},
+        { name: 'กระดานข่าว',        href: '/newsfeed',              icon: 'fluent:feed-24-regular',},
+        { name: 'รายวิชา',           href: '/courses',               icon: 'fluent-mdl2:publish-course'},
+        { name: 'เก็บแต้ม',          href: '/donates',               icon: 'mdi:hand-coin-outline'},
+        { name: 'เก็บตังค์',            href: '/supports',              icon: 'eos-icons:product-subscriptions-outlined'},
 
     ];
 
@@ -54,6 +55,13 @@
     const logout = () => {
         router.post(route('logout'));
     };
+
+    // set current column value
+    const setCurrentColumn = (column) => {
+        currentColumn.value = column;
+        console.log(currentColumn.value);
+    };
+
 
 </script>
 <template>
@@ -97,8 +105,8 @@
                     <button v-for="navbarMenu in navigation" :key="navbarMenu.name" @click.prevent="handleLinkToPage(navbarMenu.href)"
                         :class="[$page.url.startsWith(navbarMenu.href) ? 'bg-violet-500 text-white' : 'text-gray-300 hover:bg-violet-700 hover:text-white', 'flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium']"
                         :aria-current="navbarMenu.current ? 'page' : undefined">
-                        <Icon :icon="navbarMenu.icon" class="w-6 h-6 mr-2" />
-                        <span class="hidden lg:block">
+                        <Icon :icon="navbarMenu.icon" class="w-5 h-5 " />
+                        <span class="hidden xl:block">
                             {{ navbarMenu.name }}
                         </span>
                     </button>
@@ -184,7 +192,7 @@
                                 </div>
                             </DropdownLink>
 
-                            <DropdownLink :href="route('dashboard')">
+                            <!-- <DropdownLink :href="route('dashboard')">
                                 <div
                                     class="flex items-center p-1 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
                                     <svg class="w-5 h-5 mx-1" viewBox="0 0 24 24" fill="none"
@@ -198,7 +206,7 @@
                                     </svg>
                                     <span class="mx-1"> แผงควบคุม </span>
                                 </div>
-                            </DropdownLink>
+                            </DropdownLink> -->
 
                             <DropdownLink :href="route('newsfeed')">
                                 <div
@@ -224,7 +232,7 @@
                                 </div>
                             </DropdownLink> -->
 
-                            <DropdownLink href="/supports/advertise">
+                            <DropdownLink href="/supports/advertises/create">
                                 <div
                                     class="flex items-center p-1 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
                                     <Icon icon="solar:card-send-broken" class="w-5 h-5 mx-1" />
@@ -232,13 +240,21 @@
                                 </div>
                             </DropdownLink>
 
-                            <DropdownLink href="/supports/loan">
+                            <DropdownLink href="/supports/donates/create">
                                 <div
                                     class="flex items-center p-1 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
                                     <Icon icon="solar:card-send-broken" class="w-5 h-5 mx-1" />
                                     <span class="mx-1">สนับสนุนทุนการศึกษา </span>
                                 </div>
                             </DropdownLink>
+
+                            <!-- <DropdownLink href="/supports/loan">
+                                <div
+                                    class="flex items-center p-1 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                    <Icon icon="solar:card-send-broken" class="w-5 h-5 mx-1" />
+                                    <span class="mx-1">สนับสนุนทุนการศึกษา </span>
+                                </div>
+                            </DropdownLink> -->
 
                             <DropdownLink href="/forgot-password" v-if="$page.props.auth.user.is_plearnd_admin">
                                 <div
@@ -248,8 +264,15 @@
                                 </div>
                             </DropdownLink>
 
-                            <DropdownLink href="/plearnd-admin/supports/donates"
-                                v-if="$page.props.auth.user.is_plearnd_admin">
+                            <DropdownLink href="/plearnd-admin/supports/advertises" v-if="$page.props.auth.user.is_plearnd_admin">
+                                <div
+                                    class="flex items-center p-1 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
+                                    <Icon icon="solar:card-send-broken" class="w-5 h-5 mx-1" />
+                                    <span class="mx-1">อนุมัติโฆษณา </span>
+                                </div>
+                            </DropdownLink>
+
+                            <DropdownLink href="/plearnd-admin/supports/donates" v-if="$page.props.auth.user.is_plearnd_admin">
                                 <div
                                     class="flex items-center p-1 text-sm text-gray-600 capitalize transition-colors duration-300 transform dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
                                     <Icon icon="solar:card-send-broken" class="w-5 h-5 mx-1" />
@@ -298,6 +321,7 @@
         <MobileNavbar 
             :navigation
             @go-to-page="(url)=>handleLinkToPage(url)"
+            @set-current-active-column="(column)=> setCurrentColumn(column)"
         />
 
         <!-- left Sidbar -->

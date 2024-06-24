@@ -11,14 +11,14 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['go-to-page']);
+const emit = defineEmits(['go-to-page', 'set-current-active-column']);
 
 const isLoadingPage = ref(false);
 
 const handleLinkToPage = (href) => {
     // isLoadingPage.value = true;
-    // router.visit(href);
     emit('go-to-page', href);
+    // emit('set-current-active-column', href);
 };
 
 </script>
@@ -44,7 +44,7 @@ const handleLinkToPage = (href) => {
                     <path d="M24 23.95q-3.3 0-5.4-2.1-2.1-2.1-2.1-5.4 0-3.3 2.1-5.4 2.1-2.1 5.4-2.1 3.3 0 5.4 2.1 2.1 2.1 2.1 5.4 0 3.3-2.1 5.4-2.1 2.1-5.4 2.1ZM8 40v-4.7q0-1.9.95-3.25T11.4 30q3.35-1.5 6.425-2.25Q20.9 27 24 27q3.1 0 6.15.775 3.05.775 6.4 2.225 1.55.7 2.5 2.05.95 1.35.95 3.25V40Zm3-3h26v-1.7q0-.8-.475-1.525-.475-.725-1.175-1.075-3.2-1.55-5.85-2.125Q26.85 30 24 30t-5.55.575q-2.7.575-5.85 2.125-.7.35-1.15 1.075Q11 34.5 11 35.3Zm13-16.05q1.95 0 3.225-1.275Q28.5 18.4 28.5 16.45q0-1.95-1.275-3.225Q25.95 11.95 24 11.95q-1.95 0-3.225 1.275Q19.5 14.5 19.5 16.45q0 1.95 1.275 3.225Q22.05 20.95 24 20.95Zm0-4.5ZM24 37Z" />
                 </svg>
             </Link> -->
-            <button v-for="navbarMenu in navigation" :key="navbarMenu.name" @click.prevent="handleLinkToPage(navbarMenu.href)"
+            <button v-for="(navbarMenu, index) in navigation" :key="navbarMenu.name" @click.prevent="handleLinkToPage(navbarMenu.href)"
                 :class="[$page.url.startsWith(navbarMenu.href) ? 'bg-violet-500 text-white' : 'text-gray-300 hover:bg-violet-700 hover:text-white', 'flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium']"
                 :aria-current="navbarMenu.current ? 'page' : undefined">
                 <Icon :icon="navbarMenu.icon" class="w-6 h-6 mr-2" />

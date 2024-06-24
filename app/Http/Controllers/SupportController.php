@@ -2,38 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Donate;
 use App\Models\Support;
+use App\Models\Activity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\DonateResource;
+use App\Http\Resources\SupportResource;
 use Illuminate\Support\Facades\Storage;
 
 class SupportController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Support');
-    }
-
-    public function donate(){
-        return Inertia::render('Support/SupportDonate');
-    }
-    public function storeDonate(Request $request){
-        // dd($request->all());
-        return response()->json([
-            'success' => true,
-            'message' => 'success'
+        return Inertia::render('Support/Advert/Adverts', [
+            'adverts'    => SupportResource::collection(Support::where('status',1)->orderBy('remaining_views', 'DESC')->latest()->paginate()),
+            'donates' => DonateResource::collection(Donate::whereNotIn('status',[2])->orderBy('remaining_points', 'desc')->latest()->paginate()),
         ]);
     }
 
-    public function loan()
+    public function create()
     {
-        return Inertia::render('Support/SupportLoan');
+        $authUser = auth()->user();
+        return Inertia::render('Support/Advert/CreateAdvertise',[
+            'Supporter' => new UserResource($authUser),
+        ]);
     }
-    public function advertise()
+
+    public function advertisesIndex()
     {
-        return Inertia::render('Support/SupportAndAdvert',[
-            'Supporter' => new UserResource(auth()->user()),
+        return Inertia::render('PlearndAdmin/Support/ApproveAdvertise', [
+            'advertises' => SupportResource::collection(Support::latest()->paginate()),
         ]);
     }
 
@@ -62,70 +64,132 @@ class SupportController extends Controller
                 Storage::disk('public')->putFileAs('images/supports/medias', $media_file, $media_filename);
             }
 
-            $newSupport = new Support();
-            $newSupport->user_id = auth()->id();
-            $newSupport->supporter = $validated['supporter'];
-            $newSupport->amounts = $validated['amounts'];
-            $newSupport->duration = $validated['duration'];
-            $newSupport->total_views = $validated['total_views'];
-            $newSupport->remaining_views = $validated['total_views'];
-            $newSupport->transfer_date = $validated['transfer_date'];
-            $newSupport->transfer_time = $validated['transfer_time'];
-            $newSupport->slip = $slip_filename;
-            $newSupport->media_image = $media_filename;
+            $newSupport                     = new Support();
+            $newSupport->user_id            = auth()->id();
+            $newSupport->supporter          = $validated['supporter'];
+            $newSupport->amounts            = $validated['amounts'];
+            $newSupport->duration           = $validated['duration'];
+            $newSupport->total_views        = $validated['total_views'];
+            $newSupport->remaining_views    = $validated['total_views'];
+            $newSupport->transfer_date      = Carbon::parse($request->transfer_date);
+            $newSupport->transfer_time      = $validated['transfer_time'];
+            $newSupport->slip               = $slip_filename;
+            $newSupport->media_image        = $media_filename;
+            $newSupport->status             = 0;
             $newSupport->save();
 
-            return to_route('/');
+            $activity = new Activity();
+            $activity->user_id = $newSupport->user_id;
+            $activity->activity_type = 'createadvertise';
+            $activity->activityable()->associate($newSupport);
+            $activity->save();
+
+            // return to_route('/');
+            return response()->json([
+                'success' => true,
+            ]);
         } catch (\Throwable $th) {
             throw $th;
         }
 
     }
 
-    public function storeLoan(Request $request)
+
+    public function viewAdvertise(Support $advert)
     {
-        $validated = $request->validate([
-            'supporter' => '',
-            'amounts' => 'required',
-            'duration' => 'required',
-            'total_views' => 'required',
-            'transfer_date' => 'required',
-            'transfer_time' => 'required',
-            'slip' => 'required|image|mimes:jpg,jpeg,png,gif,svg|max:2048',
-            'media_image' => 'required|image|mimes:jpg,jpeg,png,gif,svg|max:4096',
-        ]);
+        if($advert->remaining_views < 1){
+            return response()->json([
+                'success' => false,
+                'advert'    => new SupportResource($advert),
+                'message' => 'จำนวนการแสดงโฆษณาครบแล้ว',
+            ], 404);
+        }
 
         try {
-            if($request->file('slip')) {
-                $slip_file = $request->file('slip');
-                $slip_filename =  uniqid().'.'.$slip_file->getClientOriginalExtension();
-                Storage::disk('public')->putFileAs('images/supports/slips', $slip_file, $slip_filename);
-            }
-            if($request->file('media_image')) {
-                $media_file = $request->file('media_image');
-                $media_filename =  uniqid().'.'.$media_file->getClientOriginalExtension();
-                Storage::disk('public')->putFileAs('images/supports/medias', $media_file, $media_filename);
+
+            $authUser = auth()->user();
+
+            $advert->viewers()->attach($authUser->id);
+            $advert->decrement('remaining_views', 1);
+            $authUser->increment('wallet', $advert->duration*0.04);
+            $authUser->decrement('pp', $advert->duration*20);
+
+            $suggesterCode = $authUser->suggester_code ?? 99999999;
+            $suggester = User::where('personal_code', $suggesterCode)->first() ?? User::where('personal_code', 99999999)->first();
+            if($suggester) {
+                $suggester->increment('wallet', $advert->duration*0.05);
             }
 
-            $newSupport = new Support();
-            $newSupport->user_id = auth()->id();
-            $newSupport->supporter = $validated['supporter'];
-            $newSupport->amounts = $validated['amounts'];
-            $newSupport->duration = $validated['duration'];
-            $newSupport->total_views = $validated['total_views'];
-            $newSupport->remaining_views = $validated['total_views'];
-            $newSupport->transfer_date = $validated['transfer_date'];
-            $newSupport->transfer_time = $validated['transfer_time'];
-            $newSupport->slip = $slip_filename;
-            $newSupport->media_image = $media_filename;
-            $newSupport->save();
+            $activity = new Activity();
+            $activity->user_id = $authUser->id;
+            $activity->activity_type = 'viewadvertise';
+            $activity->activityable()->associate($advert->supportViewers()->where('user_id', $authUser->id)->latest()->first());
+            $activity->save();
 
-            return to_route('/');
+            return response()->json([
+                'success'   => true,
+                'advert'    => new SupportResource($advert),
+                'message'   => 'success'
+            ], 200);
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
+            return response()->json([
+                'success' => false,
+                'advert'    => new SupportResource($advert),
+                'message' => $th->getMessage(),
+            ], 500);
         }
 
     }
 
+    public function approveAdvertise(Support $advert)
+    {
+        try {
+            $advert->status = 1;
+            $advert->save();
+
+            // $activity = new Activity();
+            // $activity->user_id = $advert->supporter;
+            // $activity->activity_type = 'approveadvertise';
+            // $activity->activityable()->associate($advert);
+            // $activity->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'success'
+            ], 200);
+        } catch (\Throwable $th) {
+            // throw $th;
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function rejectAdvertise(Support $advert)
+    {
+        try {
+            $advert->status = 2;
+            $advert->save();
+
+            // $activity = new Activity();
+            // $activity->user_id = $advert->supporter;
+            // $activity->activity_type = 'rejectadvertise';
+            // $activity->activityable()->associate($advert);
+            // $activity->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'success'
+            ], 200);
+        } catch (\Throwable $th) {
+            // throw $th;
+            return response()->json([
+                'success' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
 
 }

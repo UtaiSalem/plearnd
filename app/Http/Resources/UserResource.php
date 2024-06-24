@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources;
 
-use App\Models\User;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 // use Multicaret\Acquaintances\Traits\Friendable;
@@ -31,6 +31,7 @@ class UserResource extends JsonResource
             'is_plearnd_admin'          => $this->is_plearnd_admin,
             // 'is_friend_with'            => $this->isFriendWith($this->id),
             'is_friend'                 => $this->isFriendWithAuth($this->id),
+            'friendships_status'        => $this->friendships_status($this->id),
             'profile_picture'           => $this->profile()->profile_picture ?? $this->profile_photo_url,
             'cover_image'               => $this->profile()->cover_image ?? '/storage/images/banner/banner-profile-stats.jpg',
         ];

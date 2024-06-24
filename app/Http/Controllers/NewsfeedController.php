@@ -8,11 +8,13 @@ use Inertia\Inertia;
 // use Illuminate\Http\Request;
 use App\Models\Donate;
 use App\Models\Friend;
+use App\Models\Support;
 use App\Models\Activity;
 use App\Models\AcademyPost;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\DonateResource;
+use App\Http\Resources\SupportResource;
 use App\Http\Resources\ActivityResource;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Resources\FriendshipResource;
@@ -46,7 +48,8 @@ class NewsfeedController extends Controller
             'activities'        => $activities->original['activities'],
             'peopleMayKnow'     => UserResource::collection($peopleMayKnow),
             'pendingFriends'    => FriendshipResource::collection($pendingFriends),
-            'donates'           => DonateResource::collection(Donate::whereNotIn('status',[2])->where('remaining_points', '>=', 270)->latest()->paginate()),
+            'donates'           => DonateResource::collection(Donate::whereNotIn('status',[2])->orderBy('remaining_points', 'DESC')->latest()->paginate(5)),
+            'advertises'        => SupportResource::collection(Support::where('status',1)->orderBy('remaining_views', 'DESC')->latest()->paginate(5)),
         ]);
     }
 
@@ -77,6 +80,7 @@ class NewsfeedController extends Controller
                     'App\Models\AcademyPost', 
                     'App\Models\CoursePost',
                     'App\Models\Donate',
+                    'App\Models\Support',
                     'App\Models\DonateRecipient'
                 ], 
                 function ($query) use ($targetUsersIds) {

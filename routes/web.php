@@ -18,7 +18,6 @@ use App\Http\Controllers\LessonImageController;
 use App\Http\Controllers\MentalMathController;
 use App\Http\Controllers\NewsfeedController;
 use App\Http\Controllers\PostController;
-use App\Http\Controllers\PostCommentController;
 use App\Http\Controllers\PostImageController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\SupportController;
@@ -27,7 +26,6 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\CourseLessonController;
 use App\Http\Controllers\CourseMemberController;
-use App\Http\Controllers\PostReactionController;
 use App\Http\Controllers\AcademyCourseController;
 use App\Http\Controllers\AcademyMemberController;
 use App\Http\Controllers\CourseActivityController;
@@ -47,13 +45,10 @@ use App\Http\Controllers\LessonAssignmentController;
 use App\Http\Controllers\Auth\ProviderAuthController;
 use App\Http\Controllers\CourseGroupMemberController;
 use App\Http\Controllers\CoursePostCommentController;
-use App\Http\Controllers\PostImageReactionController;
 use App\Http\Controllers\CoursePostReactionController;
 use App\Http\Controllers\CourseQuizQuestionController;
 use App\Http\Controllers\UserAnswerQuestionController;
-use App\Http\Controllers\PostCommentReactionController;
 use App\Http\Controllers\CoursePostImageCommentController;
-use App\Http\Controllers\PostImageCommentReactionController;
 use App\Http\Controllers\CoursePostCommentReactionController;
 use App\Http\Controllers\CoursePostImageCommentReactionController;
 
@@ -268,87 +263,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::patch('/attendances/details/{detail}', [AttendanceDetailController::class, 'update'])->name('attendance.details.update');
 });
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
-    Route::get('/courses/{course}/settings', [CourseController::class, 'settings'])->name('course.settings.page.show');
-});
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->prefix('/courses/{course}/posts')->group(function () {
-
-    // Route::get('/', [PostController::class, 'index'])->name('course.posts.index');
-    Route::post('/', [CoursePostController::class, 'store'])->name('course.posts.store');
-    Route::get('/{post}', [CoursePostController::class, 'show'])->name('course.posts.show');
-    Route::get('/{post}/edit', [CoursePostController::class, 'edit'])->name('course.posts.edit');
-    Route::patch('/{post}', [CoursePostController::class, 'update'])->name('course.posts.update');
-    Route::delete('/{post}', [CoursePostController::class, 'destroy'])->name('course.posts.destroy');
-
-    Route::post('/{post}/like', [CoursePostReactionController::class, 'toggleLike'])->name('toggle.like.course_post');
-    Route::post('/{post}/dislike', [CoursePostReactionController::class, 'toggleDislike'])->name('toggle.dislike.course_post');
-    
-    Route::get('/{post}/comments', [CoursePostCommentController::class, 'index'])->name('course.post.comments.index');
-    Route::post('/{post}/comments', [CoursePostCommentController::class, 'store'])->name('course.post.comments.store');
-    Route::delete('/{post}/comments/{comment}', [CoursePostCommentController::class, 'destroy'])->name('course.post.comments.destroy');
-
-    Route::post('/{post}/images/{image}/like', [CoursePostImageController::class, 'toggleLike'])->name('course.post.images.toggle-like');
-    Route::post('/{post}/images/{image}/dislike', [CoursePostImageController::class, 'toggleDislike'])->name('course.post.images.toggle-dislike');
-    
-    Route::get('/{post}/images/{image}/comments', [CoursePostImageCommentController::class, 'index'])->name('course.post.images.comment.index');
-    Route::post('/{post}/images/{image}/comments', [CoursePostImageCommentController::class, 'store'])->name('course.post.images.comment.store');
-    Route::delete('/{post}/images/{image}/comments/{comment}', [CoursePostImageCommentController::class, 'destroy'])->name('course.post.images.comment.destroy');
-    Route::put('/{post}/images/{image}/comments/{comment}', [CoursePostImageCommentController::class, 'update'])->name('course.post.images.comment.update');
-    
-    Route::post('/{post}/images/{image}/comments/{comment}/like', [CoursePostImageCommentReactionController::class, 'toggleLike'])->name('course.post.images.comment.toggle-like');
-    Route::post('/{post}/images/{image}/comments/{comment}/dislike', [CoursePostImageCommentReactionController::class, 'toggleDislike'])->name('course.post.images.comment.toggle-dislike');
-
-    // Route::get('/{post}/images', [PostImageController::class, 'index'])->name('course.post.images.index');
-    // Route::post('/{post}/images', [PostImageController::class, 'store'])->name('course.post.images.store');
-    // Route::delete('/{post}/images/{image}', [PostImageController::class, 'destroy'])->name('course.post.images.destroy');
-    // Route::post('/{post}/images/{image}/set-as-cover', [PostImageController::class, 'setAsCover'])->name('course.post.images.setAsCover');
-    
-    // Route::post('/postimage/{post_image}/comments', [PostImageController::class, 'storeComment'])->name('course.post.image.comments.store');
-
-    
-});
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
-    Route::post('/courses/posts/comments/{comment}/like', [CoursePostCommentReactionController::class, 'toggleLikeComment'])->name('toggle.like.course_post_comment');
-    Route::post('/courses/posts/comments/{comment}/dislike', [CoursePostCommentReactionController::class, 'toggleDislikeComment'])->name('toggle.dislike.course_post_comment');
-    
-    Route::post('/courses/posts/images/comments/{comment}/like', [CoursePostImageCommentReactionController::class, 'toggleLikeComment'])->name('toggle.like.course_post_image_comment');
-    Route::post('/courses/posts/images/comments/{comment}/dislike', [CoursePostImageCommentReactionController::class, 'toggleDislikeComment'])->name('toggle.dislike.course_post_image_comment');
-});
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
-    Route::resource('/posts', PostController::class);
-    Route::get('/posts/{post}/getPostActivity', [PostController::class, 'getPostActivity'])->name('post.activity');
-
-    Route::post('/posts/{post}/like', [PostReactionController::class, 'toggleLikePost'])->name('toggle.like.post');
-    Route::post('/posts/{post}/dislike', [PostReactionController::class, 'toggleDislikePost'])->name('toggle.dislike.post');
-    
-    Route::get('/posts/{post}/comments', [PostCommentController::class, 'index'])->name('post.comments.index');
-    Route::post('/posts/{post}/comments', [PostCommentController::class, 'store'])->name('post.comments.store');
-    Route::delete('/posts/{post}/comments/{comment}', [PostCommentController::class, 'destroy'])->name('post.comments.destroy');
-
-    Route::post('/post_comments/{post_comment}/like', [PostCommentReactionController::class, 'toggleLikePostComment'])->name('toggle.like.post.comment');
-    Route::post('/post_comments/{post_comment}/dislike', [PostCommentReactionController::class, 'toggleDislikePostComment'])->name('toggle.dislike.post.comment');
-
-    // Route::resource('/posts/{post}/images', PostImageController::class)->name('post.images');
-    Route::get('/posts/{post}/images', [PostImageController::class, 'index'])->name('post.images.index');
-    Route::post('/posts/{post}/images', [PostImageController::class, 'store'])->name('post.images.store');
-    Route::delete('/posts/{post}/images/{image}', [PostImageController::class, 'destroy'])->name('post.images.destroy');
-    // Route::post('/posts/{post}/images/{image}/set-as-cover', [PostImageController::class, 'setAsCover'])->name('post.images.setAsCover');
-    
-    Route::post('/postimage/{post_image}/comments', [PostImageController::class, 'storeComment'])->name('post.image.comments.store');
-    Route::get('/postimage/{post_image}/comments', [PostImageController::class, 'getComments'])->name('post.image.comments.getComments');
-
-    Route::post('/post_images/{post_image}/like', [PostImageReactionController::class, 'toggleLikePostImage'])->name('toggle.like.post.image');
-    Route::post('/post_images/{post_image}/dislike', [PostImageReactionController::class, 'toggleDislikePostImage'])->name('toggle.dislike.post.image');
-
-    // Route::delete('/postimage/{post_image}/comments/{comment_id}', [PostImageController::class, 'destroyComment'])->name('post.image.comments.destroy');
-    Route::delete('/post_image_comments/{post_image_comment}', [PostImageController::class, 'destroyComment'])->name('post.image.comments.destroy');
-
-    Route::post('/post_image_comments/{post_image_comment}/like', [PostImageCommentReactionController::class, 'toggleLikePostImageComment'])->name('toggle.like.post.image.comment');
-    Route::post('/post_image_comments/{post_image_comment}/dislike', [PostImageCommentReactionController::class, 'toggleDislikePostImageComment'])->name('toggle.dislike.post.image.comment');
-
-});
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
     Route::get('/forgot-password', [ForgotPasswordController::class, 'index'])->name('forgot-pasword');
@@ -356,16 +270,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::post('/forgot-password/reset/{user}', [ForgotPasswordController::class, 'resetPassword'])->name('forgot-pasword.reset');
     Route::post('/forgot-password/exchange/{user}', [ForgotPasswordController::class, 'exchangeMoney'])->name('forgot-pasword.exchange');
     Route::delete('/forgot-password/users/{user}', [ForgotPasswordController::class, 'destroy']);
-});
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
-    // Route::resource('supports', SupportController::class);
-    Route::get('/supports/loan', [SupportController::class, 'loan'])->name('support.loan');
-    Route::post('/supports/loan', [SupportController::class, 'storeLoan'])->name('support.store.loan');
-    
-    Route::get('/supports/advertise', [SupportController::class, 'advertise'])->name('support.advert');
-    Route::post('/supports/advertise', [SupportController::class, 'storeAdvertise'])->name('support.store.advertise');
-        
 });
 
 
@@ -382,4 +286,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 Route::get('/mental-math', [MentalMathController::class, 'index'])->name('mental-math');
 
 
-require __DIR__ . '/donates/donate.php';
+require __DIR__ . '/earn/donate.php';
+require __DIR__ . '/earn/advert.php';
+require __DIR__ . '/play/post.php';
+require __DIR__ . '/learn/course.php';

@@ -163,18 +163,21 @@
     
         <div class="mx-4">
             <div class="flex items-center justify-between max-w-7xl mx-auto mt-2 mb-4 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg overflow-hidden">
-                <div class="flex items-center">
-                <img class="" :src="'/storage/images/banner/badges-icon.png'" alt="forums-icon" />
-                    <Link href="/" class="text-4xl font-bold text-white underline flex items-center">
-                        <Icon icon="heroicons-solid:home" class="" /> สนับสนุน เว็บไซต์ เพลินด์
+                <div class="hidden md:flex items-center">
+                    <img class="" :src="'/storage/images/banner/badges-icon.png'" alt="forums-icon" />
+                    <Link href="/" class="text-xl font-bold text-white underline flex items-center">
+                        <!-- <Icon icon="heroicons-solid:home" class="" />  -->
+                        สนับสนุน เว็บไซต์ เพลินด์
                     </Link>
                 </div>
-
-                <Link href="/" class="text-4xl font-bold text-white mx-2 underline flex items-center"><Icon icon="heroicons-solid:home" />Home</Link>
+                <div class="flex">
+                    <Link href="/" class="text-xl font-bold text-white mx-2 underline flex items-center"><Icon icon="heroicons-solid:home" />Home</Link>
+                    <Link href="/newsfeed" class="text-xl font-bold text-white mx-2 underline flex items-center"><Icon icon="heroicons:newspaper-solid" />กระดานข่าว</Link>
+                </div>
             </div>
         </div>
 
-        <div class="flex flex-row items-center justify-center">
+        <div class="flex flex-row items-center justify-center mb-4">
             <div class="max-w-xl plearnd-card">
                 <h2 class="mb-2 text-xl font-semibold text-gray-700 dark:text-white">
                     เพลินด์ขอขอบคุณผู้ให้การสนับสนุนทุกท่าน
@@ -195,7 +198,7 @@
                 </div>
 
                 <form id="create-new-academy-form" @submit.prevent="submitForm" class="flex flex-col justify-center" enctype="multipart/form-data">
-                    <div class="grid grid-cols-1 gap-4 mt-4">
+                    <div class="grid grid-cols-1 gap-4 mt-4 ">
                         <div class="mb-2" v-if="!refDonor">
                             <label for="personal_code" class="block mb-2 font-medium text-gray-700">รหัสประจำตัวสมาชิก (ถ้ามี) </label>
                             <input type="text" id="personal_code" name="personal_code" v-model="personalCode" @input="handlePersonalcodeInput"
@@ -214,23 +217,27 @@
                                 </div>
                             </div>
                         </div>
+
                         <figure v-if="refDonor && !isLoadingDonor" class="relative flex p-2 mb-4 bg-gray-300 rounded-md">
 
-                            <button @click.prevent="handleEmptyDonor" class="absolute top-0 right-0 p-1 m-2 bg-white rounded-full">
-                                <Icon icon="heroicons-outline:trash" class="w-6 h-6 text-red-500" />
+                            <button @click.prevent="handleEmptyDonor" class="absolute top-0 right-0 p-1 m-2 bg-white rounded-full opacity-60">
+                                <Icon icon="heroicons-outline:trash" class="w-5 h-5 text-red-500" />
                             </button>
 
                             <div class="flex-shrink-0">
-                                <img class="w-16 h-16 rounded-full" :src="refDonor.profile_photo_url"
-                                    :alt="refDonor.name + 'photo'">
+                                <img class="w-16 h-16 rounded-full" :src="refDonor.profile_photo_url" :alt="refDonor.name + 'photo'">
                             </div>
-                            <div class="w-full ps-3">
-                                <div class="mb-1 space-x-2 text-sm text-gray-700 dark:text-gray-400">
+
+                            <div class="ps-3 ">
+                                <div class="mb-1 md:space-x-2 text-sm text-gray-700 dark:text-gray-400 flex flex-col md:flex-row md:items-center">
                                     <span class="text-2xl font-bold">{{ refDonor.name }}</span>
-                                    <span class="mx-4">รหัสประจำตัว</span>
+                                    <span class="">รหัสประจำตัว</span>
                                     <span class="font-semibold">{{ refDonor.personal_code }}</span>
                                 </div>
-                                <div class="text-base text-blue-600 dark:text-blue-500">{{ refDonor.referal_link }}</div>
+
+                                <Link :href="refDonor.referal_link" class="text-base text-white bg-teal-500 py-1 px-4 rounded-lg">
+                                    สมัครต่อ
+                                </Link>
                             </div>
                         </figure>
                         
@@ -287,21 +294,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div class="grid grid-cols-1 mt-4">
                         <p class="block mb-1 text-gray-700 dark:text-white">
                             วัน/เวลา ที่ทำรายการ
                         </p>
                     </div>
-                    <div class="grid grid-cols-1 gap-4">
+                    <div class="grid grid-cols-1 gap-2">
                         <div class="flex flex-wrap -mx-3">
                             <div class="w-full px-3 sm:w-1/2">
                                 <div class="">
-                                    <VueDatePicker v-model="transferDate" :format="'dd-MM-yyyy'"
-                                        :enable-time-picker="false"></VueDatePicker>
+                                    <VueDatePicker v-model="transferDate" :format="'dd-MM-yyyy'" :enable-time-picker="false" />
                                 </div>
                             </div>
                             <div class="w-full px-3 sm:w-1/2">
-                                <div class="">
+                                <div class="mt-2 sm:mt-0">
                                     <VueDatePicker v-model="transferTime" format="HH:mm" :calendar-button="false" time-picker required />
                                 </div>
                             </div>

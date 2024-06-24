@@ -19,6 +19,7 @@ const props = defineProps({
     visitorCounter: Number,
 
     donates: Object,
+    donateRecipients: Object,
     meta: Object,
 
 });
@@ -265,35 +266,36 @@ const handleGetDonate = async (donateId, idx) => {
                 <h1 class="text-2xl font-semibold text-gray-700 sm:text-3xl title-font">ผู้ให้การสนับสนุนทุนการเรียนรู้</h1>
             </div>
             <div class="flex flex-wrap ">
-                <div class="grid grid-cols-1 gap-4 p-4 mx-auto sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+                <div class="grid grid-cols-1 gap-4 p-4 mx-auto sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4">
                     <div v-for="(donate, index) in props.donates.data" :key="index" 
                         class="bg-white border rounded-lg hover:shadow-indigo-300 hover:shadow-md bg-indigo-50/30">
 
-                        <div class="p-1 rounded-t-lg bg-sky-400"></div>
-                        <div class="flex flex-col justify-between h-full p-4 rounded">
-                            <figure class="flex items-center p-2 mb-4 bg-gray-300 rounded-md">
+                        <!-- <div class="p-1 rounded-t-lg bg-sky-400"></div> -->
+                        <div class="flex flex-col justify-between h-full p-4 rounded border-t-4 border-sky-400">
+                            <figure class="flex items-center p-2 mb-2 bg-gray-300 rounded-md">
                                 <div class="flex-shrink-0">
                                     <img class="w-16 h-16 rounded-full" :src="donate.donor ? donate.donor.avatar : '/storage/plearnd-logo.png'"
                                         :alt="donate.donor ? donate.donor.name + 'photo': 'donor-image'">
                                 </div>
                                 <div class="w-full ps-3">
                                     <div class="flex flex-col mb-1 text-sm text-gray-700 dark:text-gray-400">
-                                        <span class="text-2xl font-bold text-blue-500">{{ donate.donor ? donate.donor.name : 'ไม่ระบุนาม' }}</span>
+                                        <span class="text-lg font-bold text-blue-500">{{ donate.donor ? donate.donor.name : 'ไม่ระบุนาม' }}</span>
                                         <span class="font-semibold">{{ donate.donor ? donate.donor.personal_code :'' }}</span>
                                     </div>
                                     <!-- <div class="text-base text-blue-600 dark:text-blue-500">{{ donate.donor ? donate.donor.referal_link:'' }}</div> -->
                                     <Link v-if="donate.donor && donate.donor.no_of_ref < 5" :href="donate.donor.referal_link" class="px-3 py-1 text-sm text-white bg-teal-400 rounded-md center font-base" >สมัครต่อ</Link>
                                 </div>
                             </figure>
-                            <div>
-                                <p class="py-1 text-sm">ให้การสนับสนุน</p>
-                                <p class="w-full pt-2 text-4xl font-bold tracking-tight text-blue-500">
-                                    <span>
+                            <div class="grid mx-auto">
+                                <p class="pb-1 text-sm">ให้การสนับสนุน</p>
+                                <p class="w-full pt-2 text-4xl font-bold tracking-tight ">
+                                    <!-- <span>
                                     {{ donate.amounts }}
-                                    </span>
-                                    <div class="w-full flex justify-end space-x-1">
-                                        <span class="text-[24px] text-yellow-600">{{ donate.remaining_points }}</span>
-                                        <span class="text-[14px]"> points</span>
+                                    </span> -->
+                                    <div class="w-full flex justify-center ">
+                                        <span class="text-[28px] text-yellow-400">{{ donate.total_points.toLocaleString() }}/</span>
+                                        <span class="text-[16px] text-yellow-400 mt-1"><span class="text-[14px] text-blue-500 mt-1 ml-1">คงเหลือ </span>{{ donate.remaining_points }}</span>
+                                        <span class="text-[14px] mt-1 ml-1"> แต้ม</span>
                                     </div>
                                 </p>
                                 <!-- <div class="flex flex-col gap-2 pt-3">
@@ -325,6 +327,31 @@ const handleGetDonate = async (donateId, idx) => {
         </div>
     </section>
 
+    <section class="text-gray-700 border-t bg-slate-200 body-font sm:px-4">
+        <div class="container px-5 py-10 mx-auto">
+            <div class="flex flex-col w-full mb-4 text-center">
+                <!-- <h2 class="mb-1 text-xs font-medium tracking-widest text-indigo-500 title-font">ROOF PARTY POLAROID</h2> -->
+                <h1 class="text-2xl font-semibold text-gray-700 sm:text-3xl title-font">ผู้ได้รับการสนับสนุนทุนการเรียนรู้</h1>
+            </div>
+        </div>
+        <div class="pb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div v-for="(recipient, index) in donateRecipients.data" :key="index">
+                <div class="p-2 max-w-md mx-auto bg-white rounded-lg shadow-lg space-y-2 sm:py-4 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <img class="block mx-auto h-16 rounded-full sm:mx-0 sm:shrink-0" :src="recipient.avatar" alt="recipient-image">
+                        <div class="">
+                            <div class="mb-2">
+                                <p class="text-sm text-gray-700 font-semibold">{{ recipient.name }}</p>
+                            </div>
+                            <!-- <button class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Message</button> -->
+                            <Link v-if="recipient.no_of_ref < 5" :href="recipient.referal_link" class="px-3 py-1 text-sm text-white bg-teal-400 rounded-md center font-base" >สมัครต่อ</Link>
+                        </div>
+                    </div>
+                    <span class="text-green-500 font-semibold">{{ recipient.points }} แต้ม</span>
+                </div>
+            </div>
+        </div>
+    </section>
     <!-- <section class="w-full px-4 mx-auto bg-blue-100 max-w-container sm:px-6 lg:px-8">
         <div class="container px-5 py-10 mx-auto">
             <div class="flex flex-col w-full mb-10 text-center">

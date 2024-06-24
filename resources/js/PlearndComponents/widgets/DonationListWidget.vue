@@ -14,7 +14,7 @@ const emit = defineEmits(['add-new-donate-activity', 'go-to-create-donate']);
 
 const isCreateDonatePageLoading = ref(false);
 const isGetDonateLoading = ref(false);
-const isGetDonateSuccess = ref(false);
+
 const timeLeft = ref();
 const donateRecieved = ref(0);
 
@@ -33,6 +33,11 @@ const handleLinkToCreateDonate = () => {
 };
 
 const handleGetDonate = (donateId, idx) => {
+    if (isGetDonateLoading.value) {
+        alertGetDonateError();
+        return;
+    }
+    
     isGetDonateLoading.value = true;
     timeLeft.value = 5000;
     donateRecieved.value = 0;
@@ -58,6 +63,7 @@ const getDonate = async (id) => {
             recieveDonateActivity.value = getDonateResponse.data.activity;            
         }
         else{
+            donateResponse.value = getDonateResponse.data.donate;
             alertGetDonateError();
         }
     } catch (error) {
@@ -87,6 +93,7 @@ const handleGetDonateSuccess = () => {
         if (props.donates.data[currentIndex.value].remaining_points < 240) {
             props.donates.data.splice(currentIndex.value, 1);
         }
+
         emit('add-new-donate-activity', recieveDonateActivity.value);
         recieveDonateActivity.value = null;
         alertGetDonateSuccess();
@@ -116,7 +123,7 @@ const alertGetDonateError = () => {
 </script>
 <template>
     <div class="bg-white p-1 rounded-lg shadow-lg border-t-4 border-blue-500">
-        <p class="text-lg font-bold mb-2 p-2">รายการทุนสนับสนุนการเรียนรู้</p>
+        <p class="text-sm md:text-md font-bold mb-2 p-2">รายการทุนสนับสนุนการเรียนรู้</p>
         <hr class="mb-2">
         <div v-for="(donate, index) in props.donates.data" :key="index"
             class="border mb-2 rounded-lg hover:shadow-indigo-300 hover:shadow-md bg-indigo-50/30">
@@ -126,11 +133,12 @@ const alertGetDonateError = () => {
                 @getDonateRequest="handleGetDonate(donate.id, index)" 
             />
         </div>
+        
         <hr class="my-2">
 
-        <button class="flex items-center justify-center w-full py-2 my-1 font-medium text-center text-white rounded-md bg-green-500"
+        <button class="flex items-center justify-center w-full py-2 my-1 font-medium text-center text-white rounded-md bg-teal-500"
             @click.prevent="emit('go-to-create-donate')">
-            <Icon icon="flat-color-icons:donate" class="w-7 h-7" />
+            <Icon icon="flat-color-icons:donate" class="w-6 h-6" />
             <span>ให้การสนับสนุน</span>
         </button>
 

@@ -1,5 +1,6 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     donate: Object,
@@ -7,12 +8,13 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['getDonateRequest']);
+const isLoggedin = ref(usePage().props.auth.user);
 
 </script>
 
 <template>
   
-    <div class="flex flex-col justify-between h-full p-2 rounded">
+    <div class="flex flex-col justify-between h-full p-2 rounded ">
         <figure class="flex items-center p-2 mb-4 bg-gray-300 rounded-md">
             <div class="flex-shrink-0">
                 <img class="w-10 h-10 rounded-full"
@@ -32,14 +34,15 @@ const emit = defineEmits(['getDonateRequest']);
             </div>
         </figure>
         <div>
-            <!-- <p class="py-1 text-sm">ให้การสนับสนุน</p> -->
-            <p class="w-full text-base font-bold tracking-tight text-blue-500">
-                <span>
+            <p class="text-sm">ให้การสนับสนุน</p>
+            <p class="w-full flex justify-center text-base font-bold tracking-tight text-blue-500 p-2 rounded-lg">
+                <!-- <span>
                     {{ donate.amounts }} บาท
-                </span>
-                <div class="w-full flex justify-end space-x-1">
-                    <span class="text-[16px] text-yellow-600">{{ donate.remaining_points }}</span>
-                    <span class="text-[10px]"> points</span>
+                </span>    -->
+                <div class="">
+                    <span class="text-[28px] text-yellow-400">{{ donate.total_points.toLocaleString() }}/</span>
+                    <span class="text-[16px] text-yellow-400 mt-1"><span class="text-[14px] text-blue-500 mt-1 ml-1">คงเหลือ </span>{{ donate.remaining_points }}</span>
+                    <span class="text-[14px] mt-1 ml-1"> แต้ม</span>
                 </div>
             </p>
             <div class="flex flex-col gap-2 ">
@@ -47,7 +50,7 @@ const emit = defineEmits(['getDonateRequest']);
                     class="w-full py-2 mt-3 font-medium text-center text-white bg-orange-400 rounded-md">
                     รออนุมัต
                 </button>
-                <button v-if="donate.status === 1 && $page.props.auth.user && donate.remaining_points>0" :disabled="isProcessing"
+                <button v-if="isLoggedin && donate.status === 1 && parseInt(donate.remaining_points)>0" :disabled="isProcessing"
                     class="w-full py-2 mt-3 font-medium text-center text-white rounded-md bg-sky-400"
                     @click.prevent="emit('getDonateRequest')">
                     รับการสนับสนุน

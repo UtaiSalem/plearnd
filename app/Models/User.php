@@ -12,28 +12,29 @@ use App\Models\Support;
 use App\Models\Activity;
 
 use App\Models\CourseQuiz;
+use App\Models\Friendship;
 use App\Models\CourseGroup;
 use App\Models\PostComment;
 use App\Models\UserProfile;
 use Illuminate\Support\Str;
 use App\Models\PlearndAdmin;
-use App\Models\AcademyMember;
 // use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use App\Models\AcademyMember;
 use App\Models\AssignmentAnswer;
 use App\Models\CourseQuizResult;
 use App\Models\CourseGroupMember;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\UserAnswerQuestion;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Jetstream\HasProfilePhoto;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Multicaret\Acquaintances\Models\Friendship;
 use Multicaret\Acquaintances\Traits\Friendable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -249,6 +250,12 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         return $this->hasMany(Support::class);
     }
 
+    public function supportViewers(): HasMany
+    {
+        return $this->hasMany(SupportViewer::class);
+    }
+
+
     public function canAccessPanel(Panel $panel): bool
     {
         // return $this->email === 'aplearnd@gmail.com' && $this->hasVerifiedEmail();
@@ -316,4 +323,60 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     {
         return $this->morphToMany(Friendship::class, 'recipientable');
     }
+
+    // public function friendships_status($userId)
+    // {
+    //     return Friendship::where(function ($query) use ($userId) {
+    //                             $query->where('sender_id', $this->id)
+    //                                 ->where('recipient_id', $userId);
+    //                     })->orWhere(function ($query) use ($userId) {
+    //                             $query->where('sender_id', $userId)
+    //                                 ->where('recipient_id', $this->id);
+    //                     })->pluck('status')->first();
+    // }
+
+    public function friendships_status($friendId)
+    {
+        //$authUser = auth()->user();
+        // $friend = User::find($friendId);
+        //$friend = User::where('id', $friendId)->first();
+        
+        // if ($friend) { 
+        //     if ($authUser->isFriendWith($friend)) {
+        //         return 1; 
+                //accepted
+            // } elseif ($authUser->hasSentFriendRequestTo($friend)) {
+            //     return 0; 
+                //pending
+            // } else {
+            //     return null; 
+                //not friend
+        //     }
+            
+        // }else {
+        //     return null;
+        // }
+        if(Auth::check()){
+            $authUser = auth()->user();
+            $friend = User::find($friendId);
+            if ($friend) { 
+                if ($authUser->isFriendWith($friend)) {
+                    return 1; 
+                    //accepted
+                } elseif ($authUser->hasSentFriendRequestTo($friend)) {
+                    return 0; 
+                    //pending
+                } else {
+                    return null; 
+                    //not friend
+                }
+            }else {
+                return null;
+            }
+        }else {
+            return null;
+        }
+
+    }
+
 }

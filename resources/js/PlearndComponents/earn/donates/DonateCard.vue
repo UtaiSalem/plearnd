@@ -1,6 +1,6 @@
 <script setup>
+import { ref } from 'vue';
 import Swal from 'sweetalert2';
-import { computed, ref } from 'vue';
 
 const props = defineProps({
   donate: {

@@ -14,6 +14,7 @@ import ActivitiesLoadingSkeleton from '@/PlearndComponents/accessories/Academies
 import PeopleYouMayKnowWidget from '@/PlearndComponents/widgets/PeopleYouMayKnowWidget.vue';
 import PendingFriendsWidget from '@/PlearndComponents/widgets/friends/PendingFriendsWidget.vue';
 import DonationListWidget from '@/PlearndComponents/widgets/DonationListWidget.vue';
+import AdvertiseListWidget from '@/PlearndComponents/widgets/AdvertiseListWidget.vue';
 import DonationsViewer from '@/PlearndComponents/earn/donates/DonationsViewer.vue';
 import DonateRecipientViewer from '@/PlearndComponents/earn/donates/DonateRecipientViewer.vue';
 import LoadingPage from '@/PlearndComponents/accessories/LoadingPage.vue';
@@ -23,7 +24,8 @@ const props = defineProps({
     activities: Object,
     peopleMayKnow: Object,
     pendingFriends: Object,
-    donates: Object,    
+    donates: Object,  
+    advertises: Object,  
 });
 
 const isLoadingActivities = ref(false);
@@ -75,7 +77,7 @@ const handleLinkToPage = (href) => {
             <template #coverProfileCard>
                 <div class="hidden md:flex items-center mx-auto mt-2 mb-4 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg">
                     <img class="section-banner-icon " :src="'/storage/images/banner/forums-icon.png'" alt="forums-icon">
-                    <p class="text-white font-bold text-4xl">กระดานข่าว</p>
+                    <p class="text-white font-bold text-xl">กระดานข่าว</p>
                 </div>
                 <!-- <div class="">
                     <MobileNavbar />
@@ -84,11 +86,17 @@ const handleLinkToPage = (href) => {
 
             <template #leftSideWidget>
                 <!-- Donation List -->
+
+                <AdvertiseListWidget v-if="props.advertises.data.length" :advertises />
+                
+                <hr v-if="props.advertises.data.length" class="my-2 border-t-1 border-gray-400"/>
+
                 <DonationListWidget v-if="donates.data.length"
                     :donates
                     @add-new-donate-activity="(newActivity)=> newsfeedActivities.value.unshift(newActivity)"
                     @go-to-create-donate="handleLinkToPage('/supports/donates/create')"
                 />
+
             </template>
 
             <template #rightSideWidget >

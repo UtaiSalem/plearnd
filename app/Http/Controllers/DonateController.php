@@ -6,6 +6,7 @@ use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Donate;
 use App\Models\Activity;
+use App\Models\Friendship;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -165,6 +166,13 @@ class DonateController extends Controller
     //get donate
     public function getDonate(Donate $donate)
     {
+        if($donate->remaining_points < 270){
+            return response()->json([
+                'success' => false,
+                'donate' => $donate,
+                'message' => 'การสนับสนุนนี้หมดแล้ว',
+            ]);
+        }
         try {
             if($donate->remaining_points > 269){
                 $authUser = auth()->user();
@@ -201,6 +209,7 @@ class DonateController extends Controller
             }else {
                 return response()->json([
                     'success' => false,
+                    'donate' => $donate,
                     'message' => 'การสนับสนุนนี้หมดแล้ว',
                 ]);
             }

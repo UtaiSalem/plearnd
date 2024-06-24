@@ -8,6 +8,7 @@ use App\Http\Resources\PollResource;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\DonateResource;
+use App\Http\Resources\SupportResource;
 use App\Http\Resources\AcademyPostResource;
 use App\Http\Resources\DonateRecipientResource;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -48,6 +49,9 @@ class ActivityResource extends JsonResource
         }
         elseif ($type === 'Donate') {
             return new DonateResource($model);
+        }  
+        elseif ($type === 'Support') {
+            return new SupportResource($model);
         }  
         elseif ($type === 'DonateRecipient') {
             return new DonateRecipientResource($model);

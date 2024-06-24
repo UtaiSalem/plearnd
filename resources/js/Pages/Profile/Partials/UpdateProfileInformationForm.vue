@@ -25,6 +25,7 @@ const photoPreview = ref(null);
 const photoInput = ref(null);
 
 const updateProfileInformation = () => {
+    // console.log('form submitted');
     if (photoInput.value) {
         form.photo = photoInput.value.files[0];
     }
@@ -177,44 +178,47 @@ const clearPhotoFileInput = () => {
             </div>
 
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="referal_link" value="Referal Link / ลิงค์อ้างอิง" />
+                <p class="text-sm font-semibold text-gray-600">Referal Link / ลิงค์อ้างอิง</p>
+                <!-- <InputLabel for="referal_link" value="Referal Link / ลิงค์อ้างอิง" />
                 <TextInput
                     id="referal_link"
                     type="text"
                     class="hidden"
                     required
-                    autocomplete="name"
-                />
+                    autocomplete="referal_link"
+                /> -->
                 <p>
-                    <a :href="$page.props.auth.user.referal_link" target="_blank" class="hover:underline">
+                    <a :href="$page.props.auth.user.referal_link" target="_blank" class="hover:underline text-blue-600">
                     {{ $page.props.auth.user.referal_link }}
                     </a>
                 </p>
             </div>
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="personal_code" value="Personal code / รหัสประจำตัวสมาชิก" />
+                <!-- <InputLabel for="personal_code" value="Personal code / รหัสประจำตัวสมาชิก" />
                 <TextInput
                     id="personal_code"
                     type="text"
                     class="hidden"
                     required
                     autocomplete="name"
-                />
-                <p class="text-blue-600 text-[48px] font-bold">
+                /> -->
+                <p class="text-sm font-semibold text-gray-600">Personal code / รหัสประจำตัวสมาชิก</p>
+                <p class="text-blue-600 text-[32px] font-bold">
                     {{ $page.props.auth.user.personal_code }}
                 </p>
             </div>
             
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="member-level" value="Level/ระดับ" />
+                <!-- <InputLabel for="member-level" value="จำนวนผู้อ้างอิง" />
                 <TextInput
                     id="member-level"
                     type="text"
                     class="hidden"
                     required
                     autocomplete="name"
-                />
-                <p class="text-blue-600 text-[48px] font-bold">
+                /> -->
+                <p class="text-sm font-semibold text-gray-600">จำนวนผู้อ้างอิง</p>
+                <p class="text-blue-600 text-[32px] font-bold">
                     {{ $page.props.auth.user.no_of_ref }}
                 </p>
             </div>
