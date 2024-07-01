@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { usePage, router } from '@inertiajs/vue3';
 import DotsDropdownMenu from '@/PlearndComponents/accessories/DotsDropdownMenu.vue';
 import { Icon } from '@iconify/vue';
@@ -43,10 +43,12 @@ const form = ref({
 
 
 async function handleGroupMemberRequest(){
+    // console.log(`/courses/${usePage().props.course.data.id}/groups/${props.group.id}/members`);
     try {   
         isLoading.value = true;
-        // emit('request-tobe-group-member');
+
         let memberResp = await axios.post(`/courses/${usePage().props.course.data.id}/groups/${props.group.id}/members`);
+
         if (memberResp.data.success) {
 
             usePage().props.courseMemberOfAuth  =memberResp.data.courseMemberOfAuth;
@@ -66,7 +68,6 @@ async function handleGroupMemberRequest(){
         console.log(error);
         isLoading.value = false;
     }
-
 }
 
 
@@ -80,7 +81,8 @@ async function handleUnmemberGroupRequest(){
             usePage().props.courseMemberOfAuth          = unmemberGroupResp.data.courseMember;
             usePage().props.course.data.status          = unmemberGroupResp.data.courseMember.status;
             usePage().props.course.data.member_status   = unmemberGroupResp.data.courseMember.member_status;
-            usePage().props.groups.data[indx].members   = unmemberGroupResp.data.group.members;
+            usePage().props.groups.data[props.group_index].members   = unmemberGroupResp.data.group.members;
+
             unmemberGroupResp.data.courseMember.course_member_status == 1 ? usePage().props.course.data.isMember=true : usePage().props.course.data.isMember=false;
             
             Swal.fire(
@@ -202,7 +204,7 @@ async function handleFormSubmit(){
                     </button>                       
                 </div> -->
             </div>
-            <button v-else-if="props.courseMemberOfAuth.group_member_status===0 && props.courseMemberOfAuth.group_id === props.group.id" :disabled="isLoading"
+            <button v-else-if="props.courseMemberOfAuth && props.courseMemberOfAuth.group_member_status===0 && props.courseMemberOfAuth.group_id === props.group.id" :disabled="isLoading"
                 class="block mx-auto rounded-full bg-yellow-500 hover:shadow-lg font-base text-white px-4 py-2">
                 รอการตอบรับ
             </button>
