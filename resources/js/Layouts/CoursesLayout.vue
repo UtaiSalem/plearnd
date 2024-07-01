@@ -95,6 +95,7 @@ const handleLoadingPage = (option) => {
                     </div>
                 </div>
             </template>
+            
             <template #leftSideWidget>
                 <div>
                     

@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CoursePostController;
-use App\Http\Controllers\CoursePostReactionController;
-use App\Http\Controllers\CoursePostCommentController;
+use App\Http\Controllers\CourseActivityController;
 use App\Http\Controllers\CoursePostImageController;
+use App\Http\Controllers\CoursePostCommentController;
+use App\Http\Controllers\CoursePostReactionController;
 use App\Http\Controllers\CoursePostImageCommentController;
 use App\Http\Controllers\CoursePostImageCommentReactionController;
 
@@ -13,6 +15,41 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::get('/courses/{course}/settings', [CourseController::class, 'settings'])->name('course.settings.page.show');
 });
 
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->prefix('/courses')->group(function () {
+    Route::get('/', [CourseController::class, 'index'])->name('courses');
+    Route::post('/', [CourseController::class, 'store'])->name('courses.store');
+    Route::get('/create', [CourseController::class, 'create'])->name('courses.create');
+    Route::get('/{course}', [CourseController::class, 'show'])->name('course.show');
+    Route::put('/{course}', [CourseController::class, 'update'])->name('course.update');
+    Route::patch('/{course}', [CourseController::class, 'update'])->name('course.part.update');
+    Route::delete('/{course}', [CourseController::class, 'destroy'])->name('course.destroy');
+    Route::get('/{course}/progress', [CourseController::class, 'progress'])->name('course.progress');
+    
+    Route::get('/users/{user}', [CourseController::class, 'getUserCourses'])->name('user.courses');
+    Route::get('/users/{user}/member', [CourseController::class, 'getAuthMemberCourses'])->name('auth.member.courses');
+
+    Route::post('/{course}/groups/{group}/members', [CourseGroupMemberController::class, 'store']);
+    Route::delete('/{course}/members/groups/{group}', [CourseGroupMemberController::class, 'unMemberGroup']);
+    Route::delete('/{course}/groups/{group}/members/{member}', [CourseGroupMemberController::class, 'unMemberGroup']);
+
+    Route::resource('/{course}/quizzes/{quiz}/questions', CourseQuizQuestionController::class);
+    Route::resource('/{course}/quizzes/{quiz}/results', CourseQuizResultController::class);
+
+    Route::get('/{course}/groups/{group}/attendances', [CourseAttendanceController::class, 'getCourseGroupAttendances'])->name('course.groups.attendances');
+    Route::post('/{course}/groups/{group}/attendances', [CourseAttendanceController::class, 'store'])->name('course.groups.attendances.store');
+
+    Route::get('/{course}/feeds', [CourseActivityController::class, 'index'])->name('course.feeds');
+    Route::get('/{course}/feeds/get-more-activities', [CourseActivityController::class, 'getActivities'])->name('course.feeds.getMoresActivities');
+});
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->prefix('/api/courses')->group(function () {
+    Route::get('/', [CourseController::class, 'getMoreCourses'])->name('api.courses.all');
+    Route::get('/users/{user}', [CourseController::class, 'getMyCourses'])->name('api.courses.user-courses');
+    Route::get('/users/{user}/my-courses', [CourseController::class, 'getMyCourses'])->name('api.courses.my-courses');
+    Route::get('/users/{user}/membered', [CourseController::class, 'getAuthMemberedCourses'])->name('api.courses.member');
+
+    // Route::resource('/{course}/lessons', LessonController::class);
+});
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
     Route::post('/courses/posts/comments/{comment}/like', [CoursePostCommentReactionController::class, 'toggleLikeComment'])->name('toggle.like.course_post_comment');

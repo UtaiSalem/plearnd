@@ -27,8 +27,8 @@
         // { name: 'แหล่งเรียนรู้',     href: '/academies', icon: 'teenyicons:school-outline'},
         { name: 'กระดานข่าว',        href: '/newsfeed',              icon: 'fluent:feed-24-regular',},
         { name: 'รายวิชา',           href: '/courses',               icon: 'fluent-mdl2:publish-course'},
-        { name: 'เก็บแต้ม',          href: '/donates',               icon: 'mdi:hand-coin-outline'},
-        { name: 'เก็บตังค์',            href: '/supports',              icon: 'eos-icons:product-subscriptions-outlined'},
+        { name: 'สะสมแต้ม',          href: '/donates',               icon: 'mdi:hand-coin-outline'},
+        { name: 'ดูสินค้า',            href: '/supports',              icon: 'eos-icons:product-subscriptions-outlined'},
 
     ];
 
@@ -86,9 +86,9 @@
                 <Link :href="route('welcome')" class="items-center justify-between hidden space-x-3 md:flex ">
                     <span class="px-2 text-2xl font-semibold text-white rounded-lg plearnd-brand bg-violet-500">Plearnd</span>
                 </Link>
-                <button type="button" title="Plearnd-Hamburger-Menu" class="text-gray-400 " @click.prevent="isSidebarOpen = !isSidebarOpen">
+                <!-- <button type="button" title="Plearnd-Hamburger-Menu" class="text-gray-400 " @click.prevent="isSidebarOpen = !isSidebarOpen">
                     <Icon icon="solar:hamburger-menu-bold" class="w-9 h-9" />
-                </button>
+                </button> -->
             </div>
 
             <!-- Navigation Menus -->
@@ -325,10 +325,10 @@
         />
 
         <!-- left Sidbar -->
-        <div class="fixed flex flex-col top-[56px] bg-white dark:bg-gray-900 h-full transition-all duration-300 shadow-lg z-10"
-            :class="isSidebarOpen? 'w-52':'hidden sm:flex sm:flex-col w-16'">
-            <div class="flex flex-col justify-between flex-grow overflow-x-hidden overflow-y-auto">
-                <ul class="flex flex-col p-1 space-y-1">
+        <!-- <div class="fixed flex flex-col top-[56px] bg-white dark:bg-gray-900 h-full transition-all duration-300 shadow-lg z-10"
+            :class="isSidebarOpen? 'w-52':'hidden sm:flex sm:flex-col w-16'"> -->
+            <!-- <div class="flex flex-col justify-between flex-grow overflow-x-hidden overflow-y-auto"> -->
+                <!-- <ul class="flex flex-col p-1 space-y-1"> -->
                     <!-- <li>
                         <Link href="/dashboard" class="plearnd-sidebar-link"
                             :class="{'justify-center': !isSidebarOpen}">
@@ -397,21 +397,20 @@
                        </Link>
                    </li> -->
                    
-                   <li>
+                   <!-- <li>
                        <button @click.prevent="handleLinkToPage('/courses')" class="plearnd-sidebar-link "
                            :class="{'justify-center': !isSidebarOpen}">
                        <span>
-                           <!-- <Icon icon="fluent:form-new-28-regular" class="w-6 h-6 text-indigo-600" /> -->
                            <Icon icon="mingcute:profile-line" class="w-6 h-6 opacity-80" />
                        </span>
                        <span class="font-semibold font-mali"
                            :class="{ 'hidden': !isSidebarOpen }">รวมรายวิชา</span>
                        </button>
-                   </li>
-                </ul>
-            </div>
-            <div class="flex items-center justify-center p-3 border-t mb-14">
-                <!-- Sidebar footer -->
+                   </li> -->
+                   
+                <!-- </ul> -->
+            <!-- </div> -->
+            <!-- <div class="flex items-center justify-center p-3 border-t mb-14">
                 <button @click.prevent="logout"
                     class="flex items-center justify-center w-full px-4 py-1.5 space-x-2 text-base text-indigo-600 uppercase bg-indigo-200 hover:bg-indigo-400  rounded-md focus:outline-none focus:ring">
 
@@ -427,11 +426,11 @@
                         <span :class="isSidebarOpen? 'block':'hidden'"> Logout </span>
                     </div>
                 </button>
-            </div>
-        </div>
+            </div> -->
+        <!-- </div> -->
 
         <!-- Main content -->
-        <div class="flex flex-col justify-between sm:mx-4 md:pt-16 sm:ml-[80px] rounded-lg">
+        <div class="flex flex-col justify-between sm:mx-4 md:pt-16 rounded-lg">
 
             <div v-if="$slots.coverProfileCard" class="w-full" >
                 <slot name="coverProfileCard"></slot>

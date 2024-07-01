@@ -21,8 +21,8 @@ const errors = ref(null);
 
 const form = reactive({
   user_id: usePage().props.auth.user.id,
-  title: 'แฟล็ตไฮเทคอ่อนด้อยสต๊อกดยุค ออกแบบแกสโซฮอล์',
-  description: 'มาร์ตครัวซองเจลเกมส์คอลัมน์ เปราะบาง เทวาธิราชสโตนติงต๊องทำงาน หม่านโถวซีรีส์ศากยบุตรอุปัทวเหตุ คอร์รัปชั่นโฟนจ๊าบ',
+  title: '',
+  description: '',
   start_date: start_date.value.toUTCString(),
   end_date: end_date.value.toUTCString(),
   shuffle_questions: false,

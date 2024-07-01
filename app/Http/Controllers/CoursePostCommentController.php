@@ -11,14 +11,23 @@ use App\Http\Resources\CoursePostCommentResource;
 
 class CoursePostCommentController extends Controller
 {
-    public function index(Course $course, CoursePost $post){
-        $comments = $post->post_comments()->latest()->paginate();
+    public function index(Course $course, CoursePost $post)
+    {
+        try {
+            $comments = $post->post_comments()->latest()->paginate();
+    
+            // $post_comments = $this->getPostComments($post);
+            $post_comments = CoursePostComment::where('course_post_id', $post->id)->latest()->paginate();
+    
+            return response()->json([
+                'success' => true,
+                'comments' => CoursePostCommentResource::collection($comments),
+                'post_comments' => $post_comments,
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'comments' => CoursePostCommentResource::collection($comments),
-        ]);
-        
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 
     /**
@@ -59,6 +68,39 @@ class CoursePostCommentController extends Controller
             return response()->json([
                 'success' => true,
                 'comment' => new CoursePostCommentResource($newComment),
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 404);
+        }
+    }
+
+    /**
+     * Remove the specified comment from storage.
+     *
+     * @param  \App\Models\CoursePostComment  $comment
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Course $course, CoursePost $post, CoursePostComment $comment)
+    {
+        try {
+            
+            $post_comment_images = $comment->postCommentImages;
+            foreach ($post_comment_images as $image) {
+                Storage::disk('public')->delete('images/courses/posts/comments/' . $image->filename);
+                $image->delete();
+            }
+
+            $comment->delete();
+
+            $post->decrement('comments', 1);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Comment deleted successfully',
             ]);
 
         } catch (\Exception $e) {

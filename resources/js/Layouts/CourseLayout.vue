@@ -1,11 +1,12 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Head, Link } from "@inertiajs/vue3";
-import { Icon } from '@iconify/vue';
+import { usePage } from "@inertiajs/vue3";
+
 // import Swal from 'sweetalert2';
 import MainLayout from "@/Layouts/MainLayout.vue";
 import CourseProfileCover from '@/PlearndComponents/learn/courses/CourseProfileCover.vue';
 import SingleCoursePageNavbarTab from '@/PlearndComponents/learn/courses/SingleCoursePageNavbarTab.vue';
+import Swal from 'sweetalert2';
 
 const props = defineProps({
     course: Object,
@@ -31,18 +32,17 @@ async function onCoverImageChange(coverFile) {
     const courseCoverUpdate = new FormData();
     courseCoverUpdate.append('cover', coverFile);
     courseCoverUpdate.append('_method', 'patch');
-    const resp = await axios.post(`/courses/${props.course.data.id}`, courseCoverUpdate, config );
-    usePage().props.course.data.cover = resp.data.course.cover;
+    await axios.post(`/courses/${props.course.data.id}`, courseCoverUpdate, config );
+    
+    // usePage().props.course.data.cover = resp.data.course.cover;
 }
 
 async function onHeaderChange(courseName) {
-    let resp = await axios.patch(`/courses/${props.course.data.id}`, { name: courseName });
-    usePage().props.course.data.name = resp.data.course.name;
+    await axios.patch(`/courses/${props.course.data.id}`, { name: courseName });
 }
 
 async function onSubheaderChange(courseCode) {
-    let resp = await axios.patch(`/courses/${props.course.data.id}`, { code: courseCode });
-    usePage().props.course.data.code = resp.data.course.code;
+    await axios.patch(`/courses/${props.course.data.id}`, { code: courseCode });
 }
 
 </script>

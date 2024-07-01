@@ -101,13 +101,13 @@ const handleDeleteComment = () => {
             confirmButtonText: 'ยืนยันการลบ'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                let delResp =  await axios.delete(`/posts/${props.comment.post_id}/comments/${props.comment.id}`);
+                let delResp =  await axios.delete(`/courses/${usePage().props.course.data.id}/posts/${props.comment.course_post_id}/comments/${props.comment.id}`);
                 if(delResp.data.success){
                     emit('delete-post-comment');
                     isDeleting.value = false;
                     Swal.fire(
                         'ลบความคิดเห็นสำเร็จ',
-                        'ความคิดเห็นถูกลบออกแล้ว'+ delResp.data.message,
+                        'ความคิดเห็นถูกลบออกแล้ว',
                         'success'
                     )
                 }
@@ -123,70 +123,68 @@ const handleDeleteComment = () => {
 };
 </script>
 <template>
-    <div class="ml-[2px]">
-        <div class="flex gap-4 w-full justify-start">
-            <img :src="comment.user.avatar"
-                class="w-9 h-9 p-[2px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500" alt="">
-            <div class="w-full">
-                <div class="flex justify-between items-end">
-                    <div class="flex items-center space-x-2">
-                        <h6 class="mb-0">{{ comment.user.name }}</h6>
-                        <span class="text-gray-600 text-sm">{{ comment.create_at }}</span>
-                    </div>
-                    <CommentSettingMenu @delete-comment="handleDeleteComment" v-if="!isNotCommentOwner || isPostOwner" />
+    <div class="flex gap-3 w-full justify-start border p-2 my-2 rounded-md">
+        <img :src="comment.user.avatar"
+            class="w-9 h-9 p-[2px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500" alt="">
+        <div class="w-full">
+            <div class="flex justify-between items-end">
+                <div class="flex items-center space-x-2">
+                    <h6 class="mb-0">{{ comment.user.name }}</h6>
+                    <span class="text-gray-600 text-sm">{{ comment.create_at }}</span>
                 </div>
-                <p v-if="comment.content" class="text-gray-700 text-sm bg-slate-50 border-[1.5px] border-gray-200 p-1 ml-auto rounded-lg my-2">
-                    {{ comment.content }}
-                </p>
-                <div v-if="comment.images.length > 0" class="flex flex-wrap gap-2">
-                    <div v-for="image in comment.images" :key="image.id" class="relative">
-                        <img :src="image.url" class="w-24 h-24 object-cover rounded-lg border" alt="">
-                    </div>
+                <CommentSettingMenu @delete-comment="handleDeleteComment" v-if="!isNotCommentOwner || isPostOwner" />
+            </div>
+            <p v-if="comment.content" class="text-gray-700 text-sm bg-slate-50 border-[1.5px] border-gray-200 p-1 ml-auto rounded-lg my-2">
+                {{ comment.content }}
+            </p>
+            <div v-if="comment.images.length > 0" class="flex flex-wrap gap-2">
+                <div v-for="image in comment.images" :key="image.id" class="relative">
+                    <img :src="image.url" class="w-24 h-24 object-cover rounded-lg border" alt="">
                 </div>
-                <div class="flex items-center gap-4 text-xs">
-                    <button @click.prevent="handleLikesComment" :disabled="refComment.isDislikedByAuth || isCommentOwner"
-                        class="flex items-center space-x-1  px-2 py-1 rounded-md text-green-500 disabled:text-gray-600">
-                        <div class="flex justify-around items-center space-x-2" :class="isCommentOwner || refComment.isDislikedByAuth ?'': 'hover:scale-125'">
-                            <span v-if="isLoading">
-                                <Icon icon="eos-icons:bubble-loading" class="h-5 w-5" />
+            </div>
+            <div class="flex items-center gap-4 text-xs">
+                <button @click.prevent="handleLikesComment" :disabled="refComment.isDislikedByAuth || isCommentOwner"
+                    class="flex items-center space-x-1  px-2 py-1 rounded-md text-green-500 disabled:text-gray-600">
+                    <div class="flex justify-around items-center space-x-2" :class="isCommentOwner || refComment.isDislikedByAuth ?'': 'hover:scale-125'">
+                        <span v-if="isLoading">
+                            <Icon icon="eos-icons:bubble-loading" class="h-5 w-5" />
+                        </span>
+                        <div v-else>
+                            <span v-if="isCommentOwner">
+                                <Icon icon="icon-park-solid:like" class="w-5 h-5 " />
                             </span>
-                            <div v-else>
-                                <span v-if="isCommentOwner">
-                                    <Icon icon="icon-park-solid:like" class="w-5 h-5 " />
-                                </span>
-                                <span v-else-if="refComment.isLikedByAuth" >
-                                    <Icon icon="icon-park-solid:like" class="w-5 h-5 " />
-                                </span>
-                                <span v-else-if="!refComment.isLikedByAuth">
-                                    <Icon icon="icon-park-outline:like" class="w-5 h-5"  />
-                                </span>
-                            </div>
-                        </div>
-                        <span>{{ refComment.likes }}</span>
-                    </button>
-
-                    <button @click.prevent="handleDislikesComment" :disabled="refComment.isLikedByAuth || isCommentOwner"
-                        class="flex text-center space-x-1 px-2 py-1 rounded-md text-red-500 disabled:text-gray-600">
-
-                        <div class="flex justify-around items-center space-x-2 " :class="[isCommentOwner || refComment.isLikedByAuth ? '': 'hover:scale-125']">
-                            <span v-if="isDislikeLoading">
-                                <Icon icon="eos-icons:bubble-loading" class="h-5 w-5" />
+                            <span v-else-if="refComment.isLikedByAuth" >
+                                <Icon icon="icon-park-solid:like" class="w-5 h-5 " />
                             </span>
-                            <div v-else>
-                                <span v-if="isCommentOwner">
-                                    <Icon icon="heroicons-solid:thumb-down" class="w-5 h-5 " />
-                                </span>
-                                <span v-else-if="refComment.isDislikedByAuth" >
-                                    <Icon icon="heroicons-solid:thumb-down" class="w-5 h-5 " />
-                                </span>
-                                <span v-else-if="!refComment.isDislikedByAuth">
-                                    <Icon icon="heroicons-outline:thumb-down" class="w-5 h-5"  />
-                                </span>
-                            </div>
+                            <span v-else-if="!refComment.isLikedByAuth">
+                                <Icon icon="icon-park-outline:like" class="w-5 h-5"  />
+                            </span>
                         </div>
-                        <span>{{ refComment.dislikes }}</span>
-                    </button>
-                </div>
+                    </div>
+                    <span>{{ refComment.likes }}</span>
+                </button>
+
+                <button @click.prevent="handleDislikesComment" :disabled="refComment.isLikedByAuth || isCommentOwner"
+                    class="flex text-center space-x-1 px-2 py-1 rounded-md text-red-500 disabled:text-gray-600">
+
+                    <div class="flex justify-around items-center space-x-2 " :class="[isCommentOwner || refComment.isLikedByAuth ? '': 'hover:scale-125']">
+                        <span v-if="isDislikeLoading">
+                            <Icon icon="eos-icons:bubble-loading" class="h-5 w-5" />
+                        </span>
+                        <div v-else>
+                            <span v-if="isCommentOwner">
+                                <Icon icon="heroicons-solid:thumb-down" class="w-5 h-5 " />
+                            </span>
+                            <span v-else-if="refComment.isDislikedByAuth" >
+                                <Icon icon="heroicons-solid:thumb-down" class="w-5 h-5 " />
+                            </span>
+                            <span v-else-if="!refComment.isDislikedByAuth">
+                                <Icon icon="heroicons-outline:thumb-down" class="w-5 h-5"  />
+                            </span>
+                        </div>
+                    </div>
+                    <span>{{ refComment.dislikes }}</span>
+                </button>
             </div>
         </div>
     </div>

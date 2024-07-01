@@ -68,7 +68,7 @@ const handleDeleteFriendRequest = async () => {
 
 <template>
     <div class="max-w-sm mx-auto space-y-2 sm:py-2 sm:flex sm:items-center sm:space-y-0 sm:space-x-2">
-        <img class="block mx-auto h-12 border border-blue-500 rounded-full sm:mx-0 sm:shrink-0" :src="refPerson.avatar"
+        <img class="block mx-auto w-12 h-12 border border-blue-500 rounded-full sm:mx-0 sm:shrink-0" :src="refPerson.avatar"
             :alt="refPerson.avatar">
         <div class="text-center space-y-2 sm:text-left">
             <div class="space-y-0.5">

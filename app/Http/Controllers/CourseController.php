@@ -181,27 +181,12 @@ class CourseController extends Controller
 
     public function show(Course $course)
     {
-        // $coursesResource = new CourseResource($course);
-        // $isCourseAdmin = $course->user_id === auth()->id();
-        // $cma = $course->courseMembers()->where('user_id', auth()->id())->first();
-
-        // return Inertia::render('Learn/Course/Course', [
-        //     'success'               => true,
-        //     'academy'               => $coursesResource->academy ? new AcademyResource($course->academy) : null,
-        //     'course'                => $coursesResource,
-        //     'courseMemberOfAuth'    => $cma,
-        //     'isCourseAdmin'         => $isCourseAdmin,
-        // ]);
         return to_route('course.feeds', $course->id);
     }
 
     public function edit(Course $course)
     {
-        // return Inertia::render('Course', [
-        //     'course'=> $course,
-        //     'lessons' => $course->lessons,
-        //     'imagePath' => '/../../'
-        // ]);
+
     }
 
     /**
@@ -213,28 +198,33 @@ class CourseController extends Controller
             'user_id'           => 'nullable',
             'instructor_id'     => 'nullable',
             'academy_id'        => 'nullable',
-            'name'              => 'nullable',
+            'name'              => 'nullable|string',
             'slug'              => 'nullable',
             'code'              => 'nullable',
             'description'       => 'nullable',
             'duration'          => 'nullable',
-            'tuition_fees'      => 'nullable',
-            'price'             => 'nullable',
-            'credit_units'      => 'nullable',
-            'hours_per_week'    => 'nullable',
+            'tuition_fees'      => 'nullable|numeric',
+            'price'             => 'nullable|numeric',
+            'credit_units'      => 'nullable|numeric',
+            'hours_per_week'    => 'nullable|numeric',
             'category'          => 'nullable',
-            'capacity'          => 'nullable',
+            'capacity'          => 'nullable|numeric',
             'level'             => 'nullable',
 
         ]);
 
-        $validated['start_date'] = $request->start_date == 'null' || $request->start_date == 'undefined' ? null : Carbon::parse($request->start_date);
-        $validated['end_date']   = $request->end_date == 'null' || $request->end_date == 'undefined' ? null : Carbon::parse($request->end_date);
+        $validated['name']          = $request->name ?? $course->name;
+        $validated['start_date']    = $request->start_date == 'null' || $request->start_date == 'undefined' ? null : Carbon::parse($request->start_date);
+        $validated['end_date']      = $request->end_date == 'null' || $request->end_date == 'undefined' ? null : Carbon::parse($request->end_date);
 
-        $validated['status']    = $request->status;
-        $validated['saleable']  = $request->saleable ? '1':'0';
+        $validated['status']        = $request->status ?? $course->status;
+        $validated['saleable']      = $request->saleable;
         
         $course->update($validated);
+
+        $course->courseSettings()->update([
+            'auto_accept_members' => $request->auto_accept_members ?? $course->courseSettings->auto_accept_members,
+        ]);
 
         if($request->hasFile('cover')) {
 
@@ -251,11 +241,10 @@ class CourseController extends Controller
             $course->save();
         }
 
-        // $course->refresh();
+        $course->refresh();
 
         return response()->json([
             'success' => true,
-            // 'course' => $course,
         ], 200);
     }
 

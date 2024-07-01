@@ -38,7 +38,7 @@ class NewsfeedController extends Controller
         $peopleMayKnow = User::where('id', '!=', Auth::id())
             ->whereNotIn('id', $authFriends)
             ->inRandomOrder()
-            ->limit(5)
+            ->limit(15)
             ->get();
 
         // dd($authFriends);
@@ -49,7 +49,7 @@ class NewsfeedController extends Controller
             'peopleMayKnow'     => UserResource::collection($peopleMayKnow),
             'pendingFriends'    => FriendshipResource::collection($pendingFriends),
             'donates'           => DonateResource::collection(Donate::whereNotIn('status',[2])->orderBy('remaining_points', 'DESC')->latest()->paginate(5)),
-            'advertises'        => SupportResource::collection(Support::where('status',1)->orderBy('remaining_views', 'DESC')->latest()->paginate(5)),
+            'advertises'        => SupportResource::collection(Support::where('status',1)->where('remaining_views', '>', 0)->orderBy('remaining_views', 'DESC')->latest()->paginate(5)),
         ]);
     }
 
@@ -89,7 +89,7 @@ class NewsfeedController extends Controller
                         ->whereStatus(1);
                 })
             ->latest()
-            ->paginate(2);
+            ->paginate();
 
         return response()->json([
             'success' => true,

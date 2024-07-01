@@ -4,38 +4,29 @@ use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 
-use Illuminate\Foundation\Application;
-use App\Http\Controllers\AcademyController;
-use App\Http\Controllers\AcademyPostController;
+
+
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseGroupController;
-use App\Http\Controllers\CoursePostController;
 use App\Http\Controllers\CourseQuizController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\LessonImageController;
 use App\Http\Controllers\MentalMathController;
 use App\Http\Controllers\NewsfeedController;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\PostImageController;
 use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\SupportController;
 use App\Http\Controllers\SuggesterController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\CourseLessonController;
 use App\Http\Controllers\CourseMemberController;
-use App\Http\Controllers\AcademyCourseController;
-use App\Http\Controllers\AcademyMemberController;
 use App\Http\Controllers\CourseActivityController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\LessonQuestionController;
 use App\Http\Controllers\QuestionAnswerController;
 use App\Http\Controllers\QuestionOptionController;
-use App\Http\Controllers\AcademyActivityController;
 use App\Http\Controllers\AssignmentImageController;
-use App\Http\Controllers\CoursePostImageController;
 use App\Http\Controllers\AssignmentAnswerController;
 use App\Http\Controllers\AttendanceDetailController;
 use App\Http\Controllers\CourseAssignmentController;
@@ -44,13 +35,8 @@ use App\Http\Controllers\CourseQuizResultController;
 use App\Http\Controllers\LessonAssignmentController;
 use App\Http\Controllers\Auth\ProviderAuthController;
 use App\Http\Controllers\CourseGroupMemberController;
-use App\Http\Controllers\CoursePostCommentController;
-use App\Http\Controllers\CoursePostReactionController;
 use App\Http\Controllers\CourseQuizQuestionController;
 use App\Http\Controllers\UserAnswerQuestionController;
-use App\Http\Controllers\CoursePostImageCommentController;
-use App\Http\Controllers\CoursePostCommentReactionController;
-use App\Http\Controllers\CoursePostImageCommentReactionController;
 
 
 /*
@@ -96,83 +82,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 Route::get('/auth/{provider}/redirect', [ProviderAuthController::class, 'redirectToGoogle'])->name('google.redirect');
 Route::get('/auth/{provider}/callback', [ProviderAuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->prefix('/academies')->group(function () {
-    Route::get('/', [AcademyController::class, 'index'])->name('academies');
-    Route::post('/', [AcademyController::class, 'store'])->name('academies.store');
-    Route::get('/create', [AcademyController::class, 'create'])->name('academy.create');
-    Route::get('/{academy:name}', [AcademyController::class, 'show'])->name('academy.show');
-
-    Route::get('/{academy:name}/feeds', [AcademyActivityController::class, 'index'])->name('academy.feeds');
-
-    Route::get('/{academy:name}/courses', [AcademyCourseController::class, 'index'])->name('academy.courses.index');
-    Route::get('/{academy:name}/courses/create', [AcademyCourseController::class, 'create'])->name('academy.courses.create');
-    Route::post('/{academy}/courses', [AcademyCourseController::class, 'store'])->name('academy.courses.store');
-
-    Route::patch('/{academy}/update', [AcademyController::class, 'update'])->name('academy.update');
-
-    // Route::get('/{academy}/members', [AcademyMemberController::class, 'index'])->name('academy.members');
-    Route::get('/{academy}/members', [AcademyMemberController::class, 'index'])->name('academy.members');
-    Route::post('/{academy}/members', [AcademyMemberController::class, 'storemember']);
-    Route::post('/{academy}/unmembers', [AcademyMemberController::class, 'unmember']);
-
-    Route::get('/{academy}/posts/{post}', [AcademyPostController::class, 'show'])->name('academy_post.show');
-
-});
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->prefix('/api/academies')->group(function () {
-    Route::get('/', [AcademyController::class, 'getMoreAcademies'])->name('api.academies.all');
-    Route::get('/users/{user}/my-academies', [AcademyController::class, 'getMyAcademies'])->name('api.academies.my-academies');
-    Route::get('/users/{user}/membered-academies', [AcademyController::class, 'getAuthMemberedAcademies'])->name('api.academies.membered');
-    Route::get('/all-academies', [AcademyController::class, 'getAllAcademies'])->name('api.academies.all-academies');
-
-    Route::get('/{academy}/courses', [AcademyCourseController::class, 'getAcademyCourses'])->name('api.academy.courses.getAcademyCourses');
-
-    Route::post('/{academy}/posts', [AcademyPostController::class, 'store'])->name('api.academy.posts.store');
-    
-    Route::get('/{academy}/activities', [AcademyActivityController::class, 'getActivities'])->name('api.academy.activities.getActivities');
-});
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->prefix('/courses')->group(function () {
-    Route::get('/', [CourseController::class, 'index'])->name('courses');
-    Route::post('/', [CourseController::class, 'store'])->name('courses.store');
-    Route::get('/create', [CourseController::class, 'create'])->name('courses.create');
-    Route::get('/{course}', [CourseController::class, 'show'])->name('course.show');
-    Route::put('/{course}', [CourseController::class, 'update'])->name('course.update');
-    Route::patch('/{course}', [CourseController::class, 'update'])->name('course.part.update');
-    Route::delete('/{course}', [CourseController::class, 'destroy'])->name('course.destroy');
-    Route::get('/{course}/progress', [CourseController::class, 'progress'])->name('course.progress');
-    
-    Route::get('/users/{user}', [CourseController::class, 'getUserCourses'])->name('user.courses');
-    Route::get('/users/{user}/member', [CourseController::class, 'getAuthMemberCourses'])->name('auth.member.courses');
-
-    // Route::get('/{course}/groups', [CourseGroupController::class, 'show']);
-    // Route::post('/{course}/groups', [CourseGroupController::class, 'store'])->name('course.groups.store');
-    // Route::patch('/{course}/groups/{group}', [CourseGroupController::class, 'update'])->name('course.groups.update');
-    // Route::delete('/{course}/groups/{group}', [CourseGroupController::class, 'destroy'])->name('course.groups.destroy');
-
-    Route::post('/{course}/groups/{group}/members', [CourseGroupMemberController::class, 'store']);
-    Route::delete('/{course}/members/groups/{group}', [CourseGroupMemberController::class, 'unMemberGroup']);
-    Route::delete('/{course}/groups/{group}/members/{member}', [CourseGroupMemberController::class, 'unMemberGroup']);
-
-    Route::resource('/{course}/quizzes/{quiz}/questions', CourseQuizQuestionController::class);
-    Route::resource('/{course}/quizzes/{quiz}/results', CourseQuizResultController::class);
-
-    Route::get('/{course}/groups/{group}/attendances', [CourseAttendanceController::class, 'getCourseGroupAttendances'])->name('course.groups.attendances');
-    Route::post('/{course}/groups/{group}/attendances', [CourseAttendanceController::class, 'store'])->name('course.groups.attendances.store');
-
-    Route::get('/{course}/feeds', [CourseActivityController::class, 'index'])->name('course.feeds');
-    Route::get('/{course}/feeds/get-more-activities', [CourseActivityController::class, 'getActivities'])->name('course.feeds.getMoresActivities');
-});
-
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->prefix('/api/courses')->group(function () {
-    Route::get('/', [CourseController::class, 'getMoreCourses'])->name('api.courses.all');
-    Route::get('/users/{user}', [CourseController::class, 'getMyCourses'])->name('api.courses.user-courses');
-    Route::get('/users/{user}/my-courses', [CourseController::class, 'getMyCourses'])->name('api.courses.my-courses');
-    Route::get('/users/{user}/membered', [CourseController::class, 'getAuthMemberedCourses'])->name('api.courses.member');
-
-    // Route::resource('/{course}/lessons', LessonController::class);
-});
 
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->prefix('/courses/{course}/lessons')->group(function () {
@@ -289,4 +198,5 @@ Route::get('/mental-math', [MentalMathController::class, 'index'])->name('mental
 require __DIR__ . '/earn/donate.php';
 require __DIR__ . '/earn/advert.php';
 require __DIR__ . '/play/post.php';
+require __DIR__ . '/learn/academy.php';
 require __DIR__ . '/learn/course.php';

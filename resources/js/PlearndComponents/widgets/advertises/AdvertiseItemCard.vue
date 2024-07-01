@@ -184,15 +184,13 @@ const alertGetAdvertSuccess = () => {
             </button>
         </div>
     </div>
-
-    <div v-show="showAdvertProgress" class="fixed top-0 left-0 z-40 w-screen h-screen flex items-center justify-center  modal bg-gray-900/100 modal-overlay">
-        <div class="relative w-full h-full flex-col items-center justify-center z-30 text-center overflow-hidden">
-            <div class="bg-gray-200 dark:bg-gray-700">
-                <div class="bg-violet-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none z-30" :style="`width: ${progressValue}%`"> {{ advertRecieved.toLocaleString() }}บาท</div>
+    <div v-show="showAdvertProgress" class="fixed top-0 left-0 z-40 pt-[40%] md:pt-0 flex items-center justify-center w-full h-full modal bg-gray-900/100 modal-overlay">
+        <div class="relative w-[80%] h-screen z-30 mx-auto overflow-hidden">
+            <div class="w-full bg-gray-200 rounded-lg dark:bg-gray-700">
+                <div class="bg-violet-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-lg z-30" :style="`width: ${progressValue}%`"> {{ advertRecieved.toLocaleString() }}บาท</div>
             </div>
-            <div class="w-full flex justify-center items-center">
-                <img :src="refAdvert.media_image" alt="" srcset="" class="">
-            </div>
+            <img :src="refAdvert.media_image" alt="" srcset="" class="w-full bg-cover">
+            <!-- <div class="absolute z-40 bottom-4 left-[40%] text-[60px] font-bold text-yellow-400 ">{{ advertRecieved.toLocaleString() }} บาท</div> -->
         </div>
     </div>
 </template>

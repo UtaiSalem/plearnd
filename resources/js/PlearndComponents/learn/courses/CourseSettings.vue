@@ -23,10 +23,10 @@ const isOpenLevelOptions = ref(false);
 const crsStartDate = ref(props.course.start_date);
 const crsEndDate = ref(props.course.end_date);
 // const courseRange = ref([crsStartDate.value,crsEndDate.value]);
-const courseRange = ref([
-    crsStartDate.value, 
-    crsEndDate.value
-]);
+// const courseRange = ref([
+//     crsStartDate.value, 
+//     crsEndDate.value
+// ]);
 
 const courseCategories = ref([
     { name: 'ภาษาไทย' },
@@ -65,13 +65,11 @@ const form = ref({
 
   start_date: crsStartDate.value,
   end_date: crsEndDate.value,
-//   start_date: courseRange.value[0] === "" ? null : new Date(courseRange.value[0]),
-//   end_date: courseRange.value[1] === "" ? null : new Date(courseRange.value[1]),
 
-  auto_accept_members: props.course.setting.auto_accept_members == 1 ? true : false,
+  auto_accept_members: props.course.setting.auto_accept_members === 1 ? true : false,
   tuition_fees: props.course.tuition_fees ?? 0,
-  saleable: props.course.saleable == 1 ? true : false,
-  price: props.course.price,
+  saleable: props.course.saleable === 1 ? true : false,
+  price: props.course.price ?? 0,
   status: props.course.status,
 
 });
@@ -85,10 +83,6 @@ const canDeleteCourse = computed(() => {
 });
 
 function handleDeleteCourse(){
-    // for (let index = 0; index < 100; index++) {
-    //     const randomNumber = Math.random().toString().slice(2, 10);
-    //     console.log(randomNumber);
-    // }
     Swal.fire({
         title: 'ลบบทเรียน',
         text: "ยืนยันการลบบทเรียนอย่างถาวร",
@@ -118,34 +112,21 @@ function handleSelectLevel(level){
   isOpenLevelOptions.value = false;
 }
 
-function handleDateSelect(modelData){
-  courseRange.value = modelData;
-//   form.value.start_date = modelData ? new Date(courseRange.value[0]).toDateString() : null;
-  form.value.start_date = modelData ? new Date(courseRange.value[0]).toLocaleString() : null;
-  form.value.end_date   = modelData ? new Date(courseRange.value[1]).toLocaleString() : null;
-//   form.value.start_date = new Date(modelData[0]);
-//   form.value.end_date = new Date(modelData[1]);
-
-}
-
 function handleStartDateSelection(startData){
     crsStartDate.value = startData;
-    courseRange.value[0] = crsStartDate.value;
-    form.value.start_date = new Date(crsStartDate.value) || null;
+    // courseRange.value[0] = crsStartDate.value;
+    form.value.start_date = new Date(crsStartDate.value).toISOString() || null;
 }
 
 function handleEndDateSelection(endDateData){
     crsEndDate.value = endDateData;
-    courseRange.value[1] = crsEndDate.value;
-    form.value.end_date = new Date(crsEndDate.value) || null;
+    // courseRange.value[1] = crsEndDate.value;
+    form.value.end_date = new Date(crsEndDate.value).toISOString() || null;
 }
 
-
-// function handleSubmitForm(){
-    // console.log(courseData.start_date);
-    // console.log(courseData.end_date);
-    // emit('update-course', form.value);
-// }
+// watch(crsStartDate, (newVal, oldVal) => {
+//     form.value.start_date = new Date(newVal).toDateString() || null;
+// });
 
 async function handleSubmitForm(){
 
@@ -162,17 +143,17 @@ try {
     courseUpdateForm.append('hours_per_week', form.value.hours_per_week);
     courseUpdateForm.append('start_date', form.value.start_date);
     courseUpdateForm.append('end_date', form.value.end_date);
-    courseUpdateForm.append('auto_accept_members', form.value.auto_accept_members);
-    courseUpdateForm.append('tuition_fees', form.value.tuition_fees);
-    courseUpdateForm.append('saleable', form.value.saleable);
-    courseUpdateForm.append('price', form.value.price);
-    courseUpdateForm.append('status', form.value.status);
+    courseUpdateForm.append('auto_accept_members', form.value.auto_accept_members ? 1 : 0);
+    courseUpdateForm.append('tuition_fees', form.value.tuition_fees??0);
+    courseUpdateForm.append('saleable', form.value.saleable ? 1 : 0);
+    courseUpdateForm.append('price', parseInt(form.value.price));
+    courseUpdateForm.append('status', parseInt(form.value.status));
     
     courseUpdateForm.append('_method', 'put');
     let resultResp = await axios.post(`/courses/${props.course.id}`, courseUpdateForm ,config);
 
     if (resultResp.data && resultResp.data.success) {
-        // console.log(resultResp.data);
+        // console.log(resultResp.data.course);
         router.reload({ only: ['course']});
         Swal.fire({
             title: 'บันทึกข้อมูลสำเร็จ',
@@ -381,7 +362,7 @@ try {
                 <div class="grid grid-cols-1 gap-2 mb-1">
 
                     <div class="relative mb-4">
-                        <input id="course-fees-input" type="number" v-model="form.tuition_fees" placeholder="0"
+                        <input id="course-fees-input" type="number" min="0" v-model="form.tuition_fees" placeholder="0"
                             class="relative w-full h-12 px-4 pl-12 placeholder-transparent transition-all border rounded outline-none focus-visible:outline-none peer border-slate-300 text-slate-500 autofill:bg-white invalid:border-pink-500 invalid:text-pink-500 focus:border-violet-500 focus:outline-none invalid:focus:border-pink-500 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400" />
                         <label for="course-fees-input"
                             class="cursor-text peer-focus:cursor-default peer-autofill:-top-2 absolute left-2 -top-2 z-[1] px-2 text-xs text-slate-400 transition-all before:absolute before:top-0 before:left-0 before:z-[-1] before:block before:h-full before:w-full before:bg-white before:transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:left-10 peer-placeholder-shown:text-sm peer-required:after:text-pink-500 peer-required:after:content-['\00a0*'] peer-invalid:text-pink-500 peer-focus:-top-2 peer-focus:left-2 peer-focus:text-xs peer-focus:text-violet-500 peer-invalid:peer-focus:text-pink-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400 peer-disabled:before:bg-transparent">
@@ -415,7 +396,7 @@ try {
                     </label>
 
                     <div class="relative ml-2 md:ml-4" v-if="form.saleable">
-                        <input id="course-price-input" type="number" v-model="form.price" placeholder=""
+                        <input id="course-price-input" type="number" min="0" v-model="form.price" placeholder=""
                             class="relative w-full h-12 px-4 pl-12 placeholder-transparent transition-all border rounded outline-none focus-visible:outline-none peer border-slate-200 text-slate-500 autofill:bg-white invalid:border-pink-500 invalid:text-pink-500 focus:border-violet-500 focus:outline-none invalid:focus:border-pink-500 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400" />
                         <label for="course-price-input"
                             class="cursor-text peer-focus:cursor-default peer-autofill:-top-2 absolute left-2 -top-2 z-[1] px-2 text-xs text-slate-400 transition-all before:absolute before:top-0 before:left-0 before:z-[-1] before:block before:h-full before:w-full before:bg-white before:transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:left-10 peer-placeholder-shown:text-sm peer-required:after:text-pink-500 peer-required:after:content-['\00a0*'] peer-invalid:text-pink-500 peer-focus:-top-2 peer-focus:left-2 peer-focus:text-xs peer-focus:text-violet-500 peer-invalid:peer-focus:text-pink-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400 peer-disabled:before:bg-transparent">

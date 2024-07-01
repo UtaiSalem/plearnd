@@ -6,13 +6,9 @@ use Inertia\Inertia;
 use App\Models\Course;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
-use App\Http\Resources\TopicResource;
 use App\Http\Resources\CourseResource;
 use App\Http\Resources\LessonResource;
-use App\Http\Resources\AcademyResource;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Resources\QuestionResource;
-use App\Http\Resources\AssignmentResource;
 use App\Http\Resources\CourseGroupResource;
 
 
@@ -84,8 +80,6 @@ class CourseLessonController extends Controller
 
         $lesson = $course->CourseLessons()->create($validated);
 
-        if($lesson){ $course->increment('lessons'); }
-
         if($request->hasFile('images')) {
             $images = $request->file('images');
             foreach ($images as $image) {
@@ -98,9 +92,7 @@ class CourseLessonController extends Controller
             }
         }
 
-        if($lesson){
-            $course->increment('lessons');
-        }
+        if($lesson){ $course->increment('lessons');}
 
         return response()->json([
             'success' => true,

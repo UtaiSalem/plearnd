@@ -174,7 +174,7 @@ async function deleteImage(index, imgId) {
                 <div v-if="lesson.youtube_url" class="mt-4">
                     <p>วิดีโอ</p>
                 </div>
-                <div class=" border-2 border-gray-200 rounded-lg ">
+                <div v-if="lesson.youtube_url" class=" border-2 border-gray-200 rounded-lg ">
                     <vue-plyr>
                         <div data-plyr-provider="youtube" :data-plyr-embed-id="lesson.youtube_url"></div>
                     </vue-plyr>

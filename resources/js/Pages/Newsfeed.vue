@@ -89,7 +89,7 @@ const handleLinkToPage = (href) => {
 
                 <AdvertiseListWidget v-if="props.advertises.data.length" :advertises />
                 
-                <hr v-if="props.advertises.data.length" class="my-2 border-t-1 border-gray-400"/>
+                <hr class="my-2 border-t-1 border-gray-400"/>
 
                 <DonationListWidget v-if="donates.data.length"
                     :donates
