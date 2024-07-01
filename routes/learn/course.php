@@ -19,6 +19,14 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::get('/courses/{course}/settings', [CourseController::class, 'settings'])->name('course.settings.page.show');
 });
 
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->prefix('/courses/{course}/groups')->group(function () {
+    Route::resource('/', CourseGroupController::class);
+    // Route::get('/', [CourseGroupController::class, 'show']);
+    // Route::post('/', [CourseGroupController::class, 'store'])->name('course.groups.store');
+    // Route::patch('/{group}', [CourseGroupController::class, 'update'])->name('course.groups.update');
+    // Route::delete('/{group}', [CourseGroupController::class, 'destroy'])->name('course.groups.destroy');
+});
+
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->prefix('/courses')->group(function () {
     Route::get('/', [CourseController::class, 'index'])->name('courses');
     Route::post('/', [CourseController::class, 'store'])->name('courses.store');
