@@ -5,8 +5,12 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CoursePostController;
 use App\Http\Controllers\CourseActivityController;
 use App\Http\Controllers\CoursePostImageController;
+use App\Http\Controllers\CourseAttendanceController;
+use App\Http\Controllers\CourseQuizResultController;
+use App\Http\Controllers\CourseGroupMemberController;
 use App\Http\Controllers\CoursePostCommentController;
 use App\Http\Controllers\CoursePostReactionController;
+use App\Http\Controllers\CourseQuizQuestionController;
 use App\Http\Controllers\CoursePostImageCommentController;
 use App\Http\Controllers\CoursePostImageCommentReactionController;
 
