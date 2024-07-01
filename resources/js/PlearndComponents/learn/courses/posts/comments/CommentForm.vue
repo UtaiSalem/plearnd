@@ -72,9 +72,9 @@ function deleteTempPostCommentImage(index) {
 
 <template>
     <div class="">
-        <form @submit.prevent="handlePostCommentFormSubmit" :id="`comment-form-${postId}`" class="mt-3 relative dark:border-secondary-800 flex items-center">
+        <form @submit.prevent="handlePostCommentFormSubmit" :id="`course-post-comment-form-${postId}`" class="mt-3 relative dark:border-secondary-800 flex items-center">
             <img :src="$page.props.auth.user.profile_photo_url" class="w-10 h-10 p-[2px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500" alt="">
-            <input type="text" v-model="newCommentForm.content" :id="`comment-form-comment-input-${postId}`" placeholder="แสดงความคิดเห็น..." class="text-sm ml-2 pl-3 pr-12 py-2 w-full dark:text-gray-600 rounded-lg focus:ring-0 border-gray-400">
+            <input type="text" v-model="newCommentForm.content" :id="`course-post-comment-form-comment-input-${postId}`" placeholder="แสดงความคิดเห็น..." class="text-sm ml-2 pl-3 pr-12 py-2 w-full dark:text-gray-600 rounded-lg focus:ring-0 border-gray-400">
             <div class="flex gap-4 absolute top-[7px] right-[60px]">
                 <input ref="inputPostCommentImages" @change="onInputCommentImageInput" type="file" multiple class="hidden" accept="image/*" />
                 <button @click.prevent="browseInputPostCommentImages">
@@ -101,7 +101,7 @@ function deleteTempPostCommentImage(index) {
             <button 
                 type="submit" :disabled="!canSubmit || isLoading" 
                 name="comment-form-submit-button" 
-                :id="`comment-form-submit-button-${postId}`" 
+                :id="`course-post-comment-form-submit-button-${postId}`" 
                 :class="canSubmit ? 'hover:scale-110 text-blue-500 border-blue-500': 'cursor-not-allowed text-gray-500 border-gray-500 '"
                 class="mx-2 p-[6px]  rounded-lg border  ">
                 <Icon v-if="!isLoading"
