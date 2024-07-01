@@ -140,14 +140,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/{course_member}/member-settings', [CourseMemberController::class, 'memberSettings'])->name('course.member.settings.page.show');
 });
 
-Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->prefix('/courses/{course}/groups')->group(function () {
-    Route::resource('/', CourseGroupController::class);
-    // Route::get('/', [CourseGroupController::class, 'show']);
-    // Route::post('/', [CourseGroupController::class, 'store'])->name('course.groups.store');
-    // Route::patch('/{group}', [CourseGroupController::class, 'update'])->name('course.groups.update');
-    // Route::delete('/{group}', [CourseGroupController::class, 'destroy'])->name('course.groups.destroy');
-});
-
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
     Route::resource('/questions', QuestionController::class);
     Route::resource('/questions/{question}/options', QuestionOptionController::class);
