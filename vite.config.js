@@ -1,13 +1,13 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
-import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
     plugins: [
         laravel({
             input: 'resources/js/app.js',
             refresh: true,
+            detectTls: false, // Force HTTP for development
         }),
         vue({
             template: {
@@ -20,104 +20,39 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': '/resources/js',
+            '@': '/resources/js'
+        }
+    },
+    define: {
+        // Enable Vue template compilation features and runtime features
+        __VUE_OPTIONS_API__: true,
+        __VUE_PROD_DEVTOOLS__: false,
+        __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
+    },
+    server: {
+        // Fix CORS issues and hostname mismatches
+        host: 'localhost', // Use localhost to match Laravel server
+        port: 5173,
+        cors: {
+            origin: ['http://localhost:8000', 'http://127.0.0.1:8000'],
+            credentials: true
         },
-        // Only dedupe Vue itself, let Vite handle internal dependencies
-        dedupe: ['vue']
+        strictPort: true,
+        hmr: {
+            host: 'localhost'
+        }
     },
     optimizeDeps: {
-        // Force pre-bundling of these dependencies to avoid circular issues
+        // Force pre-bundling of these core dependencies
         include: [
             'vue',
             '@inertiajs/vue3',
-            'primevue/config',
             'pinia'
-        ],
-        // Exclude Vue internals from optimization to prevent circular dependencies
-        exclude: ['@vue/runtime-core', '@vue/runtime-dom']
+        ]
     },
     build: {
-        rollupOptions: {
-            output: {
-                manualChunks: (id) => {
-                    // Keep Vue core modules together to avoid circular dependencies
-                    // Don't separate Vue into its own chunk - include it with vendor
-                    
-                    // PrimeVue core
-                    if (id.includes('primevue/config') || 
-                        id.includes('primevue/api') ||
-                        id.includes('primevue/basecomponent')) {
-                        return 'primevue-core';
-                    }
-                    
-                    // PrimeVue data components (heavy components)
-                    if (id.includes('primevue/datatable') || 
-                        id.includes('primevue/dataview') ||
-                        id.includes('primevue/tree') ||
-                        id.includes('primevue/treetable') ||
-                        id.includes('primevue/virtualscroller')) {
-                        return 'primevue-data';
-                    }
-                    
-                    // Other PrimeVue components
-                    if (id.includes('primevue')) {
-                        return 'primevue';
-                    }
-                    
-                    // Third-party UI libraries
-                    if (id.includes('@headlessui/vue') || 
-                        id.includes('@iconify/vue') || 
-                        id.includes('flowbite') || 
-                        id.includes('sweetalert2') ||
-                        id.includes('vue-sweetalert2')) {
-                        return 'ui-libs';
-                    }
-                    
-                    // Utilities and file handling
-                    if (id.includes('file-saver') || 
-                        id.includes('xlsx') || 
-                        id.includes('html2canvas') || 
-                        id.includes('qrcode-vue3') || 
-                        id.includes('canvas-confetti') ||
-                        id.includes('velocity-animate')) {
-                        return 'utilities';
-                    }
-                    
-                    // Date pickers and form components
-                    if (id.includes('@vuepic/vue-datepicker') || 
-                        id.includes('vue-tailwind-datepicker')) {
-                        return 'date-components';
-                    }
-                    
-                    // Inertia and axios
-                    if (id.includes('@inertiajs') || id.includes('axios')) {
-                        return 'inertia';
-                    }
-                    
-                    // Large page components (academy, courses, etc.)
-                    if (id.includes('Pages/Learn/Academy') || 
-                        id.includes('Pages/Academy')) {
-                        return 'academy-pages';
-                    }
-                    
-                    if (id.includes('Pages/Learn/Course') || 
-                        id.includes('PlearndComponents/learn/courses')) {
-                        return 'course-pages';
-                    }
-                    
-                    if (id.includes('Pages/Support') || 
-                        id.includes('Pages/Play')) {
-                        return 'support-play-pages';
-                    }
-                    
-                    // Node modules vendor chunk
-                    if (id.includes('node_modules')) {
-                        return 'vendor';
-                    }
-                }
-            }
-        },
-        // Increase the chunk size warning limit to 2000kb since we have proper chunking
-        chunkSizeWarningLimit: 2000
+        // Temporarily disable manual chunking to fix lexical declaration error
+        // The complex chunking was causing cross-chunk dependency issues
+        chunkSizeWarningLimit: 2500
     }
 });
