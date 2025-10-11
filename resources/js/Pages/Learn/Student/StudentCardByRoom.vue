@@ -44,24 +44,6 @@ const handlePhotoUpload = async ({id, studentId, file }) => {
             }
         })
 
-        // if (response.data.success) {
-        //     Swal.fire({
-        //         icon: 'success',
-        //         title: 'อัพโหลดรูปภาพสำเร็จ',
-        //         text: response.data.message,
-        //         confirmButtonText: 'ตกลง'
-        //     })
-        // } else {
-        //     Swal.fire({
-        //         icon: 'error',
-        //         title: 'เกิดข้อผิดพลาด',
-        //         text: response.data.message || 'ไม่สามารถอัพโหลดรูปภาพได้',
-        //         confirmButtonText: 'ตกลง'
-        //     })
-        // }
-
-        // console.log('Upload successful:', response.data)
-        // จัดการการตอบกลับตามที่ต้องการ
     } catch (error) {
         console.error('Upload failed:', error)
     }
@@ -81,6 +63,30 @@ const handleUpdateStudent = async (updatedData) => {
     } catch (error) {
         console.error('Update failed:', error)
         alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล')
+    }
+}
+
+// Function to handle save student card as image
+const handleSaveStudentCard = async (studentId) => {
+    const student = props.students.find(s => s.id === studentId)
+    if (!student) return
+
+    try {
+        // const response = await axios.get(`/student/${studentId}/card`, {
+        //     responseType: 'blob'
+        // })
+
+        const blob = new Blob([response.data], { type: 'image/png' })
+        const url = URL.createObjectURL(blob)
+
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `student_card_${student.student_id}.png`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    } catch (error) {
+        console.error('Error saving student card:', error)
     }
 }
 </script>
@@ -148,8 +154,7 @@ const handleUpdateStudent = async (updatedData) => {
                 <p class="mt-4 text-gray-500 text-lg">ไม่พบข้อมูลนักเรียน</p>
             </div>
             <div v-else class="grid grid-cols-1 gap-4">
-                <div v-for="student in filteredStudents" 
-                    :key="student.id">
+                <div v-for="student in filteredStudents" :key="student.id">
                     <StudentCard 
                         :studentInfo="student"
                         @update="handleUpdateStudent"

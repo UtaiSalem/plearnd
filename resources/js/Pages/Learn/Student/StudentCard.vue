@@ -1,10 +1,11 @@
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import QRCodeVue3 from "qrcode-vue3";
 import { Icon } from '@iconify/vue';
 import Swal from 'sweetalert2';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
-
+// import html2canvas from 'html2canvas' // เพิ่มบรรทัดนี้
+// import domtoimage from 'dom-to-image-more'
 // Props definition
 const props = defineProps({
     studentInfo: {
@@ -216,41 +217,81 @@ const handleDeletePhoto = async () => {
         }
     }
 };
+
+// เพิ่ม ref สำหรับ DOM ของบัตร
+const cardRef = ref(null)
+
+// computed prefix name for students
+const studentPrefixName = (prefix) => {
+    if (!prefix) return ''
+    if( prefix == 'เด็กหญิง' || prefix == 'นางสาว'){
+        return 'Ms.'
+    } else if (prefix == 'เด็กชาย' || prefix == 'นาย') {
+        return 'Mr.'
+    } else {
+        return ''
+    }
+}
+
+// ฟังก์ชันดาวน์โหลดบัตร
+// const downloadCard = async () => {
+//     if (!cardRef.value) return
+//     try {
+//         // รอ 300ms เพื่อให้ฟอนต์และรูปโหลดครบ
+//         await new Promise(resolve => setTimeout(resolve, 300));
+//         const canvas = await html2canvas(cardRef.value, {
+//             useCORS: true,
+//             backgroundColor: '#a6d7ff', // กำหนดสีพื้นหลังให้ตรงกับบัตร
+//             scale: 3, // เพิ่มความละเอียด
+//             allowTaint: true,
+//             logging: false,
+//         })
+//         const link = document.createElement('a')
+//         link.download = `student_card_${props.studentInfo.student_id}.png`
+//         link.href = canvas.toDataURL('image/png')
+//         link.click()
+//     } catch (error) {
+//         Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถดาวน์โหลดบัตรได้', 'error')
+//     }
+// }
 </script>
 
 <template>
     <div class="flex justify-center items-center font-sarabun">
         <div
-            class="student-card-container w-full max-w-[640px] aspect-[1.95/1.10] relative overflow-hidden rounded-2xl shadow-lg border border-gray-300">
+            ref="cardRef"
+            class="student-card-container w-full max-w-[640px] aspect-[1.95/1.20] relative overflow-hidden rounded-2xl shadow-lg border border-gray-300">
             <!-- Top Section -->
             <div class="h-[20%] bg-gradient-to-br from-gray-50 to-gray-200 relative"
                 style="background: linear-gradient(135deg, transparent 40%, #4a90e2 0%);">
                 <!-- School Logo - ใช้ % แทน px -->
                 <div
-                    class="absolute -left-2  md:-left-3 -top-[16px] sm:-top-[28px] w-[22%] aspect-square rounded-full border-1 border-white flex items-center justify-center">
+                    class="absolute -left-2  md:-left-3 -top-[16px] sm:-top-[28px] md:-top-[22px] w-[22%] aspect-square rounded-full border-1 border-white flex items-center justify-center">
                     <img src="/storage/jsm_logo.png" alt="School Logo"
                         class="w-[56%] h-[56%] object-cover rounded-full">
                 </div>
 
                 <!-- School Information - ปรับ font size ให้ responsive -->
-                <div class="absolute left-[16%] top-[10%] sm:top-[6%] ">
-                    <div class="text-[3.6vw] md:text-[24px] font-semibold md:font-bold text-gray-800">
+                <div class="absolute left-[16%] top-[10%] sm:top-2 ">
+                    <div class="text-[3.8vw] md:text-[28px] font-semibold md:font-bold text-gray-800">
                         โรงเรียนจริยธรรมศึกษามูลนิธิ
                     </div>
-                    <div class="text-[2.3vw] md:text-sm -mt-1 sm:-mt-2.5 md:-mt-2 font-base text-gray-800 tracking-wider">
+                    <div class="text-[2.4vw] sm:text-[2.5vw] md:text-[16px] -mt-1 sm:-mt-2.5 md:-mt-2 font-base text-gray-800 tracking-wider">
                         CHARIYATHAMSUKSA FOUNDATION SCHOOL
                     </div>
-                    <div class="text-[2vw] md:text-xs -mt-0.5 sm:-mt-2 md:-mt-1 text-gray-800">
+                    <div class="text-[2.4vw] md:text-sm -mt-0.5 sm:-mt-2 md:-mt-1 text-gray-800">
                         148 ม.8 ต.สะกอม อ.จะนะ จ.สงขลา 90130 โทร.081-5412281
                     </div>
                 </div>
 
+
+                <!--Open Edit Modal Button -->
                 <div @click="isEditModalOpen = true"
                     class="absolute z-50 top-0 right-2 text-white bg-gray-200/60 p-2 text-center rounded-full shadow-md cursor-pointer">
                     <Icon icon="dashicons:edit" width="20" height="20" />
                 </div>
                 <!-- Card Label - ปรับขนาดตาม % -->
-                <div class="absolute z-10 top-6 md:top-10 right-2 text-white bg-blue-700 px-2 py-1 text-end rounded-md">
+                <div class="absolute z-10 top-6 md:top-[52px] right-2 text-white bg-blue-700 px-2 py-1 text-end rounded-md">
                     <div class="text-[1.8vw] sm:text-[14px] font-semibold">บัตรประจำตัวนักเรียน</div>
                     <div class="text-[1.4vw] sm:text-[10px] opacity-90">STUDENT CARD</div>
                 </div>
@@ -259,20 +300,19 @@ const handleDeletePhoto = async () => {
             <!-- Main Content -->
             <div class="flex p-[3%] gap-[3%] h-[80%]">
                 <!-- Photo Section -->
-                <div
-                    class="w-[30%] aspect-[2/3] bg-white border-2 border-primary-blue rounded-xl overflow-hidden flex-shrink-0">
+                <div class="w-[30%] h-[75%] rounded-xl overflow-hidden flex-shrink-0">
 
                     <!-- Hidden File Input -->
                     <input type="file" ref="fileInput" @change="handlePhotoUpload" accept="image/*" class="hidden" />
 
                     <!-- Photo Display -->
                     <div v-if="previewImage || tempPhoto" class="w-full h-full relative">
-                        <img :src="studentImageUrl" alt="Student Photo" class="w-full h-full object-cover" />
-                        <!-- <div class="absolute bottom-2 right-2 bg-white p-1 rounded-full shadow-md cursor-pointer"
+                        <img :src="studentImageUrl" alt="Student Photo" class="w-full h-full object-fill" />
+                        <div class="absolute bottom-2 right-2 bg-white p-1 rounded-full shadow-md cursor-pointer"
                             @click="triggerFileInput">
                             <Icon icon="heroicons:pencil-solid" class="w-5 h-5 text-gray-600" />
-                        </div> -->
-
+                        </div>
+   
                         <button
                             class="absolute bottom-2 right-2 bg-white p-1 rounded-full shadow-md cursor-pointer focus:outline-none focus:ring"
                             @click="triggerFileInput"
@@ -301,20 +341,20 @@ const handleDeletePhoto = async () => {
                 <div class="flex-1 pt-0.5 relative">
                     <!-- Name -->
                     <div class="flex items-baseline">
-                        <span class="w-[25%] text-[2.2vw] sm:text-sm md:text-base font-medium text-gray-700">ชื่อ</span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700">:</span>
-                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
+                        <span class="w-[25%] text-[2.2vw] sm:text-md md:text-lg font-medium text-gray-700">ชื่อ</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700">:</span>
+                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
                             {{ editForm.student_fullname_th }}
                         </span>
                     </div>
                     <div class="flex items-baseline -mt-1">
                         <span class="w-[25%] text-[2vw] sm:text-xs font-normal text-gray-600">Name</span>
                     </div>
-                    <div class="flex items-baseline -mt-3 sm:-mt-4">
-                        <span class="w-[25%] text-[2.2vw] sm:text-sm md:text-base font-medium text-gray-700"></span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700 text-transparent">:</span>
+                    <div class="flex items-baseline -mt-3 sm:-mt-4 md:-mt-5">
+                        <span class="w-[25%] text-[2.2vw] sm:text-sm md:text-lg font-medium text-gray-700"></span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700 text-transparent">:</span>
                         <span class="flex-1 text-[1.8vw] sm:text-sm font-normal text-gray-800">
-                            {{ editForm.student_name_en }}
+                           {{ editForm.student_name_en ? studentPrefixName(editForm.prefix_name) : '' }} {{ editForm.student_name_en }}
                         </span>
                     </div>
 
@@ -322,9 +362,9 @@ const handleDeletePhoto = async () => {
                     <!-- Student Code -->
                     <div class="flex items-baseline mt-0.5">
                         <span
-                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-base font-medium text-gray-700">รหัสประจำตัว</span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700">:</span>
-                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
+                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-lg font-medium text-gray-700">รหัสประจำตัว</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700">:</span>
+                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
                             {{ editForm.student_id }}
                         </span>
                     </div>
@@ -337,8 +377,8 @@ const handleDeletePhoto = async () => {
                     <div class="flex items-baseline mt-0.5">
                         <span
                             class="w-[25%] text-[2.2vw] sm:text-sm font-medium text-gray-700">เลขบัตรประชาชน</span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700">:</span>
-                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700">:</span>
+                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
                             {{ formattedIdNumber }}
                         </span>
                     </div>
@@ -350,17 +390,17 @@ const handleDeletePhoto = async () => {
                     <!-- Level -->
                     <div class="flex items-baseline mt-0.5">
                         <span
-                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-base font-medium text-gray-700">
+                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-lg font-medium text-gray-700">
                             ระดับ
                         </span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700">:</span>
-                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700">:</span>
+                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
                             {{ editForm.level }}
                         </span>
                     </div>
                     <div class="flex items-baseline -mt-1.5 sm:-mt-2 md:-mt-2.5">
                         <span class="w-[25%] text-[2vw] sm:text-xs font-normal text-gray-600">Level</span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700 text-transparent">:</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700 text-transparent">:</span>
                         <span class="flex-1 text-[1.4vw] sm:text-[12px] font-normal text-gray-800">
                             {{ studentInfo.student_class < 4 ? 'LOWER SECONDARY' : 'UPPER SECONDARY' }}
                         </span>
@@ -369,31 +409,38 @@ const handleDeletePhoto = async () => {
                     <!-- Date of Birth -->
                     <div class="flex items-baseline mt-0.5">
                         <span
-                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-base font-medium text-gray-700">วันเกิด</span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700">:</span>
-                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
+                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-lg font-medium text-gray-700">วันเกิด</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700">:</span>
+                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
                             {{ new Date(editForm.date_of_birth).toLocaleDateString('th-TH', {
                                 day: '2-digit',
                                 month: '2-digit',
                                 year: 'numeric'
                             }) }}
                         </span>
-                            <!-- <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
-                                {{ formatDate(editForm.date_of_birth) }}
-                            </span> -->
+                        <!-- <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
+                            {{ formatDate(editForm.date_of_birth) }}
+                        </span> -->
                     </div>
-                    <div class="flex items-baseline -mt-1">
-                        <span class="w-[25%] text-[2vw] sm:text-xs font-normal text-gray-600">
-                            Date of Birth
+                    <div class="flex items-baseline -mt-1.5 sm:-mt-2 md:-mt-2.5">
+                        <span class="w-[25%] text-[2vw] sm:text-xs font-normal text-gray-600">Date of Birth</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700 text-transparent">:</span>
+                        <span class="flex-1 text-[1.4vw] sm:text-[12px] font-normal text-gray-800">
+                            <!-- {{ editForm.date_of_birth }} --> 
+                            {{ new Date(editForm.date_of_birth).toLocaleDateString('en-US', {
+                                month: '2-digit',
+                                day: '2-digit',
+                                year: 'numeric'
+                            }) }}
                         </span>
                     </div>
 
                     <!-- Expiry Date -->
                     <div class="flex items-baseline mt-0.5">
                         <span
-                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-base font-medium text-gray-700">วันหมดอายุ</span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700">:</span>
-                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
+                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-lg font-medium text-gray-700">วันหมดอายุ</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700">:</span>
+                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
                             <!-- {{ new Date(props.studentInfo.expiry_date).toLocaleDateString('th-TH', {
                                 day: '2-digit',
                                 month: '2-digit',
@@ -403,9 +450,12 @@ const handleDeletePhoto = async () => {
                             {{ formatDate(props.studentInfo.expiry_date) }}
                         </span>
                     </div>
-                    <div class="flex items-baseline -mt-1">
-                        <span class="w-[25%] text-[2vw] sm:text-xs font-normal text-gray-600">Expiry
-                            Date</span>
+                    <div class="flex items-baseline -mt-1.5 sm:-mt-2 md:-mt-2.5">
+                        <span class="w-[25%] text-[2vw] sm:text-xs font-normal text-gray-600">Expiry Date</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700 text-transparent">:</span>
+                        <span class="flex-1 text-[1.4vw] sm:text-[12px] font-normal text-gray-800">
+                            {{ '05/15/2027' }}
+                        </span>
                     </div>
                 </div>
 
@@ -514,6 +564,13 @@ const handleDeletePhoto = async () => {
                 </div>
             </Dialog>
         </div>
+        <!-- ปุ่มดาวน์โหลดบัตร -->
+        <!-- <button
+            @click="downloadCard"
+            class="download-btn ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+        >
+            <Icon icon="mdi:download" class="inline-block mr-2" /> ดาวน์โหลดบัตร
+        </button> -->
     </div>
 </template>
 
@@ -529,6 +586,7 @@ const handleDeletePhoto = async () => {
 }
 
 .student-card-container {
+/* 
     background: repeating-linear-gradient(135deg,
             #a6d7ff 0%,
             #a6d7ff 20%,
@@ -536,5 +594,9 @@ const handleDeletePhoto = async () => {
             #ffffff 60%,
             #a6d7ff 90%,
             #a6d7ff 100%);
+*/
+
+    background: url('/storage/images/std_card_bg2.png') center center no-repeat ;  
+
 }
 </style>

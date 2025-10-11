@@ -1,10 +1,11 @@
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import QRCodeVue3 from "qrcode-vue3";
 import { Icon } from '@iconify/vue';
 import Swal from 'sweetalert2';
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
-
+// import html2canvas from 'html2canvas' // เพิ่มบรรทัดนี้
+// import domtoimage from 'dom-to-image-more'
 // Props definition
 const props = defineProps({
     studentInfo: {
@@ -13,18 +14,12 @@ const props = defineProps({
     }
 })
 
-// const stringQrCode = computed(() => {
-//     return `${props.studentInfo.student_id}`;
-// })
-
 // Emit definition
 const emit = defineEmits(['update', 'upload-image'])
 
 // Reactive state
 const isEditStudentPhoto = ref(false)
-const isEditStudentId = ref(false)
-const isEditStudentNameTh = ref(false)
-const isEditStudentNameEn = ref(false)
+const isDeletingStudentPhoto = ref(false)
 const isSaving = ref(false)
 const isEditModalOpen = ref(false)
 // const editForm = reactive({ ...props.studentInfo })
@@ -37,16 +32,14 @@ const editForm = reactive({
     student_fullname_th: props.studentInfo.prefix_name + ' ' + props.studentInfo.student_name_th + ' ' + props.studentInfo.last_name_th,
     student_name_en: props.studentInfo.student_name_en,
     level: props.studentInfo.student_class < 4 ? "มัธยมศึกษาตอนต้น" : "มัธยมศึกษาตอนปลาย",
-    date_of_birth: props.studentInfo.date_of_birth_str
-    ? new Date(props.studentInfo.date_of_birth_str).toISOString().split('T')[0]
-    : '',  
-    id_number: props.studentInfo.id_card_no
+    date_of_birth: props.studentInfo.date_of_birth,
+    id_card_no: props.studentInfo.id_card_no
 })
 
 const formattedIdNumber = computed(() => {
-    if (!editForm.id_number) return '';
+    if (!editForm.id_card_no) return '';
     // Convert to string and ensure it's a valid value
-    const idString = String(editForm.id_number);
+    const idString = String(editForm.id_card_no);
     if (idString.length !== 13) return idString;
 
     // Remove non-digits and format
@@ -56,14 +49,15 @@ const formattedIdNumber = computed(() => {
 
 const fileInput = ref(null)
 const previewImage = ref(null)
+const tempPhoto = ref(props.studentInfo.student_image || null)
 
 // Computed properties
 const studentImageUrl = computed(() => {
     if (previewImage.value) {
         return previewImage.value
     }
-    if (props.studentInfo.student_image) {
-        return `/storage/images/students/${props.studentInfo.student_class}/${props.studentInfo.student_section}/${props.studentInfo.student_image}`
+    if (tempPhoto.value) {
+        return `/storage/images/students/${props.studentInfo.student_class}/${props.studentInfo.student_section}/${tempPhoto.value}`
     }
     return null
 })
@@ -79,227 +73,92 @@ const handlePhotoUpload = (event) => {
     reader.onload = (e) => {
         previewImage.value = e.target.result
         isEditStudentPhoto.value = true
-        // Emit upload event with the file
-        emit('upload-image', {
-            id: props.studentInfo.id,
-            studentId: props.studentInfo.student_id,
-            file
-        })
+        // upload photo to server
+        handlePhotoUploadToServer(props.studentInfo.id, props.studentInfo.student_id, file)
+        
     }
     reader.readAsDataURL(file)
+}
+
+const handlePhotoUploadToServer = async (id, studentId, file) => {
+    if (!file || !studentId) return
+
+    const formData = new FormData()
+    formData.append('photo', file)
+    formData.append('_method', 'patch')
+
+    try {
+        const response = await axios.post(`/student/upload-photo/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+
+        if (response.data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'อัพโหลดรูปภาพสำเร็จ',
+                text: response.data.message,
+                confirmButtonText: 'ตกลง'
+            })
+            // tempPhoto.value = response.data.photo // Update tempPhoto with the new photo
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: response.data.message || 'ไม่สามารถอัพโหลดรูปภาพได้',
+                confirmButtonText: 'ตกลง'
+            })
+        }
+    } catch (error) {
+        console.error('Upload failed:', error)
+        Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'ไม่สามารถอัพโหลดรูปภาพได้',
+            confirmButtonText: 'ตกลง'
+        })
+    } finally {
+        isEditStudentPhoto.value = false
+        fileInput.value.value = '' // Clear the file input
+    }
 }
 
 const triggerFileInput = () => {
     fileInput.value.click()
 }
 
-const handleSaveEditStudentId = async () => {
-
-    if (!editForm.student_id || editForm.student_id.trim() === '') {
-        Swal.fire({
-            title: 'กรุณากรอกรหัสประจำตัวนักเรียน',
-            icon: 'warning',
-            confirmButtonText: 'ตกลง'
-        })
-        return
-    }
-    try {
-        isSaving.value = true
-        // Prepare data for API request
-        const updatedData = {
-            id: props.studentInfo.id,
-            student_id: editForm.student_id ?? props.studentInfo.student_id,
-        }
-
-        const response = await axios.patch(`/student/update-code/${updatedData.id}`, updatedData)
-        if (response.data.success) {
-
-            Swal.fire({
-                title: 'บันทึกข้อมูลสำเร็จ',
-                icon: 'success',
-                confirmButtonText: 'ตกลง'
-            })
-
-        } else {
-            Swal.fire({
-                title: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล! กรุณาตรวจสอบข้อมูลอีกครั้ง',
-                icon: 'error',
-                confirmButtonText: 'ตกลง'
-            })
-        }
-
-    } catch (error) {
-        console.error('Error updating student ID:', error)
-    } finally {
-        isSaving.value = false
-        isEditStudentId.value = false
-        isEditStudentNameTh.value = false
-        isEditStudentNameEn.value = false
-    }
-
-}
-
-const handleCancelEditStudentId = () => {
-    isEditStudentId.value = false
-    editForm.student_id = props.studentInfo.student_id
-}
-
-const handleSaveEditStudentNameTh = async () => {
-
-    try {
-        isSaving.value = true
-        // Prepare data for API request
-        const updatedData = {
-            id: props.studentInfo.id,
-            student_name_th: editForm.student_name_th,
-        }
-
-        const response = await axios.patch(`/student/update-name-th/${updatedData.id}`, updatedData)
-        if (response.data.success) {
-
-            Swal.fire({
-                title: 'บันทึกข้อมูลสำเร็จ',
-                icon: 'success',
-                confirmButtonText: 'ตกลง'
-            })
-
-        } else {
-            Swal.fire({
-                title: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล! กรุณาตรวจสอบข้อมูลอีกครั้ง',
-                icon: 'error',
-                confirmButtonText: 'ตกลง'
-            })
-        }
-
-    } catch (error) {
-        console.error('Error updating student name TH:', error)
-    } finally {
-        isSaving.value = false
-        isEditStudentId.value = false
-        isEditStudentNameTh.value = false
-        isEditStudentNameEn.value = false
-    }
-
-}
-
-const handleCancelEditStudentNameTh = () => {
-    isEditStudentNameTh.value = false
-    editForm.student_name_th = props.studentInfo.student_name_th
-}
-
-const handleSaveEditStudentNameEn = async () => {
-
-    try {
-        isSaving.value = true
-        // Prepare data for API request
-        const updatedData = {
-            id: props.studentInfo.id,
-            student_name_en: editForm.student_name_en,
-        }
-
-        const response = await axios.patch(`/student/update-name-en/${updatedData.id}`, updatedData)
-        if (response.data.success) {
-
-            Swal.fire({
-                title: 'บันทึกข้อมูลสำเร็จ',
-                icon: 'success',
-                confirmButtonText: 'ตกลง'
-            })
-
-        } else {
-            Swal.fire({
-                title: 'เกิดข้อผิดพลาดในการบันทึกข้อมูล! กรุณาตรวจสอบข้อมูลอีกครั้ง',
-                icon: 'error',
-                confirmButtonText: 'ตกลง'
-            })
-        }
-
-    } catch (error) {
-        console.error('Error updating student name EN:', error)
-    } finally {
-        isSaving.value = false
-        isEditStudentId.value = false
-        isEditStudentNameTh.value = false
-        isEditStudentNameEn.value = false
-    }
-
-}
-
-const handleCancelEditStudentNameEn = () => {
-    isEditStudentNameEn.value = false
-    editForm.student_name_en = props.studentInfo.student_name_en
-}
-
-const setEditing = (field) => {
-    if (field === 'student_id') {
-        isEditStudentId.value = true
-        isEditStudentNameTh.value = false
-        isEditStudentNameEn.value = false
-    } else if (field === 'student_name_th') {
-        isEditStudentNameTh.value = true
-        isEditStudentId.value = false
-        isEditStudentNameEn.value = false
-    } else if (field === 'student_name_en') {
-        isEditStudentNameEn.value = true
-        isEditStudentId.value = false
-        isEditStudentNameTh.value = false
-    }
-}
-
-function formatDateYMD(dateStr) {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return '';
-    const y = date.getFullYear();
-    const m = (date.getMonth() + 1).toString().padStart(2, '0');
-    const d = date.getDate().toString().padStart(2, '0');
-    return `${m}-${d}-${y}`;
-}
 // Add method to handle form submission
 const handleSubmit = async () => {
     try {
         isSaving.value = true
 
-        // console.log('Submitting edit form:', editForm);
+        const payload = {
+            id_card_no: editForm.id_card_no,
+            student_id: editForm.student_id,
+            prefix_name: editForm.prefix_name,
+            student_name_th: editForm.student_name_th,
+            last_name_th: editForm.last_name_th,
+            student_name_en: editForm.student_name_en,
+            date_of_birth: editForm.date_of_birth // เพิ่มฟิลด์นี้
+        }
 
-        const formData = new FormData()
-        formData.append('_method', 'PUT') // Add method override for Laravel
-        formData.append('id_card_no', editForm.id_number)
-        formData.append('student_id', editForm.student_id)
-        formData.append('prefix_name', editForm.prefix_name)
-        formData.append('student_name_th', editForm.student_name_th)
-        formData.append('last_name_th', editForm.last_name_th)
-        formData.append('student_name_en', editForm.student_name_en)
-        // formData.append('date_of_birth_str', editForm.date_of_birth) // Convert to ISO format
-
-        // const response = await axios.post(`/student/card/${editForm.id}`, editForm, {
-        //     headers: {
-        //         'Content-Type': 'multipart/form-data'
-        //     }
-        // }) 
-
-        // const payload = {
-        //     ...editForm,
-        //     date_of_birth: formatDateYMD(editForm.date_of_birth), // ส่งเป็น Y/m/d
-        // }
-
-        const response = await axios.put(`/student/card/${editForm.id}`, formData, {
+        const response = await axios.put(`/student/card/${editForm.id}`, payload, {
             headers: {
                 'Content-Type': 'application/json'
             }
         });
 
         if (response.data.success) {
-            console.log(response.data);
             Swal.fire({
                 title: 'บันทึกข้อมูลสำเร็จ',
                 icon: 'success',
                 confirmButtonText: 'ตกลง'
             })
             isEditModalOpen.value = false
+
         }
     } catch (error) {
-        console.error('Error updating student:', error)
         Swal.fire({
             title: 'เกิดข้อผิดพลาด',
             text: 'ไม่สามารถบันทึกข้อมูลได้',
@@ -330,41 +189,46 @@ const formatDate = (dateString) => {
         return '-';
     }
 }
+
+
+
+
 </script>
 
 <template>
     <div class="flex justify-center items-center font-sarabun">
-        <div
-            class="student-card-container w-full max-w-[640px] aspect-[1.95/1.10] relative overflow-hidden rounded-2xl shadow-lg border border-gray-300">
+        <div class="student-card-container w-full max-w-[640px] aspect-[1.95/1.20] relative overflow-hidden rounded-2xl shadow-lg border border-gray-300">
             <!-- Top Section -->
             <div class="h-[20%] bg-gradient-to-br from-gray-50 to-gray-200 relative"
                 style="background: linear-gradient(135deg, transparent 40%, #4a90e2 0%);">
                 <!-- School Logo - ใช้ % แทน px -->
                 <div
-                    class="absolute -left-2  md:-left-3 -top-[16px] sm:-top-[28px] w-[22%] aspect-square rounded-full border-1 border-white flex items-center justify-center">
+                    class="absolute -left-2  md:-left-3 -top-[16px] sm:-top-[28px] md:-top-[22px] w-[22%] aspect-square rounded-full border-1 border-white flex items-center justify-center">
                     <img src="/storage/jsm_logo.png" alt="School Logo"
                         class="w-[56%] h-[56%] object-cover rounded-full">
                 </div>
 
                 <!-- School Information - ปรับ font size ให้ responsive -->
-                <div class="absolute left-[16%] top-[10%] sm:top-[6%] ">
-                    <div class="text-[3.6vw] md:text-[24px] font-semibold md:font-bold text-gray-800">
+                <div class="absolute left-[16%] top-[10%] sm:top-2 ">
+                    <div class="text-[3.8vw] md:text-[28px] font-semibold md:font-bold text-gray-800">
                         โรงเรียนจริยธรรมศึกษามูลนิธิ
                     </div>
-                    <div class="text-[2.3vw] md:text-sm -mt-1 md:-mt-2 font-base text-gray-800 tracking-wider">
+                    <div class="text-[2.4vw] sm:text-[2.5vw] md:text-[16px] -mt-1 sm:-mt-2.5 md:-mt-2 font-base text-gray-800 tracking-wider">
                         CHARIYATHAMSUKSA FOUNDATION SCHOOL
                     </div>
-                    <div class="text-[2vw] md:text-xs -mt-0.5 md:-mt-1 text-gray-800">
+                    <div class="text-[2.4vw] md:text-sm -mt-0.5 sm:-mt-2 md:-mt-1 text-gray-800">
                         148 ม.8 ต.สะกอม อ.จะนะ จ.สงขลา 90130 โทร.081-5412281
                     </div>
                 </div>
 
-                <div @click="isEditModalOpen = true"
+
+                <!--Open Edit Modal Button -->
+                <!-- <div @click="isEditModalOpen = true"
                     class="absolute z-50 top-0 right-2 text-white bg-gray-200/60 p-2 text-center rounded-full shadow-md cursor-pointer">
                     <Icon icon="dashicons:edit" width="20" height="20" />
-                </div>
+                </div> -->
                 <!-- Card Label - ปรับขนาดตาม % -->
-                <div class="absolute z-10 top-6 md:top-10 right-2 text-white bg-blue-700 px-2 py-1 text-end rounded-md">
+                <div class="absolute z-10 top-6 md:top-[52px] right-2 text-white bg-blue-700 px-2 py-1 text-end rounded-md">
                     <div class="text-[1.8vw] sm:text-[14px] font-semibold">บัตรประจำตัวนักเรียน</div>
                     <div class="text-[1.4vw] sm:text-[10px] opacity-90">STUDENT CARD</div>
                 </div>
@@ -373,20 +237,35 @@ const formatDate = (dateString) => {
             <!-- Main Content -->
             <div class="flex p-[3%] gap-[3%] h-[80%]">
                 <!-- Photo Section -->
-                <div
-                    class="w-[30%] aspect-[2/3] bg-white border-2 border-primary-blue rounded-xl overflow-hidden flex-shrink-0">
+                <div class="w-[30%] h-[75%] rounded-xl overflow-hidden flex-shrink-0">
 
                     <!-- Hidden File Input -->
                     <input type="file" ref="fileInput" @change="handlePhotoUpload" accept="image/*" class="hidden" />
 
                     <!-- Photo Display -->
-                    <div v-if="previewImage || studentInfo.student_image" class="w-full h-full relative">
+                    <div v-if="previewImage || tempPhoto" class="w-full h-full relative">
                         <img :src="studentImageUrl" alt="Student Photo" class="w-full h-full object-cover" />
-                        <div class="absolute bottom-2 right-2 bg-white p-1 rounded-full shadow-md cursor-pointer"
+                        <!-- <div class="absolute bottom-2 right-2 bg-white p-1 rounded-full shadow-md cursor-pointer"
                             @click="triggerFileInput">
                             <Icon icon="heroicons:pencil-solid" class="w-5 h-5 text-gray-600" />
-                        </div>
-
+                        </div> -->
+   
+                        <!-- <button
+                            class="absolute bottom-2 right-2 bg-white p-1 rounded-full shadow-md cursor-pointer focus:outline-none focus:ring"
+                            @click="triggerFileInput"
+                            aria-label="เปลี่ยนรูป"
+                        >
+                            <Icon icon="eos-icons:bubble-loading" class="w-5 h-5 text-gray-600" v-if="isEditStudentPhoto" />
+                            <Icon icon="heroicons:pencil-solid" class="w-5 h-5 text-gray-600" v-else />
+                        </button>
+                        <button
+                            class="absolute bottom-2 left-2 bg-red-500 p-1 rounded-full shadow-md cursor-pointer focus:outline-none focus:ring"
+                            @click="handleDeletePhoto"
+                            aria-label="ลบรูป">
+                
+                            <Icon v-if="isDeletingStudentPhoto" icon="eos-icons:bubble-loading" class="w-5 h-5 text-white" />
+                            <Icon v-if="!isDeletingStudentPhoto && studentImageUrl" icon="heroicons:trash-solid" class="w-5 h-5 text-white" />
+                        </button> -->
                     </div>
 
                     <!-- Default Avatar -->
@@ -399,18 +278,18 @@ const formatDate = (dateString) => {
                 <div class="flex-1 pt-0.5 relative">
                     <!-- Name -->
                     <div class="flex items-baseline">
-                        <span class="w-[25%] text-[2.2vw] sm:text-sm md:text-base font-medium text-gray-700">ชื่อ</span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700">:</span>
-                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
+                        <span class="w-[25%] text-[2.2vw] sm:text-md md:text-lg font-medium text-gray-700">ชื่อ</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700">:</span>
+                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
                             {{ editForm.student_fullname_th }}
                         </span>
                     </div>
                     <div class="flex items-baseline -mt-1">
                         <span class="w-[25%] text-[2vw] sm:text-xs font-normal text-gray-600">Name</span>
                     </div>
-                    <div class="flex items-baseline -mt-3 sm:-mt-4">
-                        <span class="w-[25%] text-[2.2vw] sm:text-sm md:text-base font-medium text-gray-700"></span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700 text-transparent">:</span>
+                    <div class="flex items-baseline -mt-3 sm:-mt-4 md:-mt-5">
+                        <span class="w-[25%] text-[2.2vw] sm:text-sm md:text-lg font-medium text-gray-700"></span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700 text-transparent">:</span>
                         <span class="flex-1 text-[1.8vw] sm:text-sm font-normal text-gray-800">
                             {{ editForm.student_name_en }}
                         </span>
@@ -420,9 +299,9 @@ const formatDate = (dateString) => {
                     <!-- Student Code -->
                     <div class="flex items-baseline mt-0.5">
                         <span
-                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-base font-medium text-gray-700">รหัสประจำตัว</span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700">:</span>
-                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
+                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-lg font-medium text-gray-700">รหัสประจำตัว</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700">:</span>
+                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
                             {{ editForm.student_id }}
                         </span>
                     </div>
@@ -435,8 +314,8 @@ const formatDate = (dateString) => {
                     <div class="flex items-baseline mt-0.5">
                         <span
                             class="w-[25%] text-[2.2vw] sm:text-sm font-medium text-gray-700">เลขบัตรประชาชน</span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700">:</span>
-                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700">:</span>
+                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
                             {{ formattedIdNumber }}
                         </span>
                     </div>
@@ -448,17 +327,17 @@ const formatDate = (dateString) => {
                     <!-- Level -->
                     <div class="flex items-baseline mt-0.5">
                         <span
-                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-base font-medium text-gray-700">
+                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-lg font-medium text-gray-700">
                             ระดับ
                         </span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700">:</span>
-                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700">:</span>
+                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
                             {{ editForm.level }}
                         </span>
                     </div>
-                    <div class="flex items-baseline -mt-1.5 sm:-mt-2.5">
+                    <div class="flex items-baseline -mt-1.5 sm:-mt-2 md:-mt-2.5">
                         <span class="w-[25%] text-[2vw] sm:text-xs font-normal text-gray-600">Level</span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700 text-transparent">:</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700 text-transparent">:</span>
                         <span class="flex-1 text-[1.4vw] sm:text-[12px] font-normal text-gray-800">
                             {{ studentInfo.student_class < 4 ? 'LOWER SECONDARY' : 'UPPER SECONDARY' }}
                         </span>
@@ -467,30 +346,38 @@ const formatDate = (dateString) => {
                     <!-- Date of Birth -->
                     <div class="flex items-baseline mt-0.5">
                         <span
-                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-base font-medium text-gray-700">วันเกิด</span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700">:</span>
-                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
+                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-lg font-medium text-gray-700">วันเกิด</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700">:</span>
+                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
                             {{ new Date(editForm.date_of_birth).toLocaleDateString('th-TH', {
                                 day: '2-digit',
                                 month: '2-digit',
                                 year: 'numeric'
                             }) }}
                         </span>
-                            <!-- <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
-                                {{ formatDate(editForm.date_of_birth) }}
-                            </span> -->
+                        <!-- <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
+                            {{ formatDate(editForm.date_of_birth) }}
+                        </span> -->
                     </div>
-                    <div class="flex items-baseline -mt-1">
-                        <span class="w-[25%] text-[2vw] sm:text-xs font-normal text-gray-600">Date of
-                            Birth</span>
+                    <div class="flex items-baseline -mt-1.5 sm:-mt-2 md:-mt-2.5">
+                        <span class="w-[25%] text-[2vw] sm:text-xs font-normal text-gray-600">Date of Birth</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700 text-transparent">:</span>
+                        <span class="flex-1 text-[1.4vw] sm:text-[12px] font-normal text-gray-800">
+                            <!-- {{ editForm.date_of_birth }} --> 
+                            {{ new Date(editForm.date_of_birth).toLocaleDateString('en-US', {
+                                month: '2-digit',
+                                day: '2-digit',
+                                year: 'numeric'
+                            }) }}
+                        </span>
                     </div>
 
                     <!-- Expiry Date -->
                     <div class="flex items-baseline mt-0.5">
                         <span
-                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-base font-medium text-gray-700">วันหมดอายุ</span>
-                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-base text-gray-700">:</span>
-                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-base font-semibold text-gray-800">
+                            class="w-[25%] text-[2.2vw] sm:text-sm md:text-lg font-medium text-gray-700">วันหมดอายุ</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700">:</span>
+                        <span class="flex-1 text-[2.4vw] sm:text-sm md:text-lg font-semibold text-gray-800">
                             <!-- {{ new Date(props.studentInfo.expiry_date).toLocaleDateString('th-TH', {
                                 day: '2-digit',
                                 month: '2-digit',
@@ -500,9 +387,12 @@ const formatDate = (dateString) => {
                             {{ formatDate(props.studentInfo.expiry_date) }}
                         </span>
                     </div>
-                    <div class="flex items-baseline -mt-1">
-                        <span class="w-[25%] text-[2vw] sm:text-xs font-normal text-gray-600">Expiry
-                            Date</span>
+                    <div class="flex items-baseline -mt-1.5 sm:-mt-2 md:-mt-2.5">
+                        <span class="w-[25%] text-[2vw] sm:text-xs font-normal text-gray-600">Expiry Date</span>
+                        <span class="mx-[1%] text-[2.2vw] sm:text-sm md:text-lg text-gray-700 text-transparent">:</span>
+                        <span class="flex-1 text-[1.4vw] sm:text-[12px] font-normal text-gray-800">
+                            {{ '05/15/2027' }}
+                        </span>
                     </div>
                 </div>
 
@@ -519,7 +409,7 @@ const formatDate = (dateString) => {
                             }" 
                             :cornersDotOptions="{ type: 'square', color: '#4a90e2' }" 
                         /> -->
-                        <QRCodeVue3 :value="`${props.studentInfo.student_id + props.studentInfo.student_name_en}`"
+                        <QRCodeVue3 :value="`${props.studentInfo.student_id}`"
                             :cornersSquareOptions="{ type: 'extra-rounded', color: '#000' }" :dotsOptions="{
                                 type: 'dots',
                                 color: '#000',
@@ -584,16 +474,16 @@ const formatDate = (dateString) => {
                             <!-- ID Number -->
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">เลขประจำตัวประชาชน</label>
-                                <input type="text" v-model="editForm.id_number"
+                                <input type="text" v-model="editForm.id_card_no"
                                     class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
                             </div>
 
                             <!-- Birth Date -->
-                            <!-- <div class="mb-6">
+                            <div class="mb-6">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">วันเกิด</label>
                                 <input type="date" v-model="editForm.date_of_birth"
                                     class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" />
-                            </div>   -->
+                            </div>
 
                             <!-- Buttons -->
                             <div class="flex justify-end gap-2">
@@ -611,6 +501,13 @@ const formatDate = (dateString) => {
                 </div>
             </Dialog>
         </div>
+        <!-- ปุ่มดาวน์โหลดบัตร -->
+        <!-- <button
+            @click="downloadCard"
+            class="download-btn ml-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+        >
+            <Icon icon="mdi:download" class="inline-block mr-2" /> ดาวน์โหลดบัตร
+        </button> -->
     </div>
 </template>
 
@@ -633,5 +530,8 @@ const formatDate = (dateString) => {
             #ffffff 60%,
             #a6d7ff 90%,
             #a6d7ff 100%);
+
+    /* background: url('http://localhost:8000/storage/jsm_logo.png') center center/380px no-repeat ; */
+
 }
 </style>
