@@ -22,28 +22,26 @@ export default defineConfig({
         alias: {
             '@': '/resources/js',
         },
-        // Prevent circular dependency issues
-        dedupe: ['vue', '@vue/runtime-core', '@vue/runtime-dom']
+        // Only dedupe Vue itself, let Vite handle internal dependencies
+        dedupe: ['vue']
     },
     optimizeDeps: {
         // Force pre-bundling of these dependencies to avoid circular issues
         include: [
             'vue',
-            '@vue/runtime-core',
-            '@vue/runtime-dom',
             '@inertiajs/vue3',
             'primevue/config',
             'pinia'
-        ]
+        ],
+        // Exclude Vue internals from optimization to prevent circular dependencies
+        exclude: ['@vue/runtime-core', '@vue/runtime-dom']
     },
     build: {
         rollupOptions: {
             output: {
                 manualChunks: (id) => {
-                    // Vendor chunk for Vue core
-                    if (id.includes('vue') && !id.includes('primevue')) {
-                        return 'vue-core';
-                    }
+                    // Keep Vue core modules together to avoid circular dependencies
+                    // Don't separate Vue into its own chunk - include it with vendor
                     
                     // PrimeVue core
                     if (id.includes('primevue/config') || 
