@@ -277,13 +277,11 @@ const handleGetDonate = async (donateId, idx) => {
                             </figure>
                             <div class="grid mx-auto">
                                 <p class="pb-1 text-sm">ให้การสนับสนุน</p>
-                                <p class="w-full pt-2 text-4xl font-bold tracking-tight ">
-                                    <div class="w-full flex justify-center ">
-                                        <span class="text-[28px] text-yellow-400">{{ donate.total_points.toLocaleString() }}/</span>
-                                        <span class="text-[16px] text-yellow-400 mt-1"><span class="text-[14px] text-blue-500 mt-1 ml-1">คงเหลือ </span>{{ donate.remaining_points }}</span>
-                                        <span class="text-[14px] mt-1 ml-1"> แต้ม</span>
-                                    </div>
-                                </p>
+                                <div class="w-full pt-2 text-4xl font-bold tracking-tight flex justify-center">
+                                    <span class="text-[28px] text-yellow-400">{{ donate.total_points.toLocaleString() }}/</span>
+                                    <span class="text-[16px] text-yellow-400 mt-1"><span class="text-[14px] text-blue-500 mt-1 ml-1">คงเหลือ </span>{{ donate.remaining_points }}</span>
+                                    <span class="text-[14px] mt-1 ml-1"> แต้ม</span>
+                                </div>
                             </div>
                         </div>
                     </div>
