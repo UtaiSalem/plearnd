@@ -235,11 +235,11 @@ const navigateToMemberSettings = (courseId, memberId) => {
     <td :class="gradeStatus ? 'bg-green-200 text-green-800' : 'bg-red-50 text-red-600'"
         class="px-2 py-0 border border-slate-300 text-center text-lg font-bold">
         <span class="rounded-md px-2" v-if="gradeStatus"
-            :class="`bg-${gradeProgress(gradePercentage).color}-300 text-${gradeProgress(gradePercentage).color}-600`">
+            :class="`bg-${gradeProgress(gradePercentage).color}-300 text-${gradeProgress(gradePercentage).color}-800`">
             {{  gradeProgress(gradePercentage).grade }}
         </span>
         <span class="rounded-md px-2" v-else
-            :class="`bg-${gradeProgress(gradePercentage).color}-300 text-${gradeProgress(gradePercentage).color}-600`">
+            :class="`bg-${gradeProgress(gradePercentage).color}-300 text-${gradeProgress(gradePercentage).color}-800`">
             ร
         </span>
     </td>
