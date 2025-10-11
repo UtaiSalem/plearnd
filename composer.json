@@ -6,10 +6,10 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "blade-ui-kit/blade-heroicons": "*",
         "blade-ui-kit/blade-icons": "*",
-        "filament/filament": "^3.3",
+        "filament/filament": "^4.0",
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.0",
         "laravel/jetstream": "^5.3",
@@ -82,9 +82,8 @@
             "php-http/discovery": true
         },
         "platform": {
-            "php": "8.2.29"
-        },
-        "platform-check": false
+            "php": "8.3.0"
+        }
     },
     "minimum-stability": "stable",
     "prefer-stable": true

@@ -5,9 +5,10 @@ namespace App\Filament\PlearndAdmin\Resources;
 use App\Filament\PlearndAdmin\Resources\DonateResource\Pages;
 use App\Filament\PlearndAdmin\Resources\DonateResource\RelationManagers;
 use App\Models\Donate;
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,11 +18,11 @@ class DonateResource extends Resource
 {
     protected static ?string $model = Donate::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
+    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-currency-dollar';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 //
             ]);
