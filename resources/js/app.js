@@ -135,6 +135,11 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
+        // Add error handling for initialization issues
+        if (!el) {
+            console.error('Cannot find root element for Vue app');
+            return;
+        }
         const app = createApp({ render: () => h(App, props) });
         
         // Use plugins first

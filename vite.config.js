@@ -21,7 +21,20 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': '/resources/js',
-        }
+        },
+        // Prevent circular dependency issues
+        dedupe: ['vue', '@vue/runtime-core', '@vue/runtime-dom']
+    },
+    optimizeDeps: {
+        // Force pre-bundling of these dependencies to avoid circular issues
+        include: [
+            'vue',
+            '@vue/runtime-core',
+            '@vue/runtime-dom',
+            '@inertiajs/vue3',
+            'primevue/config',
+            'pinia'
+        ]
     },
     build: {
         rollupOptions: {
