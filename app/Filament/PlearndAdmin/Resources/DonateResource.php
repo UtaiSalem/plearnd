@@ -6,22 +6,22 @@ use App\Filament\PlearndAdmin\Resources\DonateResource\Pages;
 use App\Filament\PlearndAdmin\Resources\DonateResource\RelationManagers;
 use App\Models\Donate;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
+use Filament\Forms;
+use Filament\Forms\Form;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use BackedEnum;
 
 class DonateResource extends Resource
 {
     protected static ?string $model = Donate::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
+    protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
 
-    public static function form(Schema $schema): Schema
+    public static function form(Form $form): Form
     {
-        return $schema
+        return $form
             ->schema([
                 //
             ]);
