@@ -5,9 +5,7 @@ import 'flowbite/dist/flowbite.js';
 import 'flowbite';
 import 'vue-plyr/dist/vue-plyr.css';
 
-import 'primevue/resources/themes/lara-light-green/theme.css'
-import "primeicons/primeicons.css";
-import 'primevue/resources/primevue.min.css';
+// PrimeVue styles will be imported later to avoid conflicts
 
 import AutoComplete from 'primevue/autocomplete';
 import Accordion from 'primevue/accordion';
@@ -118,19 +116,17 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import { createPinia } from 'pinia';
 import VuePlyr from 'vue-plyr';
-import 'vue-plyr/dist/vue-plyr.css';
 import PrimeVue from 'primevue/config';
-
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import InfiniteLoading from 'v3-infinite-loading';
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
-// PrimeVue styles
-import 'primevue/resources/themes/saga-blue/theme.css';       // theme
-import 'primevue/resources/primevue.css';                     // core css
-import 'primeicons/primeicons.css';                          // icons
+// PrimeVue styles - consolidated
+import 'primevue/resources/themes/saga-blue/theme.css';
+import 'primevue/resources/primevue.css';
+import 'primeicons/primeicons.css';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Plearnd';
 const pinia = createPinia();
@@ -140,29 +136,32 @@ createInertiaApp({
     resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
         const app = createApp({ render: () => h(App, props) });
-        app.use(plugin)
-        app.use(ZiggyVue)
-        app.use(pinia)
-        // app.use(VuePlyr);
-        app.use(VuePlyr, { plyr: {} })
-        app.use(PrimeVue)
-        app.use(ConfirmationService)
-        app.use(ToastService)
-        app.use(DialogService)
-        app.use(VueSweetalert2)
+        
+        // Use plugins first
+        app.use(plugin);
+        app.use(ZiggyVue);
+        app.use(pinia);
+        app.use(VuePlyr, { plyr: {} });
+        app.use(PrimeVue);
+        app.use(ConfirmationService);
+        app.use(ToastService);
+        app.use(DialogService);
+        app.use(VueSweetalert2);
 
-        .directive('tooltip', Tooltip)
-        .directive('badge', BadgeDirective)
-        .directive('ripple', Ripple)
-        .directive('styleclass', StyleClass)
-        .directive('focustrap', FocusTrap)
-        .directive('animateonscroll', AnimateOnScroll)
+        // Register directives
+        app.directive('tooltip', Tooltip);
+        app.directive('badge', BadgeDirective);
+        app.directive('ripple', Ripple);
+        app.directive('styleclass', StyleClass);
+        app.directive('focustrap', FocusTrap);
+        app.directive('animateonscroll', AnimateOnScroll);
         
         // Register global components
-        app.component('Datepicker', Datepicker)
-        app.component('InfiniteLoading', InfiniteLoading)
+        app.component('Datepicker', Datepicker);
+        app.component('InfiniteLoading', InfiniteLoading);
         
-        .component('Accordion', Accordion)
+        // Register PrimeVue components
+        app.component('Accordion', Accordion)
         .component('AccordionTab', AccordionTab)
         .component('AutoComplete', AutoComplete)
         .component('Avatar', Avatar)
