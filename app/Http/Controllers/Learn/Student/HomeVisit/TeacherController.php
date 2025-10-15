@@ -31,9 +31,10 @@ class TeacherController extends Controller
 
         // Get unique classrooms for filter
         $classrooms = Student::join('student_academic_info', 'students.id', '=', 'student_academic_info.student_id')
+            ->where('student_academic_info.is_current', true)
             ->distinct()
-            ->orderBy('student_academic_info.classroom')
-            ->pluck('student_academic_info.classroom')
+            ->orderBy('student_academic_info.current_class')
+            ->pluck('student_academic_info.current_class')
             ->filter();
 
         return Inertia::render('Learn/Student/HomeVisit/Teacher/Dashboard', [
@@ -83,7 +84,7 @@ class TeacherController extends Controller
         // Filter by classroom through academic info
         if ($request->classroom) {
             $query->whereHas('academicInfo', function($q) use ($request) {
-                $q->where('classroom', $request->classroom);
+                $q->where('current_class', $request->classroom);
             });
         }
 
@@ -94,9 +95,10 @@ class TeacherController extends Controller
 
         // Get unique classrooms for filter
         $classrooms = Student::join('student_academic_info', 'students.id', '=', 'student_academic_info.student_id')
+            ->where('student_academic_info.is_current', true)
             ->distinct()
-            ->orderBy('student_academic_info.classroom')
-            ->pluck('student_academic_info.classroom')
+            ->orderBy('student_academic_info.current_class')
+            ->pluck('student_academic_info.current_class')
             ->filter();
 
         // Get stats for dashboard

@@ -204,8 +204,8 @@ const handleAdminLogin = () => {
                                 <input 
                                     v-model="teacherForm.password"
                                     type="password" 
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                    placeholder="ใส่รหัสผ่าน"
+                                    class="w-full px-4 py-3 border placeholder:text-gray-400 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    placeholder="รหัสผ่าน"
                                     required
                                 />
                                 <div v-if="teacherForm.errors.password" class="text-red-500 text-sm mt-1">
