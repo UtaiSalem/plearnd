@@ -35,7 +35,8 @@ class TeacherController extends Controller
             ->distinct()
             ->orderBy('student_academic_info.current_class')
             ->pluck('student_academic_info.current_class')
-            ->filter();
+            ->filter()
+            ->values(); // Convert to array
 
         return Inertia::render('Learn/Student/HomeVisit/Teacher/Dashboard', [
             'students' => (object)['data' => []], // Empty initial state
@@ -99,7 +100,8 @@ class TeacherController extends Controller
             ->distinct()
             ->orderBy('student_academic_info.current_class')
             ->pluck('student_academic_info.current_class')
-            ->filter();
+            ->filter()
+            ->values(); // Convert to array
 
         // Get stats for dashboard
         $stats = [
