@@ -221,6 +221,10 @@ const props = defineProps({
   student: {
     type: Object,
     required: true
+  },
+  context: {
+    type: String,
+    default: 'student' // 'student' or 'teacher'
   }
 })
 

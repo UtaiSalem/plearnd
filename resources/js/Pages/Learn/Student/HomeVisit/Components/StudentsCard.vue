@@ -15,6 +15,10 @@ const props = defineProps({
   isLoading: {
     type: Boolean,
     default: false
+  },
+  context: {
+    type: String,
+    default: 'student' // 'student' or 'teacher'
   }
 })
 
