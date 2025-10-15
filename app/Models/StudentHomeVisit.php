@@ -280,4 +280,28 @@ class StudentHomeVisit extends Model
             'postal_code' => $student->addresses->first()->postal_code ?? '',
         ], $visitData));
     }
+
+    /**
+     * Get the images for this home visit
+     */
+    public function images()
+    {
+        return $this->hasMany(HomeVisitImage::class, 'home_visit_id');
+    }
+
+    /**
+     * Get the evidence images
+     */
+    public function evidenceImages()
+    {
+        return $this->images()->where('image_type', 'evidence');
+    }
+
+    /**
+     * Get the activity images
+     */
+    public function activityImages()
+    {
+        return $this->images()->where('image_type', 'activity');
+    }
 }

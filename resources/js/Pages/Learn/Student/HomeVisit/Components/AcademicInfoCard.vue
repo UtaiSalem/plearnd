@@ -51,7 +51,11 @@ const formData = ref({
 // Initialize academic records on component mount
 onMounted(async () => {
   try {
-    await loadAcademicInfoFromAPI()
+    if (props.student?.id) {
+      await loadAcademicInfoFromAPI()
+    } else {
+      console.warn('AcademicInfoCard: No student ID provided')
+    }
   } catch (error) {
     if (error.message.includes('CSRF') || error.message.includes('token')) {
       error.value = 'ไม่พบ CSRF token กรุณาโหลดหน้าใหม่'
@@ -74,6 +78,11 @@ watch(() => formData.value.class_level, (newValue, oldValue) => {
 
 // Load academic info from API
 const loadAcademicInfoFromAPI = async () => {
+  if (!props.student?.id) {
+    console.warn('AcademicInfoCard: Cannot load academic info - no student ID')
+    return
+  }
+  
   try {
     // ใช้ axios แทน fetch เพราะมี CSRF token setup แล้ว
     const response = await axios.get(route('homevisit.student.academic-info.index', props.student.id))

@@ -1,13 +1,15 @@
 <script setup>
 import { Head, router } from '@inertiajs/vue3'
 import { computed, ref, onMounted, onUnmounted } from 'vue'
-import StudentsCard from './Components/StudentsCard.vue'
-import AcademicInfoCard from './Components/AcademicInfoCard.vue'
-import AddressCard from './Components/AddressCard.vue'
-import ContactCard from './Components/ContactCard.vue'
-import HealthInfoCard from './Components/HealthInfoCard.vue'
-import GuardianCard from './Components/GuardianCard.vue'
-// import DocumentsCard from './Components/DocumentsCard.vue' // Temporarily disabled for future development
+import {
+  StudentsCard,
+  AcademicInfoCard,
+  AddressCard,
+  ContactCard,
+  HealthInfoCard,
+  GuardianCard,
+  DocumentsCard
+} from '../Components'
 
 import ShowStudentCard from '../../Card/StudentCard.vue'
 

@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Student;
 use App\Models\StudentHomeVisit;
+use App\Models\HomeVisitImage;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class TeacherController extends Controller
 {
@@ -55,22 +57,21 @@ class TeacherController extends Controller
             return redirect()->route('homevisit.login');
         }
 
-        $query = Student::with(['academicInfo', 'contacts']);
+        $query = Student::with([
+            'academicInfo', 
+            'addresses', 
+            'contacts', 
+            'guardians.contacts', 
+            'healthInfo',
+            'documents',
+            'homeVisits' => function($q) {
+                $q->orderBy('visit_date', 'desc')->with('images');
+            }
+        ]);
 
-        // Search functionality - comprehensive search with collation fixed
+        // Search functionality - student ID only
         if ($request->search) {
-            $query->where(function($q) use ($request) {
-                $q->where('first_name_th', 'like', "%{$request->search}%")
-                  ->orWhere('last_name_th', 'like', "%{$request->search}%")
-                  ->orWhere('student_id', 'like', "%{$request->search}%")
-                  ->orWhere('citizen_id', 'like', "%{$request->search}%")
-                  ->orWhere('nickname', 'like', "%{$request->search}%")
-                  // Now we can search across tables since collations match
-                  ->orWhereHas('academicInfo', function($subQ) use ($request) {
-                      $subQ->where('school_name', 'like', "%{$request->search}%")
-                           ->orWhere('current_class', 'like', "%{$request->search}%");
-                  });
-            });
+            $query->where('student_id', 'like', "%{$request->search}%");
         }
 
         // Filter by classroom through academic info
@@ -128,9 +129,11 @@ class TeacherController extends Controller
             ->orderBy('visit_date', 'desc')
             ->get();
 
-        return Inertia::render('HomeVisit/Teacher/ManageStudent', [
-            'student' => $student,
-            'homeVisits' => $homeVisits
+        // Add home visits to student object
+        $student->home_visits = $homeVisits;
+
+        return Inertia::render('Learn/Student/HomeVisit/Teacher/ManageStudent', [
+            'student' => $student
         ]);
     }
 
@@ -241,6 +244,121 @@ class TeacherController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'เกิดข้อผิดพลาดในการลบข้อมูล: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update student information
+     */
+    public function updateStudent(Request $request, $studentId)
+    {
+        if (!session('homevisit_authenticated') || session('homevisit_user_type') !== 'teacher') {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $student = Student::findOrFail($studentId);
+        
+        try {
+            // Update student basic info
+            $student->update($request->only([
+                'title_prefix_th',
+                'first_name_th', 
+                'last_name_th',
+                'nickname',
+                'citizen_id',
+                'class_level',
+                'class_section'
+            ]));
+
+            // Update academic info if provided
+            if ($request->academic_info) {
+                $student->academicInfo()->updateOrCreate(
+                    ['student_id' => $student->id],
+                    $request->academic_info
+                );
+            }
+
+            // Update contacts if provided
+            if ($request->contacts) {
+                // Simple approach: delete and recreate contacts
+                $student->contacts()->delete();
+                foreach ($request->contacts as $contact) {
+                    if (!empty($contact['contact_value'])) {
+                        $student->contacts()->create($contact);
+                    }
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'อัพเดทข้อมูลนักเรียนสำเร็จแล้ว'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'เกิดข้อผิดพลาดในการอัพเดทข้อมูล: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Create new home visit with images
+     */
+    public function createHomeVisitWithImages(Request $request, $studentId)
+    {
+        if (!session('homevisit_authenticated') || session('homevisit_user_type') !== 'teacher') {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'visit_date' => 'required|date',
+            'visit_time' => 'nullable',
+            'notes' => 'nullable|string',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $student = Student::findOrFail($studentId);
+        
+        try {
+            // Create home visit record
+            $homeVisit = StudentHomeVisit::create([
+                'student_id' => $student->id,
+                'visit_date' => $request->visit_date,
+                'visit_time' => $request->visit_time,
+                'notes' => $request->notes,
+                'teacher_name' => session('homevisit_user_name', 'ครู'),
+                'created_by' => session('homevisit_user_id'),
+            ]);
+
+            // Handle image uploads
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $index => $image) {
+                    $imageName = time() . '_' . $index . '.' . $image->getClientOriginalExtension();
+                    $imagePath = $image->storeAs('home_visit_images/' . $homeVisit->id, $imageName, 'public');
+                    
+                    // Save using HomeVisitImage model
+                    HomeVisitImage::create([
+                        'home_visit_id' => $homeVisit->id,
+                        'image_path' => $imagePath,
+                        'image_name' => $imageName,
+                        'image_type' => 'evidence',
+                        'description' => 'รูปภาพหลักฐานการเยี่ยมบ้าน',
+                        'uploaded_by' => session('homevisit_user_id', 1)
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'บันทึกการเยี่ยมบ้านสำเร็จแล้ว'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' . $e->getMessage()
             ], 500);
         }
     }

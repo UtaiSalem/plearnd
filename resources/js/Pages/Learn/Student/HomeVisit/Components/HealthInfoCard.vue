@@ -251,7 +251,11 @@ const hasHealthData = computed(() => {
 // Load health data on mount
 onMounted(async () => {
   try {
-    await loadHealthData()
+    if (props.student?.id) {
+      await loadHealthData()
+    } else {
+      console.warn('HealthInfoCard: No student ID provided')
+    }
   } catch (error) {
     console.error('Error loading health data:', error)
     error.value = 'ไม่สามารถโหลดข้อมูลสุขภาพได้: ' + error.message
@@ -260,6 +264,11 @@ onMounted(async () => {
 
 // Load health data from API
 const loadHealthData = async () => {
+  if (!props.student?.id) {
+    console.warn('HealthInfoCard: Cannot load health data - no student ID')
+    return
+  }
+  
   try {
     isLoading.value = true
     

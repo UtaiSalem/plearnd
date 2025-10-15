@@ -359,7 +359,11 @@ const formData = ref({
 // Load contact data on mount
 onMounted(async () => {
   try {
-    await loadContactsFromAPI()
+    if (props.student?.id) {
+      await loadContactsFromAPI()
+    } else {
+      console.warn('ContactCard: No student ID provided')
+    }
   } catch (error) {
     console.error('Error loading contacts:', error)
     error.value = 'ไม่สามารถโหลดข้อมูลการติดต่อได้: ' + error.message
@@ -368,6 +372,11 @@ onMounted(async () => {
 
 // Load contacts from API
 const loadContactsFromAPI = async () => {
+  if (!props.student?.id) {
+    console.warn('ContactCard: Cannot load contacts - no student ID')
+    return
+  }
+  
   try {
     // Use absolute URL if route helper fails
     let url

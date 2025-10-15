@@ -82,7 +82,8 @@ Route::prefix('home-visit')->name('homevisit.')->group(function () {
         Route::get('/dashboard', [TeacherController::class, 'dashboard'])->name('dashboard');
         Route::get('/search-students', [TeacherController::class, 'searchStudents'])->name('search.students');
         Route::get('/manage-student/{student}', [TeacherController::class, 'manageStudent'])->name('manage.student');
-        Route::post('/create-home-visit/{student}', [TeacherController::class, 'createHomeVisit'])->name('create.home.visit');
+        Route::post('/create-home-visit/{student}', [TeacherController::class, 'createHomeVisitWithImages'])->name('create.home.visit');
+        Route::put('/update-student/{student}', [TeacherController::class, 'updateStudent'])->name('update.student');
         Route::put('/update-home-visit/{homeVisit}', [TeacherController::class, 'updateHomeVisit'])->name('update.home.visit');
         Route::delete('/delete-home-visit/{homeVisit}', [TeacherController::class, 'deleteHomeVisit'])->name('delete.home.visit');
         

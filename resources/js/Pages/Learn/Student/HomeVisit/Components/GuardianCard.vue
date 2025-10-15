@@ -533,6 +533,10 @@ const contactTypeOptions = [
 // Load data on component mount
 onMounted(async () => {
   await nextTick()
-  await loadGuardianData()
+  if (props.student?.id) {
+    await loadGuardianData()
+  } else {
+    console.warn('GuardianCard: No student ID provided')
+  }
 })
 </script>

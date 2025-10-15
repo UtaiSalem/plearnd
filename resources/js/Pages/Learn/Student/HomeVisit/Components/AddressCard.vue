@@ -45,7 +45,11 @@ const formData = ref({
 // Initialize address records on component mount
 onMounted(async () => {
   try {
-    await loadAddressesFromAPI()
+    if (props.student?.id) {
+      await loadAddressesFromAPI()
+    } else {
+      console.warn('AddressCard: No student ID provided')
+    }
   } catch (error) {
     console.error('Error loading addresses:', error)
     error.value = 'ไม่สามารถโหลดข้อมูลที่อยู่ได้: ' + error.message
@@ -54,6 +58,11 @@ onMounted(async () => {
 
 // Load addresses from API
 const loadAddressesFromAPI = async () => {
+  if (!props.student?.id) {
+    console.warn('AddressCard: Cannot load addresses - no student ID')
+    return
+  }
+  
   try {
     const response = await axios.get(route('homevisit.student.addresses.index', props.student.id))
     const result = response.data

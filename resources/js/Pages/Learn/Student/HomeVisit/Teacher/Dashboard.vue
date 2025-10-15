@@ -2,12 +2,39 @@
   <div class="min-h-screen bg-gray-50">
     <!-- Navigation Header -->
     <nav class="bg-white shadow-sm border-b">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <!-- Mobile Layout (sm and below) -->
+        <div class="flex justify-between items-center h-16 sm:hidden">
+          <div class="flex items-center min-w-0 flex-1">
+            <div class="flex-shrink-0">
+              <span class="text-xl">🏠</span>
+            </div>
+            <div class="ml-2 min-w-0 flex-1">
+              <h1 class="text-sm font-semibold text-gray-900 truncate">
+                ระบบเยี่ยมบ้านนักเรียน
+              </h1>
+              <p class="text-xs text-gray-500 truncate">
+                ครู
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center ml-2">
+            <button
+              @click="logout"
+              class="text-gray-500 hover:text-gray-700 p-2 rounded-md"
+              title="ออกจากระบบ"
+            >
+              <i class="fas fa-sign-out-alt text-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Desktop Layout (sm and above) -->
+        <div class="hidden sm:flex justify-between h-16">
           <div class="flex items-center">
             <div class="flex-shrink-0 flex items-center">
               <span class="text-2xl">🏠</span>
-              <h1 class="ml-2 text-xl font-semibold text-gray-900">
+              <h1 class="ml-3 text-xl font-semibold text-gray-900">
                 ระบบเยี่ยมบ้านนักเรียน - ครู
               </h1>
             </div>
@@ -18,7 +45,7 @@
             </span>
             <button
               @click="logout"
-              class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium"
+              class="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium transition-colors"
             >
               ออกจากระบบ
             </button>
@@ -27,28 +54,40 @@
       </div>
     </nav>
 
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
 
       <!-- Search Students -->
       <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
-        <div class="px-4 py-5 sm:px-6">
+        <!-- Mobile Header -->
+        <div class="px-4 py-4 sm:hidden">
+          <h3 class="text-base font-semibold text-gray-900 flex items-center">
+            <i class="fas fa-search mr-2 text-indigo-600"></i>
+            ค้นหานักเรียน
+          </h3>
+          <p class="mt-1 text-xs text-gray-500">
+            ค้นหาด้วยรหัสประจำตัวนักเรียน
+          </p>
+        </div>
+
+        <!-- Desktop Header -->
+        <div class="hidden sm:block px-4 py-5 sm:px-6">
           <h3 class="text-lg leading-6 font-medium text-gray-900">
             ค้นหานักเรียน
           </h3>
           <p class="mt-1 max-w-2xl text-sm text-gray-500">
-            ค้นหานักเรียนเพื่อดูข้อมูลและจัดการการเยี่ยมบ้าน
+            ค้นหานักเรียนด้วยรหัสประจำตัวเพื่อดูข้อมูลและจัดการการเยี่ยมบ้าน
           </p>
         </div>
-        <div class="px-4 py-5 sm:p-6">
+        <div class="px-4 pb-4 pt-2 sm:p-6">
           <div class="space-y-4">
             <!-- Mobile Layout -->
-            <div class="block sm:hidden space-y-3">
+            <div class="block sm:hidden space-y-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">ค้นหานักเรียน</label>
                 <input
                   v-model="searchQuery"
                   type="text"
-                  placeholder="ชื่อ, รหัส, เลขบัตร..."
+                  placeholder="กรอกรหัสประจำตัวนักเรียน..."
                   class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base"
                   @keyup.enter="searchStudents"
                 >
@@ -81,7 +120,7 @@
                 <input
                   v-model="searchQuery"
                   type="text"
-                  placeholder="ค้นหาด้วยชื่อ, รหัสนักเรียน, หรือเลขบัตรประชาชน"
+                  placeholder="กรอกรหัสประจำตัวนักเรียน"
                   class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   @keyup.enter="searchStudents"
                 >
@@ -110,9 +149,172 @@
         </div>
       </div>
 
-      <!-- Students List -->
-      <div v-if="students.data?.length > 0" class="bg-white shadow overflow-hidden sm:rounded-md">
-        <div class="px-4 py-5 sm:px-6">
+      <!-- Student Detail (when single student found) -->
+      <div v-if="selectedStudent" class="space-y-6">
+        <!-- Back to List Button -->
+        <div class="flex items-center space-x-3">
+          <button
+            @click="clearSelectedStudent"
+            class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+          >
+            <i class="fas fa-arrow-left mr-2"></i>
+            กลับไปรายชื่อ
+          </button>
+          <div class="text-sm text-gray-500">
+            กำลังดูข้อมูลของ: <span class="font-semibold">{{ selectedStudent.first_name_th }} {{ selectedStudent.last_name_th }}</span>
+          </div>
+        </div>
+
+        <!-- Student Information Cards -->
+        <div class="space-y-6">
+          <!-- Student Basic Info Card -->
+          <StudentsCard 
+            :student="selectedStudent" 
+            :student-card="selectedStudent"
+            @save="handleStudentSave"
+            @update="handleStudentUpdate"
+          />
+
+          <!-- Academic Information Card -->
+          <AcademicInfoCard 
+            :student="selectedStudent"
+            @save="handleAcademicSave"
+            @update="handleAcademicUpdate"
+          />
+
+          <!-- Address Information Card -->
+          <AddressCard 
+            :student="selectedStudent"
+            @save="handleAddressSave"
+            @update="handleAddressUpdate"
+          />
+
+          <!-- Contact Information Card -->
+          <ContactCard 
+            :student="selectedStudent"
+            @save="handleContactSave"
+            @update="handleContactUpdate"
+          />
+
+          <!-- Health Information Card -->
+          <HealthInfoCard 
+            :student="selectedStudent"
+            @save="handleHealthSave"
+            @update="handleHealthUpdate"
+          />
+
+          <!-- Guardian Information Card -->
+          <GuardianCard 
+            :student="selectedStudent"
+            @save="handleGuardianSave"
+            @update="handleGuardianUpdate"
+          />
+        </div>
+
+        <!-- Home Visit Section -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+          <div class="px-4 py-5 sm:px-6 bg-gradient-to-r from-green-50 to-emerald-50">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">
+              <i class="fas fa-home mr-2 text-green-600"></i>
+              การเยี่ยมบ้าน
+            </h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">
+              จัดการข้อมูลการเยี่ยมบ้านและอัพโหลดรูปภาพหลักฐาน
+            </p>
+          </div>
+
+          <div class="px-4 py-5 sm:p-6">
+            <!-- Create New Home Visit Form -->
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+              <h4 class="text-md font-medium text-gray-900 mb-4">สร้างการเยี่ยมบ้านใหม่</h4>
+              <form @submit.prevent="createNewHomeVisit" class="space-y-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">วันที่เยี่ยม</label>
+                    <input v-model="visitForm.visit_date" type="date" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">เวลาเยี่ยม</label>
+                    <input v-model="visitForm.visit_time" type="time" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">หมายเหตุ</label>
+                  <textarea v-model="visitForm.notes" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm" placeholder="บันทึกรายละเอียดการเยี่ยม..."></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">อัพโหลดรูปภาพหลักฐาน</label>
+                  <input @change="handleImageUpload" type="file" multiple accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+                  <p class="mt-1 text-xs text-gray-500">เลือกรูปภาพหลายไฟล์ได้ (JPG, PNG, GIF)</p>
+                </div>
+                <!-- Image Preview -->
+                <div v-if="visitForm.images && visitForm.images.length > 0" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div v-for="(image, index) in visitForm.images" :key="index" class="relative">
+                    <img :src="image.preview" alt="Preview" class="w-full h-24 object-cover rounded-lg border-2 border-gray-200">
+                    <button @click="removeImage(index)" type="button" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
+                      ×
+                    </button>
+                  </div>
+                </div>
+                <button type="submit" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded transition-colors">
+                  <i class="fas fa-plus mr-2"></i>
+                  สร้างการเยี่ยมบ้าน
+                </button>
+              </form>
+            </div>
+
+            <!-- Existing Home Visits -->
+            <div v-if="selectedStudent.home_visits && selectedStudent.home_visits.length > 0">
+              <h4 class="text-md font-medium text-gray-900 mb-4">ประวัติการเยี่ยมบ้าน</h4>
+              <div class="space-y-4">
+                <div v-for="visit in selectedStudent.home_visits" :key="visit.id" class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                  <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                      <p class="font-semibold text-gray-900">
+                        <i class="fas fa-calendar mr-2 text-green-600"></i>
+                        {{ formatDate(visit.visit_date) }}
+                        <span v-if="visit.visit_time" class="ml-2 text-gray-600">เวลา {{ visit.visit_time }}</span>
+                      </p>
+                      <p v-if="visit.notes" class="mt-1 text-sm text-gray-600">{{ visit.notes }}</p>
+                      <p class="mt-1 text-xs text-gray-500">
+                        บันทึกโดย: {{ visit.teacher?.name || 'ไม่ระบุ' }} | {{ formatDateTime(visit.created_at) }}
+                      </p>
+                    </div>
+                    <div class="flex space-x-2 ml-4">
+                      <button @click="viewVisitImages(visit)" class="text-blue-600 hover:text-blue-800 text-sm">
+                        <i class="fas fa-images mr-1"></i>
+                        รูปภาพ
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else class="text-center py-8 text-gray-500">
+              <i class="fas fa-home text-3xl mb-2"></i>
+              <p>ยังไม่มีประวัติการเยี่ยมบ้าน</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Students List (when multiple students found or no single student selected) -->
+      <div v-else-if="students.data?.length > 0 && !selectedStudent" class="bg-white shadow overflow-hidden sm:rounded-md">
+        <!-- Mobile Header -->
+        <div class="px-4 py-3 sm:hidden border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold text-gray-900 flex items-center">
+              <i class="fas fa-users mr-2 text-green-600"></i>
+              รายชื่อนักเรียน
+            </h3>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              {{ students.data.length }} คน
+            </span>
+          </div>
+        </div>
+
+        <!-- Desktop Header -->
+        <div class="hidden sm:block px-4 py-5 sm:px-6">
           <h3 class="text-lg leading-6 font-medium text-gray-900">
             รายชื่อนักเรียน
           </h3>
@@ -121,341 +323,144 @@
           </p>
         </div>
         <ul class="divide-y divide-gray-200">
-          <li
+          <StudentCard
             v-for="student in students.data"
             :key="student.id"
-            class="px-3 py-4 hover:bg-gray-50 border-l-4 border-transparent hover:border-indigo-400 transition-all duration-200"
-          >
-            <!-- Mobile Layout (sm and below) -->
-            <div class="block sm:hidden">
-              <div class="space-y-3">
-                <!-- Header Row -->
-                <div class="flex items-start space-x-5">
-                  <div class="flex-shrink-0">
-                    <div v-if="student.profile_image" class="w-32 h-40 rounded-2xl overflow-hidden border-2 border-gray-200 shadow-lg">
-                      <img :src="'../../storage/images/students/' + student.class_level + '/' + student.class_section + '/' + student.profile_image" :alt="student.first_name_th" class="w-full h-full object-cover">
-                    </div>
-                    <div v-else class="w-32 h-40 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center border-2 border-gray-200 shadow-lg">
-                      <span class="text-white font-bold text-4xl">
-                        {{ student.first_name_th?.charAt(0) || 'N' }}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div class="flex-1 min-w-0 flex flex-col justify-start pt-2">
-                    <!-- Name and Nickname -->
-                    <div class="flex flex-col space-y-3">
-                      <!-- Full Name with responsive sizing -->
-                      <div class="space-y-1">
-                        <h3 class="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
-                          <span class="block sm:inline">{{ student.title_prefix_th || '' }}</span>
-                          <span class="block sm:inline">{{ student.first_name_th }}</span>
-                          <span class="block sm:inline">{{ student.last_name_th }}</span>
-                        </h3>
-                        <!-- Abbreviated name for very long names on mobile -->
-                        <div v-if="getFullName(student).length > 30" class="text-sm text-gray-600 font-medium block sm:hidden">
-                          {{ student.first_name_th }} {{ student.last_name_th?.charAt(0) }}.
-                        </div>
-                      </div>
-                      
-                      <!-- Badges with flexible wrapping -->
-                      <div class="flex flex-wrap items-center gap-2">
-                        <!-- Nickname Badge -->
-                        <div v-if="student.nickname" class="flex-shrink-0">
-                          <span class="inline-flex items-center px-2.5 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
-                            <i class="fas fa-star mr-1"></i>
-                            <span class="truncate max-w-20">{{ student.nickname }}</span>
-                          </span>
-                        </div>
-                        
-                        <!-- Visit Status Badge -->
-                        <div class="flex-shrink-0">
-                          <div v-if="student.home_visits?.length > 0" class="inline-flex items-center px-2.5 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-                            <i class="fas fa-check-circle mr-1"></i>
-                            <span class="whitespace-nowrap">เยี่ยม {{ student.home_visits.length }} ครั้ง</span>
-                          </div>
-                          <div v-else class="inline-flex items-center px-2.5 py-1 bg-orange-100 text-orange-700 text-xs font-medium rounded-full">
-                            <i class="fas fa-clock mr-1"></i>
-                            <span class="whitespace-nowrap">ยังไม่เคยเยี่ยม</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            :student="student"
+            @view-student="selectStudent"
+            @create-home-visit="createHomeVisit"
+          />
 
-                <!-- Information Grid -->
-                <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 space-y-3 border border-gray-200">
-                  <div class="grid grid-cols-2 gap-3">
-                    <!-- Student ID -->
-                    <div class="bg-white rounded-lg p-3 shadow-sm">
-                      <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <i class="fas fa-id-card text-blue-600 text-sm"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                          <p class="text-xs text-gray-500 font-medium">รหัสนักเรียน</p>
-                          <p class="text-sm font-bold text-gray-900 break-all">{{ student.student_id }}</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Class Level -->
-                    <div v-if="student.class_level" class="bg-white rounded-lg p-3 shadow-sm">
-                      <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <i class="fas fa-layer-group text-emerald-600 text-sm"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                          <p class="text-xs text-gray-500 font-medium">ระดับชั้น</p>
-                          <p class="text-sm font-bold text-gray-900">ม.{{ student.class_level }}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="grid grid-cols-2 gap-3">
-                    <!-- Class Section -->
-                    <div v-if="student.class_section" class="bg-white rounded-lg p-3 shadow-sm">
-                      <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <i class="fas fa-graduation-cap text-green-600 text-sm"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                          <p class="text-xs text-gray-500 font-medium">ห้อง</p>
-                          <p class="text-sm font-bold text-gray-900">{{ student.class_section }}</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Current Class (from academic_info) -->
-                    <div v-if="student.academic_info?.current_class" class="bg-white rounded-lg p-3 shadow-sm">
-                      <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <i class="fas fa-chalkboard-teacher text-teal-600 text-sm"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                          <p class="text-xs text-gray-500 font-medium">ชั้นปัจจุบัน</p>
-                          <p class="text-sm font-bold text-gray-900 break-words">{{ student.academic_info.current_class }}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="grid grid-cols-2 gap-3" v-if="student.citizen_id || (student.contacts && student.contacts.length > 0)">
-                    <!-- Citizen ID -->
-                    <div v-if="student.citizen_id" class="bg-white rounded-lg p-3 shadow-sm">
-                      <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <i class="fas fa-credit-card text-purple-600 text-sm"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                          <p class="text-xs text-gray-500 font-medium">เลขบัตร</p>
-                          <p class="text-xs font-bold text-gray-900 break-all">{{ student.citizen_id }}</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Phone -->
-                    <div v-if="student.contacts && student.contacts.length > 0" class="bg-white rounded-lg p-3 shadow-sm">
-                      <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <i class="fas fa-phone text-yellow-600 text-sm"></i>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                          <p class="text-xs text-gray-500 font-medium">เบอร์โทร</p>
-                          <p class="text-xs font-bold text-gray-900 break-all">{{ student.contacts[0].contact_value || 'ไม่ระบุ' }}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Last Visit Info -->
-                  <div v-if="student.home_visits?.length > 0" class="bg-white rounded-lg p-3 shadow-sm">
-                    <div class="flex items-center space-x-2">
-                      <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fas fa-calendar text-indigo-600 text-sm"></i>
-                      </div>
-                      <div class="min-w-0 flex-1">
-                        <p class="text-xs text-gray-500 font-medium">เยี่ยมล่าสุด</p>
-                        <p class="text-sm font-bold text-gray-900 break-words">{{ formatDate(student.home_visits[0].visit_date) }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex space-x-2">
-                  <button
-                    @click="viewStudent(student)"
-                    class="flex-1 inline-flex items-center justify-center px-4 py-2 border border-indigo-300 text-sm font-medium rounded-lg text-indigo-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
-                  >
-                    <i class="fas fa-user-graduate mr-2"></i>
-                    ดูข้อมูล
-                  </button>
-                  <button
-                    @click="createHomeVisit(student)"
-                    class="flex-1 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
-                  >
-                    <i class="fas fa-home mr-2"></i>
-                    เยี่ยมบ้าน
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Desktop Layout (sm and above) -->
-            <div class="hidden sm:flex items-center justify-between">
-              <div class="flex items-center flex-1">
-                <div class="flex-shrink-0">
-                  <div v-if="student.profile_image" class="w-24 h-32 rounded-xl overflow-hidden border-2 border-gray-200 shadow-md">
-                    <img :src="'../../storage/images/students/' + student.class_level + '/' + student.class_section + '/' + student.profile_image" :alt="student.first_name_th" class="w-full h-full object-cover">
-                  </div>
-                  <div v-else class="w-24 h-32 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center border-2 border-gray-200 shadow-md">
-                    <span class="text-white font-bold text-2xl">
-                      {{ student.first_name_th?.charAt(0) || 'N' }}
-                    </span>
-                  </div>
-                </div>
-                <div class="ml-4 sm:ml-5 flex-1 min-w-0">
-                  <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <div class="text-base font-medium text-gray-900 break-words min-w-0">
-                      <span class="inline-block">{{ student.title_prefix_th || '' }}</span>
-                      <span class="inline-block">{{ student.first_name_th }}</span>
-                      <span class="inline-block">{{ student.last_name_th }}</span>
-                    </div>
-                    <div v-if="student.nickname" class="flex-shrink-0">
-                      <span class="inline-flex items-center text-xs text-purple-700 bg-purple-100 px-2 py-1 rounded-full font-medium">
-                        <i class="fas fa-star mr-1"></i>
-                        <span class="truncate max-w-20">{{ student.nickname }}</span>
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div class="mt-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 text-sm text-gray-500">
-                    <div class="flex items-center">
-                      <i class="fas fa-id-card w-4 mr-2"></i>
-                      รหัส: {{ student.student_id }}
-                    </div>
-                    <div v-if="student.class_level" class="flex items-center">
-                      <i class="fas fa-layer-group w-4 mr-2"></i>
-                      ระดับ: ม.{{ student.class_level }}
-                    </div>
-                    <div v-if="student.class_section" class="flex items-center">
-                      <i class="fas fa-door-open w-4 mr-2"></i>
-                      ห้อง: {{ student.class_section }}
-                    </div>
-                    <div v-if="student.academic_info?.current_class" class="flex items-center">
-                      <i class="fas fa-graduation-cap w-4 mr-2"></i>
-                      ชั้นปัจจุบัน: {{ student.academic_info.current_class }}
-                    </div>
-                    <div v-if="student.citizen_id" class="flex items-center">
-                      <i class="fas fa-credit-card w-4 mr-2"></i>
-                      เลขบัตร: {{ student.citizen_id }}
-                    </div>
-                    <div v-if="student.contacts?.length > 0" class="flex items-center">
-                      <i class="fas fa-phone w-4 mr-2"></i>
-                      เบอร์: {{ student.contacts[0].contact_value || 'ไม่ระบุ' }}
-                    </div>
-                  </div>
-
-                  <!-- Academic Info -->
-                  <div class="mt-2 text-xs text-gray-400 space-x-3">
-                    <span v-if="student.academic_info?.school_name">
-                      <i class="fas fa-school mr-1"></i>
-                      {{ student.academic_info.school_name }}
-                    </span>
-                    <span v-if="student.academic_info?.education_level">
-                      <i class="fas fa-graduation-cap mr-1"></i>
-                      การศึกษา: {{ getEducationLevelText(student.academic_info.education_level) }}
-                    </span>
-                    <span v-if="student.class_level && student.class_section">
-                      <i class="fas fa-users mr-1"></i>
-                      ม.{{ student.class_level }}/{{ student.class_section }}
-                    </span>
-                  </div>
-
-                  <!-- Home Visit Status -->
-                  <div v-if="student.home_visits?.length > 0" class="mt-2 text-xs">
-                    <div class="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded">
-                      <i class="fas fa-home mr-1"></i>
-                      เยี่ยมล่าสุด: {{ formatDate(student.home_visits[0].visit_date) }}
-                    </div>
-                  </div>
-                  <div v-else class="mt-2 text-xs">
-                    <div class="inline-flex items-center px-2 py-1 bg-yellow-100 text-yellow-700 rounded">
-                      <i class="fas fa-exclamation-circle mr-1"></i>
-                      ยังไม่เคยเยี่ยมบ้าน
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="flex flex-col items-end space-y-2 ml-4">
-                <!-- Visit Count Badge -->
-                <div v-if="student.home_visits?.length > 0" class="text-xs text-center">
-                  <span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
-                    <i class="fas fa-chart-line mr-1"></i>
-                    เยี่ยมแล้ว {{ student.home_visits.length }} ครั้ง
-                  </span>
-                </div>
-                
-                <div class="flex flex-col space-y-1">
-                  <button
-                    @click="viewStudent(student)"
-                    class="inline-flex items-center px-3 py-2 border border-indigo-300 shadow-sm text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-                  >
-                    <i class="fas fa-user-graduate mr-2"></i>
-                    ดูข้อมูล
-                  </button>
-                  <button
-                    @click="createHomeVisit(student)"
-                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                  >
-                    <i class="fas fa-home mr-2"></i>
-                    เยี่ยมบ้าน
-                  </button>
-                </div>
-              </div>
-            </div>
-          </li>
         </ul>
 
         <!-- Pagination -->
-        <div v-if="students.links" class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-          <div class="flex items-center justify-between">
-            <div class="flex-1 flex justify-between sm:hidden">
+        <div v-if="students.links" class="bg-gray-50 px-4 py-3 border-t border-gray-200 sm:px-6">
+          <!-- Mobile Pagination -->
+          <div class="flex items-center justify-between sm:hidden">
+            <div class="flex-1 flex justify-between">
               <a
                 v-if="students.prev_page_url"
                 :href="students.prev_page_url"
-                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 shadow-sm transition-colors"
               >
+                <i class="fas fa-chevron-left mr-2"></i>
+                ก่อนหน้า
+              </a>
+              <div v-else class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-400">
+                <i class="fas fa-chevron-left mr-2"></i>
+                ก่อนหน้า
+              </div>
+              
+              <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700">
+                หน้า {{ students.current_page }} จาก {{ students.last_page }}
+              </span>
+              
+              <a
+                v-if="students.next_page_url"
+                :href="students.next_page_url"
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 shadow-sm transition-colors"
+              >
+                ถัดไป
+                <i class="fas fa-chevron-right ml-2"></i>
+              </a>
+              <div v-else class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-400">
+                ถัดไป
+                <i class="fas fa-chevron-right ml-2"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Desktop Pagination -->
+          <div class="hidden sm:flex items-center justify-between">
+            <div class="flex items-center">
+              <p class="text-sm text-gray-700">
+                แสดง <span class="font-medium">{{ students.from }}</span> ถึง <span class="font-medium">{{ students.to }}</span> 
+                จาก <span class="font-medium">{{ students.total }}</span> ผลลัพธ์
+              </p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <a
+                v-if="students.prev_page_url"
+                :href="students.prev_page_url"
+                class="relative inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+              >
+                <i class="fas fa-chevron-left mr-1"></i>
                 ก่อนหน้า
               </a>
               <a
                 v-if="students.next_page_url"
                 :href="students.next_page_url"
-                class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                class="relative inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
               >
                 ถัดไป
+                <i class="fas fa-chevron-right ml-1"></i>
               </a>
             </div>
-          </div>
-        </div>
+          </div>   
+        </div>  
+
+
+              <div class="space-y-4 sm:space-y-6">
+        
+        <!-- Students Card Component - Has its own form -->
+        <StudentsCard 
+          :student="student"
+          :student-card="studentCard"
+          @save="(result) => handleCardSave('student', result)"
+          :is-loading="isSubmitting"
+        />
+        
+        <!-- Academic Info Card Component - Uses API from student_academic_info -->
+        <AcademicInfoCard 
+          :student="student"
+          @save="(result) => handleCardSave('academic_info', result)"
+          :is-loading="isSubmitting"
+        />
+        
+        <!-- Address Card Component - Has its own form -->
+        <AddressCard 
+          :student="student"
+          @save="(result) => handleCardSave('address', result)"
+          :is-loading="isSubmitting"
+        />
+        
+        <!-- Contact Card Component - Has its own form -->
+        <ContactCard 
+          :student="student"
+          @save="(result) => handleCardSave('contact', result)"
+          :is-loading="isSubmitting"
+        />
+        
+        <!-- Health Info Card Component - Has its own form -->
+        <HealthInfoCard 
+          :student="student"
+          @save="(result) => handleCardSave('health', result)"
+          :is-loading="isSubmitting"
+        />
+        
+        <!-- Guardian Card Component - Has its own form -->
+        <GuardianCard 
+          :student="student"
+          @save="(result) => handleCardSave('guardian', result)"
+          :is-loading="isSubmitting"
+        />
+        
       </div>
 
+      </div>
+      
       <!-- No Results -->
-      <div v-else-if="searchQuery || selectedClassroom" class="text-center py-12">
-        <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">ไม่พบนักเรียน</h3>
-        <p class="text-gray-500">ลองค้นหาด้วยคำค้นอื่นหรือเปลี่ยนตัวกรองชั้นเรียน</p>
+      <div v-else-if="searchQuery || selectedClassroom" class="bg-white rounded-lg shadow-sm border border-gray-200 text-center py-8 sm:py-12 mx-4 sm:mx-0">
+        <i class="fas fa-search text-3xl sm:text-4xl text-gray-400 mb-3 sm:mb-4"></i>
+        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">ไม่พบนักเรียน</h3>
+        <p class="text-sm sm:text-base text-gray-500 px-4">ลองค้นหาด้วยรหัสประจำตัวนักเรียนอื่นหรือเปลี่ยนตัวกรองชั้นเรียน</p>
       </div>
 
       <!-- Initial State -->
-      <div v-else class="text-center py-12">
-        <i class="fas fa-users text-4xl text-gray-400 mb-4"></i>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">ค้นหานักเรียน</h3>
-        <p class="text-gray-500">กรอกชื่อหรือรหัสนักเรียนเพื่อเริ่มค้นหา</p>
+      <div v-else class="bg-white rounded-lg shadow-sm border border-gray-200 text-center py-8 sm:py-12 mx-4 sm:mx-0">
+        <i class="fas fa-users text-3xl sm:text-4xl text-gray-400 mb-3 sm:mb-4"></i>
+        <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">ค้นหานักเรียน</h3>
+        <p class="text-sm sm:text-base text-gray-500 px-4">กรอกรหัสประจำตัวนักเรียนเพื่อเริ่มค้นหา</p>
       </div>
     </div>
 
@@ -469,8 +474,20 @@
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
-              สร้างการเยี่ยมบ้าน - {{ selectedStudent?.first_name_th }} {{ selectedStudent?.last_name_th }}
+              สร้างการเยี่ยมบ้าน
             </h3>
+            <div class="mb-4 p-3 bg-gray-50 rounded-lg">
+              <div class="text-sm space-y-1">
+                <div class="flex">
+                  <span class="text-gray-500 font-medium w-16">ชื่อ:</span>
+                  <span class="font-semibold text-gray-900">{{ selectedStudent?.first_name_th }}</span>
+                </div>
+                <div class="flex">
+                  <span class="text-gray-500 font-medium w-16">นามสกุล:</span>
+                  <span class="font-semibold text-gray-900">{{ selectedStudent?.last_name_th }}</span>
+                </div>
+              </div>
+            </div>
             
             <form @submit.prevent="submitCreateVisit" class="space-y-4">
               <div>
@@ -538,8 +555,27 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { Head, useForm, router } from '@inertiajs/vue3'
+import StudentCard from './Components/StudentCard.vue'
+// Import Shared HomeVisit Components
+import {
+  StudentsCard,
+  AcademicInfoCard,
+  AddressCard,
+  ContactCard,
+  HealthInfoCard,
+  GuardianCard
+} from '../Components'
 
 export default {
+  components: {
+    StudentCard,
+    StudentsCard,
+    AcademicInfoCard,
+    AddressCard,
+    ContactCard,
+    HealthInfoCard,
+    GuardianCard
+  },
   props: {
     stats: Object,
     students: Object,
@@ -555,9 +591,21 @@ export default {
 
     const visitForm = useForm({
       visit_date: '',
-      visit_purpose: '',
-      visit_notes: '',
-      teacher_name: 'ครู' // This should come from auth
+      visit_time: '',
+      notes: '',
+      images: []
+    })
+
+    const editForm = useForm({
+      title_prefix_th: '',
+      first_name_th: '',
+      last_name_th: '',
+      nickname: '',
+      citizen_id: '',
+      class_level: '',
+      class_section: '',
+      academic_info: null,
+      contacts: []
     })
 
     const searchStudents = () => {
@@ -565,12 +613,33 @@ export default {
         search: searchQuery.value,
         classroom: selectedClassroom.value
       }, {
-        preserveState: true
+        preserveState: true,
+        onSuccess: (page) => {
+          // Auto-select student if only one result
+          if (page.props.students.data?.length === 1) {
+            selectStudent(page.props.students.data[0])
+          }
+        }
       })
     }
 
+    const selectStudent = (student) => {
+      selectedStudent.value = student
+      
+      // Populate edit form
+      editForm.title_prefix_th = student.title_prefix_th || ''
+      editForm.first_name_th = student.first_name_th || ''
+      editForm.last_name_th = student.last_name_th || ''
+      editForm.nickname = student.nickname || ''
+      editForm.citizen_id = student.citizen_id || ''
+      editForm.class_level = student.class_level || ''
+      editForm.class_section = student.class_section || ''
+      editForm.academic_info = student.academic_info || {}
+      editForm.contacts = student.contacts || []
+    }
+
     const viewStudent = (student) => {
-      router.visit(route('homevisit.teacher.manage.student', student.id))
+      selectStudent(student)
     }
 
     const createHomeVisit = (student) => {
@@ -594,6 +663,158 @@ export default {
           searchStudents() // Refresh the list
         }
       })
+    }
+
+    const updateStudent = () => {
+      if (!selectedStudent.value) return
+
+      editForm.put(route('homevisit.teacher.update.student', selectedStudent.value.id), {
+        onSuccess: () => {
+          // Refresh selected student data
+          searchStudents()
+        }
+      })
+    }
+
+    const createNewHomeVisit = () => {
+      if (!selectedStudent.value) return
+
+      const formData = new FormData()
+      formData.append('visit_date', visitForm.visit_date)
+      formData.append('visit_time', visitForm.visit_time)
+      formData.append('notes', visitForm.notes)
+      
+      // Add images
+      if (visitForm.images) {
+        visitForm.images.forEach((image, index) => {
+          formData.append(`images[${index}]`, image.file)
+        })
+      }
+
+      router.post(route('homevisit.teacher.create.home.visit', selectedStudent.value.id), formData, {
+        forceFormData: true,
+        onSuccess: () => {
+          visitForm.reset()
+          visitForm.images = []
+          searchStudents() // Refresh data
+        }
+      })
+    }
+
+    const handleImageUpload = (event) => {
+      const files = Array.from(event.target.files)
+      files.forEach(file => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          visitForm.images.push({
+            file: file,
+            preview: e.target.result
+          })
+        }
+        reader.readAsDataURL(file)
+      })
+    }
+
+    const removeImage = (index) => {
+      visitForm.images.splice(index, 1)
+    }
+
+    const resetForm = () => {
+      selectedStudent.value = null
+      editForm.reset()
+      visitForm.reset()
+      visitForm.images = []
+    }
+
+    const clearSelectedStudent = () => {
+      selectedStudent.value = null
+      editForm.reset()
+    }
+
+    const viewVisitImages = (visit) => {
+      // TODO: Implement image gallery modal
+      alert(`ดูรูปภาพของการเยี่ยม ID: ${visit.id}`)
+    }
+
+    const formatDateTime = (dateString) => {
+      if (!dateString) return 'ไม่ระบุ'
+      const date = new Date(dateString)
+      return date.toLocaleString('th-TH')
+    }
+
+    // Event handlers for student component saves
+    const handleStudentSave = (message) => {
+      console.log('Student saved:', message)
+      // Refresh data if needed
+      searchStudents()
+    }
+
+    const handleStudentUpdate = (data) => {
+      console.log('Student updated:', data)
+      // Update local selectedStudent data
+      if (selectedStudent.value) {
+        Object.assign(selectedStudent.value, data)
+      }
+    }
+
+    const handleAcademicSave = (message) => {
+      console.log('Academic info saved:', message)
+      searchStudents()
+    }
+
+    const handleAcademicUpdate = (data) => {
+      console.log('Academic info updated:', data)
+      if (selectedStudent.value) {
+        selectedStudent.value.academic_info = data
+      }
+    }
+
+    const handleAddressSave = (message) => {
+      console.log('Address saved:', message)
+      searchStudents()
+    }
+
+    const handleAddressUpdate = (data) => {
+      console.log('Address updated:', data)
+      if (selectedStudent.value) {
+        selectedStudent.value.addresses = data
+      }
+    }
+
+    const handleContactSave = (message) => {
+      console.log('Contact saved:', message)
+      searchStudents()
+    }
+
+    const handleContactUpdate = (data) => {
+      console.log('Contact updated:', data)
+      if (selectedStudent.value) {
+        selectedStudent.value.contacts = data
+      }
+    }
+
+    const handleHealthSave = (message) => {
+      console.log('Health info saved:', message)
+      searchStudents()
+    }
+
+    const handleHealthUpdate = (data) => {
+      console.log('Health info updated:', data)
+      if (selectedStudent.value) {
+        selectedStudent.value.health_info = data
+      }
+    }
+
+    const handleGuardianSave = (message) => {
+      console.log('Guardian saved:', message)
+      searchStudents()
+    }
+
+    const handleGuardianUpdate = (data) => {
+      console.log('Guardian updated:', data)
+      if (selectedStudent.value) {
+        selectedStudent.value.guardians = data
+      }
     }
 
     const logout = () => {
@@ -630,15 +851,38 @@ export default {
       showCreateVisitModal,
       selectedStudent,
       visitForm,
+      editForm,
       searchStudents,
+      selectStudent,
       viewStudent,
       createHomeVisit,
       closeCreateVisitModal,
       submitCreateVisit,
+      updateStudent,
+      createNewHomeVisit,
+      handleImageUpload,
+      removeImage,
+      resetForm,
+      clearSelectedStudent,
+      viewVisitImages,
       logout,
       formatDate,
+      formatDateTime,
       getEducationLevelText,
-      getFullName
+      getFullName,
+      // Component event handlers
+      handleStudentSave,
+      handleStudentUpdate,
+      handleAcademicSave,
+      handleAcademicUpdate,
+      handleAddressSave,
+      handleAddressUpdate,
+      handleContactSave,
+      handleContactUpdate,
+      handleHealthSave,
+      handleHealthUpdate,
+      handleGuardianSave,
+      handleGuardianUpdate
     }
   }
 }
