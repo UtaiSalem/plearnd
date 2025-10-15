@@ -3,6 +3,7 @@ import { ref, onMounted, nextTick } from 'vue'
 import { router } from '@inertiajs/vue3'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { useStudentRoutes } from '../Composables/useStudentRoutes'
 
 const props = defineProps({
   student: {
@@ -12,10 +13,17 @@ const props = defineProps({
   isLoading: {
     type: Boolean,
     default: false
+  },
+  context: {
+    type: String,
+    default: 'student' // 'student' or 'teacher'
   }
 })
 
 const emit = defineEmits(['save', 'update'])
+
+// Use route composable for dynamic routes
+const { addressRoutes } = useStudentRoutes(props.context)
 
 // Reactive state
 const addressRecords = ref([])
@@ -64,7 +72,7 @@ const loadAddressesFromAPI = async () => {
   }
   
   try {
-    const response = await axios.get(route('homevisit.student.addresses.index', props.student.id))
+    const response = await axios.get(addressRoutes.value.index(props.student.id))
     const result = response.data
     
     if (result.status === 'success' && result.data && result.data.length > 0) {
@@ -132,7 +140,7 @@ const deleteRecord = async (index) => {
   saveStatus.value = null
   
   try {
-    const response = await axios.delete(route('homevisit.student.addresses.destroy', [props.student.id, record.id]))
+    const response = await axios.delete(addressRoutes.value.destroy(props.student.id, record.id))
     const result = response.data
 
     if (result.status === 'success' || result.success === true) {
@@ -197,7 +205,7 @@ const setAsCurrent = async (record, index) => {
   saveStatus.value = null
   
   try {
-    const response = await axios.put(route('homevisit.student.addresses.set-current', [props.student.id, record.id]))
+    const response = await axios.put(addressRoutes.value.setCurrent(props.student.id, record.id))
     const result = response.data
 
     if (result.status === 'success' || result.success === true) {
@@ -364,13 +372,13 @@ const submitForm = async () => {
     if (modalMode.value === 'edit' && editingRecord.value?.id) {
       // PUT request for update
       response = await axios.put(
-        route('homevisit.student.addresses.update', [props.student.id, editingRecord.value.id]),
+        addressRoutes.value.update(props.student.id, editingRecord.value.id),
         apiData
       )
     } else {
       // POST request for create
       response = await axios.post(
-        route('homevisit.student.addresses.store', props.student.id),
+        addressRoutes.value.store(props.student.id),
         apiData
       )
     }

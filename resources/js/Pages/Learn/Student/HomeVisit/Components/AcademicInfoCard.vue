@@ -3,6 +3,7 @@ import { ref, onMounted, nextTick, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { useStudentRoutes } from '../Composables/useStudentRoutes'
 
 const props = defineProps({
   student: {
@@ -16,6 +17,9 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['save', 'update'])
+
+// Use route composable for dynamic routes
+const { academicInfoRoutes } = useStudentRoutes()
 
 // Reactive state
 const academicInfo = ref(null)

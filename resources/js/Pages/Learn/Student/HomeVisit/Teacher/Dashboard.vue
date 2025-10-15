@@ -171,6 +171,7 @@
           <StudentsCard 
             :student="selectedStudent" 
             :student-card="selectedStudent"
+            context="teacher"
             @save="handleStudentSave"
             @update="handleStudentUpdate"
           />
@@ -178,6 +179,7 @@
           <!-- Academic Information Card -->
           <AcademicInfoCard 
             :student="selectedStudent"
+            context="teacher"
             @save="handleAcademicSave"
             @update="handleAcademicUpdate"
           />
@@ -185,6 +187,7 @@
           <!-- Address Information Card -->
           <AddressCard 
             :student="selectedStudent"
+            context="teacher"
             @save="handleAddressSave"
             @update="handleAddressUpdate"
           />
@@ -192,6 +195,7 @@
           <!-- Contact Information Card -->
           <ContactCard 
             :student="selectedStudent"
+            context="teacher"
             @save="handleContactSave"
             @update="handleContactUpdate"
           />
@@ -199,6 +203,7 @@
           <!-- Health Information Card -->
           <HealthInfoCard 
             :student="selectedStudent"
+            context="teacher"
             @save="handleHealthSave"
             @update="handleHealthUpdate"
           />
@@ -206,6 +211,7 @@
           <!-- Guardian Information Card -->
           <GuardianCard 
             :student="selectedStudent"
+            context="teacher"
             @save="handleGuardianSave"
             @update="handleGuardianUpdate"
           />
@@ -577,6 +583,9 @@ export default {
 
     const selectStudent = (student) => {
       selectedStudent.value = student
+      
+      // Debug: Log student data to see what we get
+
       
       // Populate edit form
       editForm.title_prefix_th = student.title_prefix_th || ''
