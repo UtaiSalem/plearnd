@@ -7,8 +7,7 @@ use App\Http\Controllers\PostCommentController;
 use App\Http\Controllers\PostImageController;
 use App\Http\Controllers\PostImageReactionController;
 use App\Http\Controllers\PostImageCommentReactionController;
-
-
+use App\Http\Controllers\PostCommentReactionController;
 
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {

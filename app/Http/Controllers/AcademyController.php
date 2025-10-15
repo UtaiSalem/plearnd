@@ -10,7 +10,6 @@ use Intervention\Image\Facades\Image;
 use App\Http\Resources\CourseResource;
 use App\Http\Resources\AcademyResource;
 use Illuminate\Support\Facades\Storage;
-use App\Http\Controllers\AcademyController;
 
 
 class AcademyController extends Controller
