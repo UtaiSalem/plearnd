@@ -57,28 +57,14 @@ class TeacherController extends Controller
 
         $query = Student::with(['academicInfo', 'contacts']);
 
-        // Search functionality - include StudentCard search
+        // Search functionality - comprehensive search with collation handling
         if ($request->search) {
             $query->where(function($q) use ($request) {
                 $q->where('first_name_th', 'like', "%{$request->search}%")
                   ->orWhere('last_name_th', 'like', "%{$request->search}%")
                   ->orWhere('student_id', 'like', "%{$request->search}%")
                   ->orWhere('citizen_id', 'like', "%{$request->search}%")
-                  // Also search by matching StudentCard data
-                  ->orWhereIn('student_id', function($subquery) use ($request) {
-                      $subquery->select('student_number')
-                               ->from('student_cards')
-                               ->where('first_name_thai', 'like', "%{$request->search}%")
-                               ->orWhere('last_name_thai', 'like', "%{$request->search}%")
-                               ->orWhere('student_number', 'like', "%{$request->search}%");
-                  })
-                  ->orWhereIn('citizen_id', function($subquery) use ($request) {
-                      $subquery->select('national_id')
-                               ->from('student_cards')
-                               ->where('first_name_thai', 'like', "%{$request->search}%")
-                               ->orWhere('last_name_thai', 'like', "%{$request->search}%")
-                               ->orWhere('national_id', 'like', "%{$request->search}%");
-                  });
+                  ->orWhere('nickname', 'like', "%{$request->search}%");
             });
         }
 
