@@ -57,14 +57,19 @@ class TeacherController extends Controller
 
         $query = Student::with(['academicInfo', 'contacts']);
 
-        // Search functionality - comprehensive search with collation handling
+        // Search functionality - comprehensive search with collation fixed
         if ($request->search) {
             $query->where(function($q) use ($request) {
                 $q->where('first_name_th', 'like', "%{$request->search}%")
                   ->orWhere('last_name_th', 'like', "%{$request->search}%")
                   ->orWhere('student_id', 'like', "%{$request->search}%")
                   ->orWhere('citizen_id', 'like', "%{$request->search}%")
-                  ->orWhere('nickname', 'like', "%{$request->search}%");
+                  ->orWhere('nickname', 'like', "%{$request->search}%")
+                  // Now we can search across tables since collations match
+                  ->orWhereHas('academicInfo', function($subQ) use ($request) {
+                      $subQ->where('school_name', 'like', "%{$request->search}%")
+                           ->orWhere('current_class', 'like', "%{$request->search}%");
+                  });
             });
         }
 
