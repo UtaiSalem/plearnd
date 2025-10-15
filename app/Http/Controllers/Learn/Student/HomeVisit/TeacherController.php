@@ -80,8 +80,8 @@ class TeacherController extends Controller
             });
         }
 
-        $students = $query->orderBy('first_name')
-            ->orderBy('last_name')
+        $students = $query->orderBy('first_name_th')
+            ->orderBy('last_name_th')
             ->paginate(15)
             ->withQueryString();
 
