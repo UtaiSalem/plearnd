@@ -88,7 +88,8 @@
                   v-model="searchQuery"
                   type="text"
                   placeholder="กรอกรหัสประจำตัวนักเรียน..."
-                  class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base"
+                  :disabled="isLoading"
+                  class="block w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-base disabled:bg-gray-100 disabled:cursor-not-allowed"
                   @keyup.enter="searchStudents"
                 >
               </div>
@@ -107,10 +108,15 @@
               </div> -->
               <button
                 @click="searchStudents"
-                class="w-full inline-flex justify-center items-center py-3 px-4 border border-transparent shadow-sm text-base font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                :disabled="isLoading"
+                class="w-full inline-flex justify-center items-center py-3 px-4 border border-transparent shadow-sm text-base font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <i class="fas fa-search mr-2"></i>
-                ค้นหานักเรียน
+                <svg v-if="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <i v-else class="fas fa-search mr-2"></i>
+                {{ isLoading ? 'กำลังค้นหา...' : 'ค้นหานักเรียน' }}
               </button>
             </div>
 
@@ -121,7 +127,8 @@
                   v-model="searchQuery"
                   type="text"
                   placeholder="กรอกรหัสประจำตัวนักเรียน"
-                  class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  :disabled="isLoading"
+                  class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
                   @keyup.enter="searchStudents"
                 >
               </div>
@@ -139,11 +146,32 @@
               </div> -->
               <button
                 @click="searchStudents"
-                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                :disabled="isLoading"
+                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <i class="fas fa-search mr-2"></i>
-                ค้นหา
+                <svg v-if="isLoading" class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <i v-else class="fas fa-search mr-2"></i>
+                {{ isLoading ? 'กำลังค้นหา...' : 'ค้นหา' }}
               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Overlay -->
+      <div v-if="isLoading && !selectedStudent" class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-12 sm:px-6 text-center">
+          <div class="inline-flex items-center justify-center">
+            <svg class="animate-spin h-8 w-8 text-indigo-600 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 mb-1">กำลังค้นหาข้อมูลนักเรียน</h3>
+              <p class="text-sm text-gray-500">กรุณารอสักครู่...</p>
             </div>
           </div>
         </div>
@@ -536,6 +564,7 @@ const searchQuery = ref(props.filters?.search || '')
 const selectedClassroom = ref(props.filters?.classroom || '')
 const showCreateVisitModal = ref(false)
 const selectedStudent = ref(null)
+const isLoading = ref(false)
 
 // === Forms ===
 const visitForm = useForm({
@@ -559,16 +588,27 @@ const editForm = useForm({
 
 // === Search & Navigation Functions ===
 const searchStudents = () => {
+  isLoading.value = true
   router.get(route('homevisit.teacher.search.students'), {
     search: searchQuery.value,
     classroom: selectedClassroom.value
   }, {
     preserveState: true,
+    onStart: () => {
+      isLoading.value = true
+    },
     onSuccess: (page) => {
       // Auto-select student if only one result
       if (page.props.students.data?.length === 1) {
         selectStudent(page.props.students.data[0])
       }
+      isLoading.value = false
+    },
+    onError: () => {
+      isLoading.value = false
+    },
+    onFinish: () => {
+      isLoading.value = false
     }
   })
 }
@@ -684,6 +724,7 @@ const selectStudent = (student) => {
       editForm.reset()
       searchQuery.value = ''
       selectedClassroom.value = ''
+      isLoading.value = false
       // Navigate back to main dashboard view
       router.get(route('homevisit.teacher.dashboard'), {}, {
         preserveState: false
