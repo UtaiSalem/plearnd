@@ -510,7 +510,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted } from 'vue'
 import { Head, useForm, router } from '@inertiajs/vue3'
 import StudentCard from './Components/StudentCard.vue'
@@ -524,64 +524,56 @@ import {
   GuardianCard
 } from '../Components'
 
-export default {
-  components: {
-    StudentCard,
-    StudentsCard,
-    AcademicInfoCard,
-    AddressCard,
-    ContactCard,
-    HealthInfoCard,
-    GuardianCard
-  },
-  props: {
-    stats: Object,
-    students: Object,
-    classrooms: Array,
-    filters: Object
-  },
+const props = defineProps({
+  stats: Object,
+  students: Object,
+  classrooms: Array,
+  filters: Object
+})
 
-  setup(props) {
-    const searchQuery = ref(props.filters?.search || '')
-    const selectedClassroom = ref(props.filters?.classroom || '')
-    const showCreateVisitModal = ref(false)
-    const selectedStudent = ref(null)
+// === Reactive State ===
+const searchQuery = ref(props.filters?.search || '')
+const selectedClassroom = ref(props.filters?.classroom || '')
+const showCreateVisitModal = ref(false)
+const selectedStudent = ref(null)
 
-    const visitForm = useForm({
-      visit_date: '',
-      visit_time: '',
-      notes: '',
-      images: []
-    })
+// === Forms ===
+const visitForm = useForm({
+  visit_date: '',
+  visit_time: '',
+  notes: '',
+  images: []
+})
 
-    const editForm = useForm({
-      title_prefix_th: '',
-      first_name_th: '',
-      last_name_th: '',
-      nickname: '',
-      citizen_id: '',
-      class_level: '',
-      class_section: '',
-      academic_info: null,
-      contacts: []
-    })
+const editForm = useForm({
+  title_prefix_th: '',
+  first_name_th: '',
+  last_name_th: '',
+  nickname: '',
+  citizen_id: '',
+  class_level: '',
+  class_section: '',
+  academic_info: null,
+  contacts: []
+})
 
-    const searchStudents = () => {
-      router.get(route('homevisit.teacher.search.students'), {
-        search: searchQuery.value,
-        classroom: selectedClassroom.value
-      }, {
-        preserveState: true,
-        onSuccess: (page) => {
-          // Auto-select student if only one result
-          if (page.props.students.data?.length === 1) {
-            selectStudent(page.props.students.data[0])
-          }
-        }
-      })
+// === Search & Navigation Functions ===
+const searchStudents = () => {
+  router.get(route('homevisit.teacher.search.students'), {
+    search: searchQuery.value,
+    classroom: selectedClassroom.value
+  }, {
+    preserveState: true,
+    onSuccess: (page) => {
+      // Auto-select student if only one result
+      if (page.props.students.data?.length === 1) {
+        selectStudent(page.props.students.data[0])
+      }
     }
+  })
+}
 
-    const selectStudent = (student) => {
+const selectStudent = (student) => {
       selectedStudent.value = student
       
       // Debug: Log student data to see what we get
@@ -805,46 +797,4 @@ export default {
     const getFullName = (student) => {
       return `${student.title_prefix_th || ''} ${student.first_name_th} ${student.last_name_th}`.trim()
     }
-
-    return {
-      searchQuery,
-      selectedClassroom,
-      showCreateVisitModal,
-      selectedStudent,
-      visitForm,
-      editForm,
-      searchStudents,
-      selectStudent,
-      viewStudent,
-      createHomeVisit,
-      closeCreateVisitModal,
-      submitCreateVisit,
-      updateStudent,
-      createNewHomeVisit,
-      handleImageUpload,
-      removeImage,
-      resetForm,
-      clearSelectedStudent,
-      viewVisitImages,
-      logout,
-      formatDate,
-      formatDateTime,
-      getEducationLevelText,
-      getFullName,
-      // Component event handlers
-      handleStudentSave,
-      handleStudentUpdate,
-      handleAcademicSave,
-      handleAcademicUpdate,
-      handleAddressSave,
-      handleAddressUpdate,
-      handleContactSave,
-      handleContactUpdate,
-      handleHealthSave,
-      handleHealthUpdate,
-      handleGuardianSave,
-      handleGuardianUpdate
-    }
-  }
-}
 </script>
