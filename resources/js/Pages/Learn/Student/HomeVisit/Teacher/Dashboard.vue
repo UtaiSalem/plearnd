@@ -399,54 +399,6 @@
           </div>   
         </div>  
 
-
-              <div class="space-y-4 sm:space-y-6">
-        
-        <!-- Students Card Component - Has its own form -->
-        <StudentsCard 
-          :student="student"
-          :student-card="studentCard"
-          @save="(result) => handleCardSave('student', result)"
-          :is-loading="isSubmitting"
-        />
-        
-        <!-- Academic Info Card Component - Uses API from student_academic_info -->
-        <AcademicInfoCard 
-          :student="student"
-          @save="(result) => handleCardSave('academic_info', result)"
-          :is-loading="isSubmitting"
-        />
-        
-        <!-- Address Card Component - Has its own form -->
-        <AddressCard 
-          :student="student"
-          @save="(result) => handleCardSave('address', result)"
-          :is-loading="isSubmitting"
-        />
-        
-        <!-- Contact Card Component - Has its own form -->
-        <ContactCard 
-          :student="student"
-          @save="(result) => handleCardSave('contact', result)"
-          :is-loading="isSubmitting"
-        />
-        
-        <!-- Health Info Card Component - Has its own form -->
-        <HealthInfoCard 
-          :student="student"
-          @save="(result) => handleCardSave('health', result)"
-          :is-loading="isSubmitting"
-        />
-        
-        <!-- Guardian Card Component - Has its own form -->
-        <GuardianCard 
-          :student="student"
-          @save="(result) => handleCardSave('guardian', result)"
-          :is-loading="isSubmitting"
-        />
-        
-      </div>
-
       </div>
       
       <!-- No Results -->
