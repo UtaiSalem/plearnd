@@ -59,9 +59,7 @@ class TeacherController extends Controller
 
         $query = Student::with([
             'academicInfo', 
-            'addresses.province', 
-            'addresses.district', 
-            'addresses.subDistrict',
+            'addresses',
             'contacts', 
             'guardians.contacts', 
             'healthInfo',
