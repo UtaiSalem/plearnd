@@ -92,6 +92,7 @@ const saveStatus = ref(null)
 // Student photo management
 const studentPhoto = ref(null)
 const photoInput = ref(null)
+const showPhotoModal = ref(false)
 
 // Computed property to get student photo URL
 const getStudentPhotoUrl = computed(() => {
@@ -135,6 +136,18 @@ const loadStudentPhoto = async () => {
       }
     }
   }
+}
+
+// Function to open photo modal
+const openPhotoModal = () => {
+  if (studentPhoto.value) {
+    showPhotoModal.value = true
+  }
+}
+
+// Function to close photo modal
+const closePhotoModal = () => {
+  showPhotoModal.value = false
 }
 
 // Handle photo upload
@@ -345,7 +358,7 @@ const saveStudentData = async () => {
     <div class="bg-gray-50 px-4 py-4 sm:px-6 border-b border-gray-200">
       <div class="flex items-center space-x-4">
         <div class="flex-shrink-0">
-          <div class="w-24 h-32 sm:w-32 sm:h-40 bg-gray-200 rounded-md overflow-hidden border-2 border-white shadow-lg">
+          <div class="w-24 h-32 sm:w-32 sm:h-40 bg-gray-200 rounded-md overflow-hidden border-2 border-white shadow-lg" :class="{ 'cursor-pointer hover:shadow-xl transition-shadow': studentPhoto }" @click="openPhotoModal">
             <img
               v-if="studentPhoto"
               :src="studentPhoto"
@@ -758,6 +771,51 @@ const saveStudentData = async () => {
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
             {{ isSaving ? 'กำลังบันทึก...' : 'บันทึกข้อมูลพื้นฐาน' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo Modal -->
+  <div v-if="showPhotoModal" class="fixed inset-0 z-50 overflow-y-auto" @click="closePhotoModal">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <!-- Background overlay -->
+      <div class="fixed inset-0 transition-opacity bg-black bg-opacity-75" @click="closePhotoModal"></div>
+
+      <!-- Modal content -->
+      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full" @click.stop>
+        <!-- Header -->
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 flex items-center justify-between border-b">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            รูปภาพ {{ form.title_prefix_th }} {{ form.first_name_th }} {{ form.last_name_th }}
+          </h3>
+          <button @click="closePhotoModal" class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition ease-in-out duration-150">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Photo content -->
+        <div class="bg-white px-4 py-6 sm:px-6">
+          <div class="flex justify-center">
+            <img
+              :src="studentPhoto"
+              :alt="`${form.first_name_th} ${form.last_name_th}`"
+              class="max-w-full max-h-96 object-contain rounded-lg shadow-lg"
+            />
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t">
+          <button
+            @click="closePhotoModal"
+            type="button"
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors"
+          >
+            ปิด
           </button>
         </div>
       </div>

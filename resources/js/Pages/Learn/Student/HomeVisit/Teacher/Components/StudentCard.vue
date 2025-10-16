@@ -6,7 +6,7 @@
         <!-- Header Row -->
         <div class="flex items-start space-x-4">
           <div class="flex-shrink-0">
-            <div v-if="student.profile_image" class="w-24 h-32 rounded-md overflow-hidden border-2 border-gray-200 shadow-lg">
+            <div v-if="student.profile_image" class="w-24 h-32 rounded-md overflow-hidden border-2 border-gray-200 shadow-lg cursor-pointer hover:shadow-xl transition-shadow" @click="openPhotoModal">
               <img :src="getProfileImagePath(student)" :alt="student.first_name_th" class="w-full h-full object-cover">
             </div>
             <div v-else class="w-24 h-32 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-md flex items-center justify-center border-2 border-gray-200 shadow-lg">
@@ -92,7 +92,7 @@
     <div class="hidden sm:flex items-center justify-between">
       <div class="flex items-center flex-1">
         <div class="flex-shrink-0">
-          <div v-if="student.profile_image" class="w-20 h-24 rounded-md overflow-hidden border border-gray-200 shadow-lg">
+          <div v-if="student.profile_image" class="w-20 h-24 rounded-md overflow-hidden border border-gray-200 shadow-lg cursor-pointer hover:shadow-xl transition-shadow" @click="openPhotoModal">
             <img :src="getProfileImagePath(student)" :alt="student.first_name_th" class="w-full h-full object-cover">
           </div>
           <div v-else class="w-20 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-md flex items-center justify-center border border-gray-200 shadow-lg">
@@ -214,6 +214,51 @@
       </div>
     </div>
   </li>
+
+  <!-- Photo Modal -->
+  <div v-if="showPhotoModal" class="fixed inset-0 z-50 overflow-y-auto" @click="closePhotoModal">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <!-- Background overlay -->
+      <div class="fixed inset-0 transition-opacity bg-black bg-opacity-75" @click="closePhotoModal"></div>
+
+      <!-- Modal content -->
+      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full" @click.stop>
+        <!-- Header -->
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 flex items-center justify-between border-b">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            รูปภาพ {{ student.title_prefix_th }} {{ student.first_name_th }} {{ student.last_name_th }}
+          </h3>
+          <button @click="closePhotoModal" class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600 transition ease-in-out duration-150">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Photo content -->
+        <div class="bg-white px-4 py-6 sm:px-6">
+          <div class="flex justify-center">
+            <img
+              :src="getProfileImagePath(student)"
+              :alt="`${student.first_name_th} ${student.last_name_th}`"
+              class="max-w-full max-h-96 object-contain rounded-lg shadow-lg"
+            />
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t">
+          <button
+            @click="closePhotoModal"
+            type="button"
+            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors"
+          >
+            ปิด
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -234,6 +279,12 @@ export default {
   },
 
   emits: ['view-student', 'create-visit'],
+
+  data() {
+    return {
+      showPhotoModal: false
+    }
+  },
 
   methods: {
     getProfileImagePath(student) {
@@ -259,6 +310,16 @@ export default {
         4: 'อุดมศึกษา'
       }
       return levelMap[level] || `ระดับ ${level}`
+    },
+
+    openPhotoModal() {
+      if (this.student.profile_image) {
+        this.showPhotoModal = true
+      }
+    },
+
+    closePhotoModal() {
+      this.showPhotoModal = false
     }
   }
 }
