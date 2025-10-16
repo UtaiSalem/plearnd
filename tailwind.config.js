@@ -21,6 +21,7 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                'prompt': ['Prompt', 'sans-serif'],
             },
             colors: {
                 'vtd-primary': colors.sky, // Light mode

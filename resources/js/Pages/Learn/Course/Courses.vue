@@ -54,7 +54,7 @@ const handleLoadingPage = (courseId) => {
 
             <div class="p-4 my-4 bg-white shadow-lg section-header rounded-xl">
                 <div class="section-header-info">               
-                    <h2 class="section-title font-mali"> รายวิชาของฉัน {{ ' ' + props.courses.meta.total + ' วิชา' || 'ยังไม่มีรายวิชา' }}</h2>
+                    <h2 class="section-title font-prompt"> รายวิชาของฉัน {{ ' ' + props.courses.meta.total + ' วิชา' || 'ยังไม่มีรายวิชา' }}</h2>
                 </div>
             </div>
             <div class="flex flex-wrap justify-between gap-4 ">

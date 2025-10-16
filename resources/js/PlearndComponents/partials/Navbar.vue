@@ -124,7 +124,7 @@ const logout = () => {
             <hr class="border-gray-200 dark:border-gray-700" />
             <div class="flex items-center justify-center p-2 ">
                 <button @click.prevent="logout"
-                    class="flex w-full justify-center items-center p-2 space-x-2 rounded-md font-mali font-bold text-indigo-500 hover:bg-indigo-200">
+                    class="flex w-full justify-center items-center p-2 space-x-2 rounded-md font-prompt font-bold text-indigo-500 hover:bg-indigo-200">
                     <span>
                         <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">

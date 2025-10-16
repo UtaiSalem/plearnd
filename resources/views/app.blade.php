@@ -13,11 +13,11 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Mali&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
         <style>
-            *, .font-mali {
-                font-family: 'Mali', sans-serif, cursive;
+            *, .font-prompt {
+                font-family: 'Prompt', sans-serif;
             };
         </style>
         <!-- Scripts -->

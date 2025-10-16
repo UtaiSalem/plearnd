@@ -284,7 +284,7 @@
 
                             <div class="flex items-center justify-center p-2 ">
                                 <button @click.prevent="logout"
-                                    class="flex items-center justify-center w-full p-2 space-x-2 font-bold text-indigo-500 rounded-md font-mali hover:bg-indigo-200">
+                                    class="flex items-center justify-center w-full p-2 space-x-2 font-bold text-indigo-500 rounded-md font-prompt hover:bg-indigo-200">
                                     <span>
                                         <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
@@ -346,7 +346,7 @@
                                     </g>
                                 </svg>
                             </span>
-                            <span class="font-semibold font-mali" :class="{ 'hidden': !isSidebarOpen }">แผงจัดการ</span>
+                            <span class="font-semibold font-prompt" :class="{ 'hidden': !isSidebarOpen }">แผงจัดการ</span>
                         </Link>
                     </li> -->
                     <!-- <li>
@@ -364,14 +364,14 @@
                                             h2V20z M13,20h-2v-2h2V20z" />
                            </svg>
                        </span>
-                       <span class="font-semibold font-mali"
+                       <span class="font-semibold font-prompt"
                            :class="{ 'hidden': !isSidebarOpen }">แหล่งเรียนรู้</span>
                        </Link>
                    </li> -->
                     <!-- <li>
                        <Link href="/academies" class="plearnd-sidebar-link " :class="{'justify-center': !isSidebarOpen}">
                         <SVGJoinGroup  />
-                       <span class="font-semibold font-mali"
+                       <span class="font-semibold font-prompt"
                            :class="{ 'hidden': !isSidebarOpen }">โรงเรียนของฉัน</span>
                        </Link>
                    </li> -->
@@ -392,7 +392,7 @@
                                         c-1.102,0-1.996,0.896-1.996,2.001H4.996H3.02c0-2.211,1.788-4,3.993-4h1.996v-2.001h0.998h0.998V15.999z" />
                            </svg>
                        </span>
-                       <span class="font-semibold font-mali"
+                       <span class="font-semibold font-prompt"
                            :class="{ 'hidden': !isSidebarOpen }">เปิดแหล่งเรียนรู้ใหม่</span>
                        </Link>
                    </li> -->
@@ -403,7 +403,7 @@
                        <span>
                            <Icon icon="mingcute:profile-line" class="w-6 h-6 opacity-80" />
                        </span>
-                       <span class="font-semibold font-mali"
+                       <span class="font-semibold font-prompt"
                            :class="{ 'hidden': !isSidebarOpen }">รวมรายวิชา</span>
                        </button>
                    </li> -->

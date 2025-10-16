@@ -94,7 +94,7 @@ function handleCancle() {
 
                 <div class="bg-indigo-500 p-2  rounded-lg shadow-xl">
                     <div class="flex items-center justify-between w-full px-4 py-2 rounded-t-lg bg-indigo-500">
-                        <h3 class="text-2xl text-white font-mali">สร้างแหล่งเรียนรู้ใหม่</h3>
+                        <h3 class="text-2xl text-white font-prompt">สร้างแหล่งเรียนรู้ใหม่</h3>
                         <Link href="/academies" class="w-10 p-3 rounded-full cursor-pointer hover:bg-indigo-400">
                             <!-- <Icon icon="heroicons:x-mark-20-solid" class="w-7 h-7" /> -->
                             <svg version="1.1" id="Go_Back_Arrow_Icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px"
