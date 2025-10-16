@@ -6,10 +6,10 @@
         <!-- Header Row -->
         <div class="flex items-start space-x-4">
           <div class="flex-shrink-0">
-            <div v-if="student.profile_image" class="w-20 h-24 rounded-xl overflow-hidden border-2 border-gray-200 shadow-sm">
+            <div v-if="student.profile_image" class="w-24 h-32 rounded-md overflow-hidden border-2 border-gray-200 shadow-lg">
               <img :src="getProfileImagePath(student)" :alt="student.first_name_th" class="w-full h-full object-cover">
             </div>
-            <div v-else class="w-20 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center border-2 border-gray-200 shadow-sm">
+            <div v-else class="w-24 h-32 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-md flex items-center justify-center border-2 border-gray-200 shadow-lg">
               <span class="text-white font-bold text-xl">
                 {{ student.first_name_th?.charAt(0) || 'N' }}
               </span>
@@ -92,10 +92,10 @@
     <div class="hidden sm:flex items-center justify-between">
       <div class="flex items-center flex-1">
         <div class="flex-shrink-0">
-          <div v-if="student.profile_image" class="w-16 h-20 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+          <div v-if="student.profile_image" class="w-20 h-24 rounded-md overflow-hidden border border-gray-200 shadow-lg">
             <img :src="getProfileImagePath(student)" :alt="student.first_name_th" class="w-full h-full object-cover">
           </div>
-          <div v-else class="w-16 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center border border-gray-200 shadow-sm">
+          <div v-else class="w-20 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-md flex items-center justify-center border border-gray-200 shadow-lg">
             <span class="text-white font-semibold text-lg">
               {{ student.first_name_th?.charAt(0) || 'N' }}
             </span>

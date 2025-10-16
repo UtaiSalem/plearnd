@@ -345,7 +345,7 @@ const saveStudentData = async () => {
     <div class="bg-gray-50 px-4 py-4 sm:px-6 border-b border-gray-200">
       <div class="flex items-center space-x-4">
         <div class="flex-shrink-0">
-          <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gray-200 rounded-full overflow-hidden border-2 border-white shadow-sm">
+          <div class="w-24 h-32 sm:w-32 sm:h-40 bg-gray-200 rounded-md overflow-hidden border-2 border-white shadow-lg">
             <img
               v-if="studentPhoto"
               :src="studentPhoto"
@@ -355,7 +355,7 @@ const saveStudentData = async () => {
               @error="handleImageError"
             />
             <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-12 h-12 sm:w-16 sm:h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
