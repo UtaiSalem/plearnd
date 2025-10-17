@@ -162,33 +162,7 @@
       <div class="px-4 py-4 sm:px-6 sm:py-6 bg-gray-50 border-t border-gray-200">
         <div class="flex justify-between items-center">
           <div class="text-xs sm:text-sm text-gray-500">
-            <span v-if="isLoading" class="flex items-center">
-              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" stroke-dasharray="15 5" stroke-linecap="round"></circle>
-              </svg>
-              กำลังโหลด...
-            </span>
-            <span v-else-if="isSaving" class="flex items-center">
-              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" stroke-dasharray="15 5" stroke-linecap="round"></circle>
-              </svg>
-              กำลังบันทึก...
-            </span>
-            <span v-else-if="error" class="flex items-center text-red-600">
-              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-              {{ error }}
-            </span>
-            <span v-else-if="hasHealthData" class="flex items-center text-green-600">
-              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              มีข้อมูลสุขภาพแล้ว
-            </span>
-            <span v-else>ยังไม่มีข้อมูลสุขภาพ</span>
+              <!-- Spinner footer removed: spinner now only at save button -->
           </div>
           
           <button

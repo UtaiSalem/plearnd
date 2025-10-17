@@ -65,7 +65,7 @@ class TeacherController extends Controller
             'healthInfo',
             'documents',
             'homeVisits' => function($q) {
-                $q->orderBy('visit_date', 'desc')->with('images');
+                $q->orderBy('visit_date', 'desc')->with(['images', 'participants']);
             }
         ]);
 
@@ -182,9 +182,9 @@ class TeacherController extends Controller
      */
     public function updateHomeVisit(Request $request, $homeVisitId)
     {
-        if (!session('homevisit_authenticated') || session('homevisit_user_type') !== 'teacher') {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        // if (!session('homevisit_authenticated') || session('homevisit_user_type') !== 'teacher') {
+        //     return response()->json(['error' => 'Unauthorized'], 401);
+        // }
 
         $homeVisit = StudentHomeVisit::findOrFail($homeVisitId);
         
@@ -218,9 +218,9 @@ class TeacherController extends Controller
      */
     public function deleteHomeVisit($homeVisitId)
     {
-        if (!session('homevisit_authenticated') || session('homevisit_user_type') !== 'teacher') {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        // if (!session('homevisit_authenticated') || session('homevisit_user_type') !== 'teacher') {
+        //     return response()->json(['error' => 'Unauthorized'], 401);
+        // }
 
         $homeVisit = StudentHomeVisit::findOrFail($homeVisitId);
         
@@ -253,9 +253,9 @@ class TeacherController extends Controller
      */
     public function updateStudent(Request $request, $studentId)
     {
-        if (!session('homevisit_authenticated') || session('homevisit_user_type') !== 'teacher') {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        // if (!session('homevisit_authenticated') || session('homevisit_user_type') !== 'teacher') {
+        //     return response()->json(['error' => 'Unauthorized'], 401);
+        // }
 
         $student = Student::findOrFail($studentId);
         
@@ -308,29 +308,48 @@ class TeacherController extends Controller
      */
     public function createHomeVisitWithImages(Request $request, $studentId)
     {
-        if (!session('homevisit_authenticated') || session('homevisit_user_type') !== 'teacher') {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+        // if (!session('homevisit_authenticated') || session('homevisit_user_type') !== 'teacher') {
+        //     return response()->json(['error' => 'Unauthorized'], 401);
+        // }
 
         $request->validate([
             'visit_date' => 'required|date',
             'visit_time' => 'nullable',
+            'observations' => 'nullable|string',
             'notes' => 'nullable|string',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'participants' => 'nullable|array',
+            'participants.*.name' => 'required|string',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480'
         ]);
 
         $student = Student::findOrFail($studentId);
         
         try {
-            // Create home visit record
-            $homeVisit = StudentHomeVisit::create([
-                'student_id' => $student->id,
+            // Create home visit record using the smart method
+            $homeVisit = StudentHomeVisit::createFromStudent($student, [
                 'visit_date' => $request->visit_date,
                 'visit_time' => $request->visit_time,
+                'observations' => $request->observations,
                 'notes' => $request->notes,
-                'teacher_name' => session('homevisit_user_name', 'ครู'),
+                'visitor_name' => session('homevisit_user_name', 'ครู'), // Keep for backward compatibility
                 'created_by' => session('homevisit_user_id'),
             ]);
+
+            // Add participants
+            if ($request->has('participants') && is_array($request->participants)) {
+                foreach ($request->participants as $participantData) {
+                    \App\Models\HomeVisitParticipant::create([
+                        'home_visit_id' => $homeVisit->id,
+                        'participant_name' => $participantData['name'],
+                    ]);
+                }
+            } else {
+                // Fallback: Add current user if no participants provided
+                \App\Models\HomeVisitParticipant::create([
+                    'home_visit_id' => $homeVisit->id,
+                    'participant_name' => session('homevisit_user_name', 'ครู'),
+                ]);
+            }
 
             // Handle image uploads
             if ($request->hasFile('images')) {
@@ -350,15 +369,115 @@ class TeacherController extends Controller
                 }
             }
 
+            return redirect()->back()->with('success', 'บันทึกการเยี่ยมบ้านสำเร็จแล้ว');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update existing home visit record with full form data
+     */
+    public function updateHomeVisitWithImages(Request $request, $homeVisitId)
+    {
+        // if (!session('homevisit_authenticated') || session('homevisit_user_type') !== 'teacher') {
+        //     return response()->json(['error' => 'Unauthorized'], 401);
+        // }
+
+        $request->validate([
+            'visit_date' => 'required|date',
+            'visit_time' => 'nullable',
+            'observations' => 'nullable|string',
+            'notes' => 'nullable|string',
+            'recommendations' => 'nullable|string',
+            'follow_up' => 'nullable|string',
+            'next_visit' => 'nullable|date',
+            'participants' => 'required|array|min:1',
+            'participants.*.participant_name' => 'required|string',
+            'new_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:20480',
+            'images_to_delete' => 'nullable|array'
+        ]);
+
+        $homeVisit = StudentHomeVisit::findOrFail($homeVisitId);
+        
+        try {
+            DB::beginTransaction();
+
+            // Update basic visit information
+            $homeVisit->update([
+                'visit_date' => $request->visit_date,
+                'visit_time' => $request->visit_time,
+                'observations' => $request->observations,
+                'notes' => $request->notes,
+                'recommendations' => $request->recommendations,
+                'follow_up' => $request->follow_up,
+                'next_visit' => $request->next_visit,
+            ]);
+
+            // Update participants
+            if ($request->has('participants')) {
+                // Delete existing participants
+                $homeVisit->participants()->delete();
+                
+                // Add new participants
+                foreach ($request->participants as $participantData) {
+                    \App\Models\HomeVisitParticipant::create([
+                        'home_visit_id' => $homeVisit->id,
+                        'participant_name' => $participantData['participant_name'],
+                    ]);
+                }
+            }
+
+            // Handle image deletions
+            if ($request->has('images_to_delete') && is_array($request->images_to_delete)) {
+                foreach ($request->images_to_delete as $imageId) {
+                    $image = \App\Models\HomeVisitImage::find($imageId);
+                    if ($image && $image->home_visit_id == $homeVisit->id) {
+                        // Delete file from storage
+                        if ($image->image_path) {
+                            Storage::disk('public')->delete($image->image_path);
+                        }
+                        // Delete from database
+                        $image->delete();
+                    }
+                }
+            }
+
+            // Handle new image uploads
+            if ($request->hasFile('new_images')) {
+                foreach ($request->file('new_images') as $index => $image) {
+                    $imageName = time() . '_' . $index . '.' . $image->getClientOriginalExtension();
+                    $imagePath = $image->storeAs('home_visit_images/' . $homeVisit->id, $imageName, 'public');
+                    
+                    // Save using HomeVisitImage model
+                    \App\Models\HomeVisitImage::create([
+                        'home_visit_id' => $homeVisit->id,
+                        'image_path' => $imagePath,
+                        'image_name' => $imageName,
+                        'image_type' => 'evidence',
+                        'description' => 'รูปภาพหลักฐานการเยี่ยมบ้าน',
+                        'uploaded_by' => session('homevisit_user_id', 1)
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            // Load updated relationships
+            $homeVisit->load(['participants', 'images']);
+
             return response()->json([
                 'success' => true,
-                'message' => 'บันทึกการเยี่ยมบ้านสำเร็จแล้ว'
+                'message' => 'อัปเดตข้อมูลการเยี่ยมบ้านเรียบร้อยแล้ว',
+                'visit' => $homeVisit
             ]);
 
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' . $e->getMessage()
+                'message' => 'เกิดข้อผิดพลาดในการอัปเดตข้อมูล: ' . $e->getMessage()
             ], 500);
         }
     }

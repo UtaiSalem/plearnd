@@ -85,6 +85,7 @@ Route::prefix('home-visit')->name('homevisit.')->group(function () {
         Route::post('/create-home-visit/{student}', [TeacherController::class, 'createHomeVisitWithImages'])->name('create.home.visit');
         Route::put('/update-student/{student}', [TeacherController::class, 'updateStudent'])->name('update.student');
         Route::put('/update-home-visit/{homeVisit}', [TeacherController::class, 'updateHomeVisit'])->name('update.home.visit');
+        Route::post('/update-home-visit-with-images/{homeVisit}', [TeacherController::class, 'updateHomeVisitWithImages'])->name('update.home.visit.with.images');
         Route::delete('/delete-home-visit/{homeVisit}', [TeacherController::class, 'deleteHomeVisit'])->name('delete.home.visit');
         
         // Student Academic Info Routes for Teacher

@@ -161,22 +161,6 @@
         </div>
       </div>
 
-      <!-- Loading Overlay -->
-      <div v-if="isLoading && !selectedStudent" class="bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="px-4 py-12 sm:px-6 text-center">
-          <div class="inline-flex items-center justify-center">
-            <svg class="animate-spin h-8 w-8 text-indigo-600 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <div>
-              <h3 class="text-lg font-medium text-gray-900 mb-1">กำลังค้นหาข้อมูลนักเรียน</h3>
-              <p class="text-sm text-gray-500">กรุณารอสักครู่...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Student Detail (when single student found) -->
       <div v-if="selectedStudent" class="space-y-6">
         <!-- Back to Search Button -->
@@ -246,90 +230,15 @@
         </div>
 
         <!-- Home Visit Section -->
-        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-          <div class="px-4 py-5 sm:px-6 bg-gradient-to-r from-green-50 to-emerald-50">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
-              <i class="fas fa-home mr-2 text-green-600"></i>
-              การเยี่ยมบ้าน
-            </h3>
-            <p class="mt-1 max-w-2xl text-sm text-gray-500">
-              จัดการข้อมูลการเยี่ยมบ้านและอัพโหลดรูปภาพหลักฐาน
-            </p>
-          </div>
-
-          <div class="px-4 py-5 sm:p-6">
-            <!-- Create New Home Visit Form -->
-            <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h4 class="text-md font-medium text-gray-900 mb-4">สร้างการเยี่ยมบ้านใหม่</h4>
-              <form @submit.prevent="createNewHomeVisit" class="space-y-4">
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">วันที่เยี่ยม</label>
-                    <input v-model="visitForm.visit_date" type="date" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700">เวลาเยี่ยม</label>
-                    <input v-model="visitForm.visit_time" type="time" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm">
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700">หมายเหตุ</label>
-                  <textarea v-model="visitForm.notes" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm" placeholder="บันทึกรายละเอียดการเยี่ยม..."></textarea>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">อัพโหลดรูปภาพหลักฐาน</label>
-                  <input @change="handleImageUpload" type="file" multiple accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
-                  <p class="mt-1 text-xs text-gray-500">เลือกรูปภาพหลายไฟล์ได้ (JPG, PNG, GIF)</p>
-                </div>
-                <!-- Image Preview -->
-                <div v-if="visitForm.images && visitForm.images.length > 0" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div v-for="(image, index) in visitForm.images" :key="index" class="relative">
-                    <img :src="image.preview" alt="Preview" class="w-full h-24 object-cover rounded-lg border-2 border-gray-200">
-                    <button @click="removeImage(index)" type="button" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">
-                      ×
-                    </button>
-                  </div>
-                </div>
-                <button type="submit" class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded transition-colors">
-                  <i class="fas fa-plus mr-2"></i>
-                  สร้างการเยี่ยมบ้าน
-                </button>
-              </form>
-            </div>
-
-            <!-- Existing Home Visits -->
-            <div v-if="selectedStudent.home_visits && selectedStudent.home_visits.length > 0">
-              <h4 class="text-md font-medium text-gray-900 mb-4">ประวัติการเยี่ยมบ้าน</h4>
-              <div class="space-y-4">
-                <div v-for="visit in selectedStudent.home_visits" :key="visit.id" class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                  <div class="flex justify-between items-start">
-                    <div class="flex-1">
-                      <p class="font-semibold text-gray-900">
-                        <i class="fas fa-calendar mr-2 text-green-600"></i>
-                        {{ formatDate(visit.visit_date) }}
-                        <span v-if="visit.visit_time" class="ml-2 text-gray-600">เวลา {{ visit.visit_time }}</span>
-                      </p>
-                      <p v-if="visit.notes" class="mt-1 text-sm text-gray-600">{{ visit.notes }}</p>
-                      <p class="mt-1 text-xs text-gray-500">
-                        บันทึกโดย: {{ visit.teacher?.name || 'ไม่ระบุ' }} | {{ formatDateTime(visit.created_at) }}
-                      </p>
-                    </div>
-                    <div class="flex space-x-2 ml-4">
-                      <button @click="viewVisitImages(visit)" class="text-blue-600 hover:text-blue-800 text-sm">
-                        <i class="fas fa-images mr-1"></i>
-                        รูปภาพ
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div v-else class="text-center py-8 text-gray-500">
-              <i class="fas fa-home text-3xl mb-2"></i>
-              <p>ยังไม่มีประวัติการเยี่ยมบ้าน</p>
-            </div>
-          </div>
-        </div>
+        <HomeVisitCard
+          :home-visits="homeVisits" 
+          :visit-form="visitForm"
+          :create-new-home-visit="createNewHomeVisit"
+          :handle-image-upload="handleImageUpload"
+          :remove-image="removeImage"
+          @visit-updated="onVisitUpdated"  
+        />
+        
       </div>
 
       <!-- Students List (when multiple students found) - Only show if more than one student -->
@@ -551,6 +460,7 @@ import {
   HealthInfoCard,
   GuardianCard
 } from '../Components'
+import HomeVisitCard from './Components/HomeVisitCard.vue'
 
 const props = defineProps({
   stats: Object,
@@ -565,6 +475,8 @@ const selectedClassroom = ref(props.filters?.classroom || '')
 const showCreateVisitModal = ref(false)
 const selectedStudent = ref(null)
 const isLoading = ref(false)
+
+const homeVisits = ref([])
 
 // === Forms ===
 const visitForm = useForm({
@@ -614,22 +526,24 @@ const searchStudents = () => {
 }
 
 const selectStudent = (student) => {
-      selectedStudent.value = student
-      
-      // Debug: Log student data to see what we get
-
-      
-      // Populate edit form
-      editForm.title_prefix_th = student.title_prefix_th || ''
-      editForm.first_name_th = student.first_name_th || ''
-      editForm.last_name_th = student.last_name_th || ''
-      editForm.nickname = student.nickname || ''
-      editForm.citizen_id = student.citizen_id || ''
-      editForm.class_level = student.class_level || ''
-      editForm.class_section = student.class_section || ''
-      editForm.academic_info = student.academic_info || {}
-      editForm.contacts = student.contacts || []
-    }
+  selectedStudent.value = student
+  // Populate edit form
+  editForm.title_prefix_th = student.title_prefix_th || ''
+  editForm.first_name_th = student.first_name_th || ''
+  editForm.last_name_th = student.last_name_th || ''
+  editForm.nickname = student.nickname || ''
+  editForm.citizen_id = student.citizen_id || ''
+  editForm.class_level = student.class_level || ''
+  editForm.class_section = student.class_section || ''
+  editForm.academic_info = student.academic_info || {}
+  editForm.contacts = student.contacts || []
+  // Set homeVisits for this student
+  if (student.home_visits) {
+    homeVisits.value = student.home_visits
+  } else {
+    homeVisits.value = []
+  }
+}
 
     const viewStudent = (student) => {
       selectStudent(student)
@@ -675,7 +589,15 @@ const selectStudent = (student) => {
       const formData = new FormData()
       formData.append('visit_date', visitForm.visit_date)
       formData.append('visit_time', visitForm.visit_time)
-      formData.append('notes', visitForm.notes)
+      formData.append('observations', visitForm.observations || '')
+      formData.append('notes', visitForm.notes || '')
+      
+      // Add participants
+      if (visitForm.participants && visitForm.participants.length > 0) {
+        visitForm.participants.forEach((participant, index) => {
+          formData.append(`participants[${index}][name]`, participant.name)
+        })
+      }
       
       // Add images
       if (visitForm.images) {
@@ -689,20 +611,67 @@ const selectStudent = (student) => {
         onSuccess: () => {
           visitForm.reset()
           visitForm.images = []
+          visitForm.participants = []
           searchStudents() // Refresh data
         }
       })
     }
 
-    const handleImageUpload = (event) => {
+    const handleImageUpload = async (event) => {
       const files = Array.from(event.target.files)
-      files.forEach(file => {
+      
+      for (const file of files) {
+        // Compress image before adding to form
+        const compressedFile = await compressImage(file)
+        
         const reader = new FileReader()
         reader.onload = (e) => {
           visitForm.images.push({
-            file: file,
+            file: compressedFile,
             preview: e.target.result
           })
+        }
+        reader.readAsDataURL(compressedFile)
+      }
+    }
+    
+    // Compress image to reduce file size
+    const compressImage = (file, maxWidth = 1200, quality = 0.8) => {
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          const img = new Image()
+          img.onload = () => {
+            const canvas = document.createElement('canvas')
+            let width = img.width
+            let height = img.height
+            
+            // Resize if image is too large
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width
+              width = maxWidth
+            }
+            
+            canvas.width = width
+            canvas.height = height
+            
+            const ctx = canvas.getContext('2d')
+            ctx.drawImage(img, 0, 0, width, height)
+            
+            // Convert to blob with compression
+            canvas.toBlob(
+              (blob) => {
+                const compressedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now()
+                })
+                resolve(compressedFile)
+              },
+              'image/jpeg',
+              quality
+            )
+          }
+          img.src = e.target.result
         }
         reader.readAsDataURL(file)
       })
@@ -771,7 +740,6 @@ const selectStudent = (student) => {
 
     const handleAddressSave = (message) => {
       console.log('Address saved:', message)
-      searchStudents()
     }
 
     const handleAddressUpdate = (data) => {
@@ -783,7 +751,6 @@ const selectStudent = (student) => {
 
     const handleContactSave = (message) => {
       console.log('Contact saved:', message)
-      searchStudents()
     }
 
     const handleContactUpdate = (data) => {
@@ -795,7 +762,6 @@ const selectStudent = (student) => {
 
     const handleHealthSave = (message) => {
       console.log('Health info saved:', message)
-      searchStudents()
     }
 
     const handleHealthUpdate = (data) => {
@@ -807,7 +773,6 @@ const selectStudent = (student) => {
 
     const handleGuardianSave = (message) => {
       console.log('Guardian saved:', message)
-      searchStudents()
     }
 
     const handleGuardianUpdate = (data) => {
@@ -818,7 +783,7 @@ const selectStudent = (student) => {
     }
 
     const logout = () => {
-      router.post(route('homevisit.logout'))
+      router.post(route('homevisit.general.logout'))
     }
 
     const formatDate = (dateString) => {
@@ -843,5 +808,17 @@ const selectStudent = (student) => {
 
     const getFullName = (student) => {
       return `${student.title_prefix_th || ''} ${student.first_name_th} ${student.last_name_th}`.trim()
+    }
+
+
+    function onVisitUpdated(updatedVisit) {
+      // หา index ของการเยี่ยมบ้านที่ถูกอัปเดต
+      const index = homeVisits.value.findIndex(visit => visit.id === updatedVisit.id);
+      
+      // ถ้าเจอ ให้อัปเดตข้อมูลใน array
+      if (index !== -1) {
+        // ใช้ spread operator เพื่อคง reactive ไว้และอัปเดตข้อมูล
+        homeVisits.value[index] = { ...homeVisits.value[index], ...updatedVisit };
+      }
     }
 </script>

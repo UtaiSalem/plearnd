@@ -240,8 +240,8 @@ const deleteRecord = async (index) => {
         title: 'CSRF Token หมดอายุ!',
         text: 'กรุณาโหลดหน้าเว็บใหม่แล้วลองอีกครั้ง',
         icon: 'warning',
-        confirmButtonText: 'โหลดหน้าใหม่'
-      }).then(() => window.location.reload())
+        confirmButtonText: 'ตกลง'
+      })
     } else {
       // Show error message
       await Swal.fire({
@@ -518,17 +518,9 @@ const submitForm = async () => {
     const result = response.data
 
     if (result.success) {
-      await Swal.fire({
-        title: 'สำเร็จ!',
-        text: modalMode.value === 'add' ? 'เพิ่มข้อมูลประวัติการศึกษาเรียบร้อยแล้ว' : 'อัปเดตข้อมูลประวัติการศึกษาเรียบร้อยแล้ว',
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false
-      })
-
       // Reload data from API
       await loadAcademicInfoFromAPI()
-      
+
       // Close modal
       closeModal()
 
@@ -537,6 +529,16 @@ const submitForm = async () => {
         success: true,
         type: modalMode.value === 'add' ? 'academic_info_added' : 'academic_info_updated',
         data: result.data
+      })
+
+      // ปิดสปินเนอร์ก่อนแสดง SweetAlert (isSaving จะถูก set false ใน finally)
+      await nextTick()
+      await Swal.fire({
+        title: 'สำเร็จ!',
+        text: modalMode.value === 'add' ? 'เพิ่มข้อมูลประวัติการศึกษาเรียบร้อยแล้ว' : 'อัปเดตข้อมูลประวัติการศึกษาเรียบร้อยแล้ว',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
       })
     } else {
       throw new Error(result.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล')
@@ -588,13 +590,7 @@ const submitForm = async () => {
         title: 'CSRF Token หมดอายุ!',
         text: 'กรุณาโหลดหน้าเว็บใหม่แล้วลองอีกครั้ง',
         icon: 'warning',
-        confirmButtonText: 'โหลดหน้าใหม่',
-        cancelButtonText: 'ยกเลิก',
-        showCancelButton: true
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.reload()
-        }
+        confirmButtonText: 'ตกลง'
       })
       return
     } else if (error.message) {
@@ -652,8 +648,8 @@ const submitForm = async () => {
       </div>
     </div>
 
-    <!-- Error State -->
-    <div v-if="error" class="p-4 bg-red-50 border-l-4 border-red-400">
+  <!-- Error State -->
+  <div v-if="error && !isSaving" class="p-4 bg-red-50 border-l-4 border-red-400">
       <div class="flex">
         <div class="flex-shrink-0">
           <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -957,30 +953,6 @@ const submitForm = async () => {
       </div>
     </div>
     
-    <!-- Status Footer -->
-    <div v-if="saveStatus || isSaving" class="px-4 py-3 bg-gray-50 border-t border-gray-200">
-      <div class="flex items-center justify-center">
-        <span v-if="isSaving" class="flex items-center text-blue-600">
-          <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          กำลังบันทึกข้อมูล...
-        </span>
-        <span v-else-if="saveStatus === 'success'" class="flex items-center text-green-600">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-          </svg>
-          บันทึกข้อมูลสำเร็จ
-        </span>
-        <span v-else-if="saveStatus === 'error'" class="flex items-center text-red-600">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-          เกิดข้อผิดพลาดในการบันทึก
-        </span>
-      </div>
-    </div>
 
     <!-- Modal Form -->
     <div v-if="showModal" class="fixed inset-0 z-50 overflow-y-auto">

@@ -31,8 +31,8 @@
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="rounded-lg bg-red-50 p-4 mb-6">
-        <div class="flex">
+  <div v-else-if="error && !isSaving" class="rounded-lg bg-red-50 p-4 mb-6">
+          <div v-if="!isSaving" class="flex">
           <div class="flex-shrink-0">
             <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
@@ -266,7 +266,7 @@
             <span v-if="isSaving" class="flex items-center">
               <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
               กำลังบันทึก...
             </span>
@@ -359,7 +359,7 @@ const form = ref({
 
 // API endpoints
 const getApiUrl = (endpoint) => {
-  const studentId = props.student?.student_id || props.student?.id
+  const studentId = props.student?.id
   return `/home-visit/student/${studentId}/guardian${endpoint ? '/' + endpoint : ''}`
 }
 
@@ -463,8 +463,8 @@ const saveGuardianData = async () => {
     if (response.data.success) {
       hasGuardianData.value = true
       saveStatus.value = 'success'
-      
-      // Show Sweet Alert for confirmation
+      await nextTick()
+      isSaving.value = false
       await Swal.fire({
         title: 'สำเร็จ!',
         text: response.data.message || 'บันทึกข้อมูลผู้ปกครองเรียบร้อย',
@@ -473,12 +473,9 @@ const saveGuardianData = async () => {
         confirmButtonColor: '#8b5cf6',
         timer: 2000
       })
-
-      // Clear saveStatus after showing success
       setTimeout(() => {
         saveStatus.value = null
       }, 3000)
-
       emit('save', {
         success: true,
         type: 'guardian',
