@@ -48,15 +48,8 @@ class StudentController extends Controller
         }
         
         // Get student's home visit records using HYBRID approach
-        $homeVisits = StudentHomeVisit::where(function($query) use ($student, $studentCard) {
-            // Try to find by student_id (relational)
+        $homeVisits = StudentHomeVisit::where(function($query) use ($student) {
             $query->where('student_id', $student->id);
-            
-            // Also try standalone identifiers as fallback
-            if ($studentCard) {
-                $query->orWhere('id_card', $studentCard->national_id)
-                      ->orWhere('student_name', 'like', '%' . $student->first_name_th . '%');
-            }
         })
         ->orderBy('visit_date', 'desc')
         ->get();
@@ -345,7 +338,7 @@ class StudentController extends Controller
                     // Basic student info
                     'birth_date' => $student->birth_date ?? now(),
                     'gender' => $student->gender ?? 'ไม่ระบุ',
-                    'id_card' => $student->national_id ?? '',
+                    'student_id' => $student->id ?? '',
                     'phone' => $student->student_phone ?? '',
                 ]
             );
@@ -375,7 +368,7 @@ class StudentController extends Controller
             'class' => 'required|string|max:10',
             'birth_date' => 'required|date',
             'gender' => 'required|string|in:ชาย,หญิง',
-            'id_card' => 'required|string|max:17',
+            'student_id' => 'required|integer|exists:students,id',
             'phone' => 'required|string|max:15',
             
             // Address Information
