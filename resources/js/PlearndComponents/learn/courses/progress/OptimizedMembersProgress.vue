@@ -1,21 +1,18 @@
 <script setup>
-import { ref, computed } from 'vue';
-import MemberProgressItem from './MemberProgressItem.vue';
-import { saveAs } from 'file-saver';
-import * as XLSX from 'xlsx';
-// import TableExport from 'tableexport';
+import { ref, computed, shallowRef } from 'vue';
+import { usePage } from "@inertiajs/vue3";
+import OptimizedMemberProgressItem from './OptimizedMemberProgressItem.vue';
+
 const props = defineProps({
     groupName: String,
     members: Array,
     isCourseAdmin: Boolean,
+    assignments: Array,
+    quizzes: Array,
+    course: Object,
 });
 
-//member-progress-table const
-const membersProgressTable = ref(null);
-const sheetName = computed(() => props.groupName); // Example sheet name
-const sanitizedSheetName = computed(() => sheetName.value.replace(/[:\\\/?*\[\]]/g, '')); // Remove invalid characters
-
-// Optimize member sorting and filtering with computed properties
+// Optimized member sorting with computed properties
 const sortedMembersWithOrder = computed(() => {
     return props.members
         .filter(member => member.order_number !== null)
@@ -28,20 +25,17 @@ const sortedMembersWithoutOrder = computed(() => {
         .sort((a, b) => (a.order_number || 0) - (b.order_number || 0));
 });
 
-const exportTableToExcel = () => {
-    const table = membersProgressTable.value; // อ้างอิงไปที่ตาราง
-    // const rows = table.querySelectorAll('tr'); // Get all rows
-    //   // Define the columns to include (e.g., "ชื่อ - สกุล", "คะแนน (ได้/เต็ม)")
-    // const columnsToInclude = ['เลขที่', 'รหัส', 'ชื่อ - สกุล', 'คะแนน (ได้/เต็ม)'];
+// Table reference for export
+const membersProgressTable = ref(null);
 
-    const worksheet = XLSX.utils.table_to_sheet(table); // แปลงตาราง HTML เป็น worksheet
-    const workbook = XLSX.utils.book_new(); // สร้าง workbook ใหม่
-    XLSX.utils.book_append_sheet(workbook, worksheet, sanitizedSheetName.value); // เพิ่ม worksheet ลงใน workbook
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' }); // เขียน workbook เป็น array buffer
-    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' }); // สร้าง Blob จาก buffer
-    saveAs(blob, Date.now() + '.xlsx'); // บันทึกไฟล์ Excel
+// Event handler for member updates
+const handleMemberUpdated = (memberId, updates) => {
+    const memberIndex = props.members.findIndex(m => m.id === memberId);
+    if (memberIndex !== -1) {
+        // Update the member in the local array
+        props.members[memberIndex] = { ...props.members[memberIndex], ...updates };
+    }
 };
-
 </script>
 
 <template>
@@ -59,15 +53,15 @@ const exportTableToExcel = () => {
                         ชื่อ - สกุล
                     </th>
                     <th scope="col" class="px-2 py-3 border border-slate-300"
-                        v-for="(assignment, index) in $page.props.assignments.data" :key="assignment.id">
+                        v-for="(assignment, index) in assignments" :key="assignment.id">
                         {{ '@' + (index + 1) + '(' + assignment.points +')'  }}
                     </th>
                     <th scope="col" class="px-2 py-3 border border-slate-300"
-                        v-for="(quiz, index) in $page.props.quizzes.data" :key="quiz.id">
+                        v-for="(quiz, index) in quizzes" :key="quiz.id">
                         {{ '#' + (index + 1) + '(' + quiz.total_score +')' }}
                     </th>
                     <th scope="col" class="px-2 py-3 border border-slate-300">
-                        {{ 'คะแนนเก็บ (' + $page.props.course.data.total_score +')' }}
+                        {{ 'คะแนนเก็บ (' + course.total_score +')' }}
                     </th>
                     <th scope="col" class="px-2 py-3 border border-slate-300">
                         คะแนนพิเศษ
@@ -90,20 +84,34 @@ const exportTableToExcel = () => {
                 </tr>
             </thead>
             <tbody>
+                <!-- Members with order number -->
                 <tr v-for="member in sortedMembersWithOrder"
-                    :key="member.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <MemberProgressItem :member="member" :isCourseAdmin="isCourseAdmin" />
+                    :key="member.id" 
+                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <OptimizedMemberProgressItem 
+                        :member="member" 
+                        :isCourseAdmin="isCourseAdmin"
+                        :assignments="assignments"
+                        :quizzes="quizzes"
+                        :course="course"
+                        @member-updated="handleMemberUpdated"
+                    />
                 </tr>
+                
+                <!-- Members without order number -->
                 <tr v-for="member in sortedMembersWithoutOrder"
-                    :key="member.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <MemberProgressItem :member="member" :isCourseAdmin="isCourseAdmin" />
+                    :key="'no-order-' + member.id" 
+                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <OptimizedMemberProgressItem 
+                        :member="member" 
+                        :isCourseAdmin="isCourseAdmin"
+                        :assignments="assignments"
+                        :quizzes="quizzes"
+                        :course="course"
+                        @member-updated="handleMemberUpdated"
+                    />
                 </tr>
             </tbody>
         </table>
-        <div class="flex w-full justify-end my-4"> <!-- เพิ่ม div นี้เพื่อจัดตำแหน่งปุ่มไปทางขวา -->
-            <button ref="downloadButton" @click.prevent="exportTableToExcel" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                ดาวน์โหลด Excel
-            </button>
-        </div>
     </div>
 </template>

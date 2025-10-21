@@ -7,19 +7,28 @@ import MembersProgress from './MembersProgress.vue';
 
 const activeGroupTab = ref(usePage().props.courseMemberOfAuth.last_accessed_group_tab);
 
+// Cache the course and member data to avoid repeated access
+const courseData = computed(() => usePage().props.course.data);
+const courseMemberOfAuth = computed(() => usePage().props.courseMemberOfAuth);
+const groupsData = computed(() => usePage().props.groups.data);
+const membersData = computed(() => usePage().props.members.data);
+
 async function setActiveGroupTab(tab) {
     activeGroupTab.value = tab;
-    let resp = await axios.post(`/courses/${usePage().props.course.data.id}/members/${usePage().props.courseMemberOfAuth.id}/set-active-group-tab`, {group_tab: activeGroupTab.value});
+    let resp = await axios.post(`/courses/${courseData.value.id}/members/${courseMemberOfAuth.value.id}/set-active-group-tab`, {group_tab: activeGroupTab.value});
     if (resp.data.success) {
-        usePage().props.courseMemberOfAuth.last_accessed_group_tab = tab;
+        courseMemberOfAuth.value.last_accessed_group_tab = tab;
     }
 }
 
-const unGroupedMembers = ref(usePage().props.members.data.filter((member) => !member.group));
+// Memoize ungrouped members to avoid repeated filtering
+const unGroupedMembers = computed(() => {
+    return membersData.value.filter((member) => !member.group);
+});
 
 const activeGroupMembers = computed(() => {
-    if (activeGroupTab.value < usePage().props.groups.data.length) {
-        return usePage().props.groups.data[activeGroupTab.value].members;
+    if (activeGroupTab.value < groupsData.value.length) {
+        return groupsData.value[activeGroupTab.value].members;
     } else {
         return unGroupedMembers.value;
     }
@@ -44,7 +53,7 @@ const activeGroupMembers = computed(() => {
                 <li>
                     <button @click.prevent="setActiveGroupTab($page.props.groups.data.length)"
                         class="inline-flex items-center justify-center w-full h-12 gap-2 px-6 mb-2 text-sm tracking-wide transition duration-300 border-b-2 rounded-t focus-visible:outline-none whitespace-nowrap hover:border-violet-600 focus:border-violet-700 text-violet-500 hover:text-violet-600 focus:text-violet-700 hover:bg-violet-50 focus:bg-violet-50 disabled:cursor-not-allowed disabled:border-slate-500 stroke-violet-500 hover:stroke-violet-600 focus:stroke-violet-700"
-                        :class="activeGroupTab === $page.props.groups.data.length ? 'border-violet-500 bg-violet-200 font-bold' : 'font-medium'"
+                        :class="activeGroupTab === groupsData.length ? 'border-violet-500 bg-violet-200 font-bold' : 'font-medium'"
                         id="tab-label-1a" role="tab" aria-setsize="3" aria-posinset="1" tabindex="0"
                         aria-controls="tab-panel-1a" aria-selected="true">
                         <span>{{ 'ไม่มีกลุ่ม' }}</span>
@@ -56,7 +65,7 @@ const activeGroupMembers = computed(() => {
             <div class="" :class="{ 'pt-4': $page.props.isCourseAdmin }" id="tab-panel-1a" aria-hidden="false"
                 role="tabpanel" aria-labelledby="tab-label-1a" tabindex="-1">
                 <staggered-fade :duration="50" tag="ul" class="flex flex-col w-full ">
-                    <MembersProgress :members="activeGroupMembers" />
+                    <MembersProgress :members="activeGroupMembers" :groupName="activeGroupTab < groupsData.length ? groupsData[activeGroupTab].name : 'ไม่มีกลุ่ม'" />
                 </staggered-fade>
             </div>
         </section>

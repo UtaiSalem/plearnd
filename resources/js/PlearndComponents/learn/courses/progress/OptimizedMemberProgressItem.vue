@@ -1,37 +1,36 @@
 <script setup>
-import { ref, computed, shallowRef } from "vue";
-// import { useRouter } from 'vue-router';
-import { usePage } from "@inertiajs/vue3";
-import Swal from "sweetalert2";
+import { ref, computed, watch } from "vue";
 import { Icon } from "@iconify/vue";
 
-import MemberAssignmentsAnswerProgress from "@/PlearndComponents/learn/courses/progress/MemberAssignmentAnswerProgress.vue";
-import MemberQuizzesAnswerProgress from "@/PlearndComponents/learn/courses/progress/MemberQuizzesAnswerProgress.vue";
-import MemberGradeProgress from "./MemberGradeProgress.vue";
-import MemberProgressComments from "./MemberProgressComments.vue";
+import OptimizedMemberAssignmentAnswerProgress from "./OptimizedMemberAssignmentAnswerProgress.vue";
+import OptimizedMemberQuizAnswerProgress from "./OptimizedMemberQuizAnswerProgress.vue";
+import OptimizedMemberGradeProgress from "./OptimizedMemberGradeProgress.vue";
+import OptimizedMemberProgressComments from "./OptimizedMemberProgressComments.vue";
 
 const props = defineProps({
   member: Object,
   isCourseAdmin: Boolean,
+  assignments: Array,
+  quizzes: Array,
+  course: Object,
 });
 
-// const router = useRouter();
+const emit = defineEmits(['member-updated']);
+
+// State management
 const isLoading = ref(false);
-const isAllAnswersCompleted = ref(true);
-const errorMessages = ref([]);
-const refBonusPoints = ref(props.member.bonus_points ?? 0);
-const isLinkingToMemberSettingPage = ref(false);
-const refOrderNumber = ref(props.member.order_number);
 const isOrderLoading = ref(false);
+const errorMessages = ref([]);
 
-// Cache page props to avoid repeated access
-const pageProps = computed(() => usePage().props);
-const courseData = computed(() => pageProps.value.course.data);
-const assignmentsData = computed(() => pageProps.value.assignments.data);
-const quizzesData = computed(() => pageProps.value.quizzes.data);
+// Local reactive data to avoid unnecessary re-renders
+const localBonusPoints = ref(props.member.bonus_points ?? 0);
+const localOrderNumber = ref(props.member.order_number);
+const localGradeProgress = ref(props.member.grade_progress);
+const localNotesComments = ref(props.member.notes_comments);
 
+// Computed properties
 const totalMemberScore = computed(() => {
-  return props.member.achieved_score + refBonusPoints.value;
+  return props.member.achieved_score + localBonusPoints.value;
 });
 
 const gradeProgress = (score) => {
@@ -59,7 +58,6 @@ const gradeStatus = computed(() => {
     !props.member.order_number ||
     !props.member.achieved_score ||
     !props.member.member_code ||
-    !isAllAnswersCompleted.value ||
     props.member.grade_progress === 5 ||
     (props.member.notes_comments && props.member.notes_comments.length) ||
     errorMessages.value.length
@@ -73,8 +71,8 @@ const gradeStatus = computed(() => {
 const gradePercentage = computed(() => {
   if (props.member.achieved_score) {
     return Math.round(
-      ((props.member.achieved_score + refBonusPoints.value) /
-        courseData.value.total_score) *
+      ((props.member.achieved_score + localBonusPoints.value) /
+        props.course.total_score) *
         100
     );
   } else {
@@ -82,19 +80,22 @@ const gradePercentage = computed(() => {
   }
 });
 
+// Form data
 const bonusPointsForm = ref({
   bonusPoints: 0,
-  gradeProgress: gradeProgress(totalMemberScore).grade,
 });
 
 const orderNumberForm = ref({
   orderNumber: props.member.order_number || 0,
 });
 
+// Methods
 const handleBonusPointsInputSubmit = async () => {
+  if (isLoading.value || bonusPointsForm.value.bonusPoints === 0) return;
+  
   isLoading.value = true;
   try {
-    let response = await axios.patch(
+    const response = await axios.patch(
       `/courses/${props.member.course_id}/members/${props.member.id}/bonus-points`,
       {
         bonus_points: bonusPointsForm.value.bonusPoints,
@@ -102,33 +103,27 @@ const handleBonusPointsInputSubmit = async () => {
     );
 
     if (response.data.success) {
-      refBonusPoints.value += bonusPointsForm.value.bonusPoints;
+      localBonusPoints.value += bonusPointsForm.value.bonusPoints;
       bonusPointsForm.value.bonusPoints = 0;
-      Swal.fire({
-        icon: "success",
-        title: "บันทึกคะแนนโบนัสสำเร็จ",
-        showConfirmButton: false,
-        timer: 1500,
+      
+      // Emit update to parent
+      emit('member-updated', props.member.id, {
+        bonus_points: localBonusPoints.value
       });
-      isLoading.value = false;
     }
   } catch (error) {
-    console.log(error);
+    console.error('Error updating bonus points:', error);
+  } finally {
     isLoading.value = false;
-    Swal.fire({
-      icon: "error",
-      title: "บันทึกคะแนนโบนัสไม่สำเร็จ",
-      showConfirmButton: false,
-      timer: 1500,
-    });
   }
-  isLoading.value = false;
 };
 
 const handleOrderNumberInputSubmit = async () => {
+  if (isOrderLoading.value || orderNumberForm.value.orderNumber === localOrderNumber.value) return;
+  
   isOrderLoading.value = true;
   try {
-    let response = await axios.patch(
+    const response = await axios.patch(
       `/courses/${props.member.course_id}/members/${props.member.id}/order-number`,
       {
         order_number: orderNumberForm.value.orderNumber,
@@ -136,42 +131,88 @@ const handleOrderNumberInputSubmit = async () => {
     );
 
     if (response.data.success) {
-      refOrderNumber.value = orderNumberForm.value.orderNumber;
-      props.member.order_number = orderNumberForm.value.orderNumber;
-      Swal.fire({
-        icon: "success",
-        title: "บันทึกเลขที่สำเร็จ",
-        showConfirmButton: false,
-        timer: 1500,
+      localOrderNumber.value = orderNumberForm.value.orderNumber;
+      
+      // Emit update to parent
+      emit('member-updated', props.member.id, {
+        order_number: localOrderNumber.value
       });
-      isOrderLoading.value = false;
     }
   } catch (error) {
-    console.log(error);
+    console.error('Error updating order number:', error);
+  } finally {
     isOrderLoading.value = false;
-    Swal.fire({
-      icon: "error",
-      title: "บันทึกเลขที่ไม่สำเร็จ",
-      showConfirmButton: false,
-      timer: 1500,
-    });
   }
-  isOrderLoading.value = false;
 };
 
-function setGradeStatus(errMsg) {
-  errorMessages.value.push(errMsg);
-}
-
-const navigateToMemberSettings = (courseId, memberId) => {
-  isLinkingToMemberSettingPage.value = true;
+const handleGradeProgressUpdate = async (newGradeProgress) => {
+  if (localGradeProgress.value === newGradeProgress) return;
+  
   try {
-    // route('course.member.settings.page.show', { course: courseId, course_member: memberId });
-    window.location.href = `/courses/${courseId}/members/${memberId}/member-settings`;
+    const response = await axios.patch(
+      `/courses/${props.member.course_id}/members/${props.member.id}/grade_progress`,
+      {
+        grade_progress: newGradeProgress,
+      }
+    );
+
+    if (response.data.success) {
+      localGradeProgress.value = newGradeProgress;
+      
+      // Emit update to parent
+      emit('member-updated', props.member.id, {
+        grade_progress: localGradeProgress.value
+      });
+    }
   } catch (error) {
-    console.log(error);
+    console.error('Error updating grade progress:', error);
   }
 };
+
+const handleNotesCommentsUpdate = async (newNotesComments) => {
+  if (localNotesComments.value === newNotesComments) return;
+  
+  try {
+    const response = await axios.patch(
+      `/courses/${props.member.course_id}/members/${props.member.id}/notes_comments`,
+      {
+        notes_comments: newNotesComments,
+      }
+    );
+
+    if (response.data.success) {
+      localNotesComments.value = newNotesComments;
+      
+      // Emit update to parent
+      emit('member-updated', props.member.id, {
+        notes_comments: localNotesComments.value
+      });
+    }
+  } catch (error) {
+    console.error('Error updating notes comments:', error);
+  }
+};
+
+const setGradeStatus = (errMsg) => {
+  errorMessages.value.push(errMsg);
+};
+
+// Watch for changes in props.member and update local state
+watch(() => props.member.bonus_points, (newValue) => {
+  localBonusPoints.value = newValue ?? 0;
+});
+
+watch(() => props.member.order_number, (newValue) => {
+  localOrderNumber.value = newValue;
+});
+
+watch(() => props.member.grade_progress, (newValue) => {
+  localGradeProgress.value = newValue;
+});
+
+watch(() => props.member.notes_comments, (newValue) => {
+  localNotesComments.value = newValue;
+});
 </script>
 
 <template>
@@ -183,7 +224,7 @@ const navigateToMemberSettings = (courseId, memberId) => {
     class="border font-medium text-gray-900 whitespace-nowrap dark:text-white text-center"
   >
     <div v-if="!isCourseAdmin" class="w-12 min-w-fit">
-      {{ member.order_number }}
+      {{ localOrderNumber }}
     </div>
     <form
       v-else
@@ -228,37 +269,42 @@ const navigateToMemberSettings = (courseId, memberId) => {
     {{ member.member_name ?? member.user.name }}
   </td>
 
+  <!-- Assignment answers -->
   <td
     :class="
       gradeStatus ? 'bg-slate-100 text-slate-800 border-slate-300' : 'bg-red-100 text-red-700 border-red-300'
     "
-    v-for="(assignment, asmIndx) in assignmentsData"
+    v-for="(assignment, asmIndx) in assignments"
     :key="assignment.id"
     class="px-2 py-1 border text-center w-8"
   >
-    <MemberAssignmentsAnswerProgress
-      :member_info="member"
+    <OptimizedMemberAssignmentAnswerProgress
+      :member_id="member.id"
+      :user_id="member.user.id"
       :assignment="assignment"
-      :answers="assignment.answers"
+      :answers="member.assignment_answers"
       @handleEmptyPoints="
-        setGradeStatus(' ภาระงานที่ ' + (asmIndx + 1) + ' ไม่มีคะแนน')
+        setGradeStatus('ภาระงานที่ ' + (asmIndx + 1) + ' ไม่มีคะแนน')
       "
     />
   </td>
 
+  <!-- Quiz results -->
   <td
     :class="
       gradeStatus ? 'bg-slate-100 text-slate-800 border-slate-300' : 'bg-red-100 text-red-700 border-red-300'
     "
-    v-for="(quiz, qzIndx) in quizzesData"
+    v-for="(quiz, qzIndx) in quizzes"
     :key="quiz.id"
     class="px-2 py-1 border text-center w-8"
   >
-    <MemberQuizzesAnswerProgress
+    <OptimizedMemberQuizAnswerProgress
+      :member_id="member.id"
+      :user_id="member.user.id"
       :quiz="quiz"
-      :member_id="member.user.id"
+      :results="member.quiz_results"
       @handleEmptyPoints="
-        setGradeStatus(' แบบทดสอบที่ ' + (qzIndx + 1) + ' ไม่มีคะแนน')
+        setGradeStatus('แบบทดสอบที่ ' + (qzIndx + 1) + ' ไม่มีคะแนน')
       "
     />
   </td>
@@ -282,7 +328,7 @@ const navigateToMemberSettings = (courseId, memberId) => {
       @submit.prevent="handleBonusPointsInputSubmit"
       class="flex items-center justify-center"
     >
-      <span class="mr-2">{{ refBonusPoints }}</span>
+      <span class="mr-2">{{ localBonusPoints }}</span>
       <input
         type="number"
         name="bonusPoints"
@@ -311,7 +357,7 @@ const navigateToMemberSettings = (courseId, memberId) => {
     "
     class="px-2 py-0 border text-center"
   >
-    {{ totalMemberScore + "/" + courseData.total_score }}
+    {{ totalMemberScore + "/" + course.total_score }}
   </td>
 
   <td
@@ -344,35 +390,22 @@ const navigateToMemberSettings = (courseId, memberId) => {
   </td>
 
   <td class="p-1 flex justify-center">
-    <MemberGradeProgress
-      :grade="gradeProgress(totalMemberScore).grade"
+    <OptimizedMemberGradeProgress
+      :grade="gradeProgress(gradePercentage).grade"
       :gradeStatus="gradeStatus"
       :member_id="member.id"
       :course_id="member.course_id"
-      v-model:grade-progress="props.member.grade_progress"
+      :grade_progress="localGradeProgress"
+      @update:grade-progress="handleGradeProgressUpdate"
     />
   </td>
+  
   <td class="p-1 border">
-    <MemberProgressComments
-      :member_id="props.member.id"
-      :course_id="props.member.course_id"
-      :notes_comments="props.member.notes_comments"
-      v-model:notes-comments="props.member.notes_comments"
+    <OptimizedMemberProgressComments
+      :member_id="member.id"
+      :course_id="member.course_id"
+      :notes_comments="localNotesComments"
+      @update:notes-comments="handleNotesCommentsUpdate"
     />
   </td>
-
-  <div
-    v-if="isLinkingToMemberSettingPage"
-    class="fixed top-0 left-0 z-20 flex items-center justify-center w-full h-full modal"
-  >
-    <div
-      class="absolute w-full h-full bg-gray-900 opacity-75 modal-overlay"
-    ></div>
-    <div class="flex items-center justify-center h-64">
-      <Icon
-        icon="svg-spinners:bars-rotate-fade"
-        class="z-30 w-32 h-32 text-white"
-      />
-    </div>
-  </div>
 </template>

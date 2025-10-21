@@ -72,10 +72,6 @@ const handleAddNewActivity = (newActivity) => {
     >
         <template #courseContent>
             <div class="mt-4">
-                <!-- <CreateCoursePost v-if="courseMemberOfAuth" 
-                    :course_id="props.course.data.id" 
-                    @add-new-post="(newActivity)=>courseActivities.unshift(newActivity)"
-                /> -->
                 <CreateCoursePost v-if="courseMemberOfAuth" 
                     :course_id="props.course.data.id" 
                     @add-new-post="(newActivity) => handleAddNewActivity(newActivity)"

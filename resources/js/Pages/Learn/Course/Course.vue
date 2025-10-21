@@ -22,9 +22,9 @@ onMounted(() => {
 
 <template>
     <CourseLayout
-        :course 
-        :isCourseAdmin
-        :courseMemberOfAuth
+        :course="course"
+        :isCourseAdmin="isCourseAdmin"
+        :courseMemberOfAuth="courseMemberOfAuth"
         :activeTab="1"
     >
         <template #courseContent>
