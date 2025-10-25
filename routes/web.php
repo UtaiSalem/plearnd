@@ -65,6 +65,3 @@ require __DIR__ . '/learn/student.php';
 require __DIR__ . '/homevisit/homevisit.php';
 require __DIR__ . '/studentcard/studentcard.php';
 require __DIR__ . '/apis/academies.php';
-require __DIR__ . '/optimized_newsfeed.php';
-require __DIR__ . '/optimized_course_progress.php';
-require __DIR__ . '/optimized_course_feeds.php';

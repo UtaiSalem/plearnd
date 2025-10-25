@@ -11,7 +11,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\DonateResource;
 use App\Http\Resources\ActivityResource;
-// use App\Filament\PlearndAdmin\Resources\DonateResource;
 
 class DonateController extends Controller
 {

@@ -13,7 +13,6 @@ use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Route;
 use App\Http\Resources\DonateResource;
 use Illuminate\Foundation\Application;
-// use App\Filament\PlearndAdmin\Resources\DonateResource;
 
 class WelcomeController extends Controller
 {
