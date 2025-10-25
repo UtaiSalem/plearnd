@@ -53,11 +53,13 @@ const activeGroupMembers = computed(() => {
                 <div class=" md:-ml-4 md:mr-4">
                     <section class="" aria-multiselectable="false">
                         <ul v-if="$page.props.isCourseAdmin"
-                            class="flex flex-wrap items-center border-b border-slate-200 plearnd-card" role="tablist">
+                            class="flex flex-wrap items-center border-b border-gradient-to-r from-blue-300 via-green-200 to-yellow-200 plearnd-card bg-gradient-to-r from-blue-50 via-green-50 to-yellow-50" role="tablist">
                             <li v-for="(group, index) in $page.props.groups.data" :key="index" class="w-1/2 md:w-1/3 lg:w-1/4" role="presentation ">
                                 <button @click.prevent="setActiveGroupTab(index)"
-                                    class="inline-flex items-center justify-center w-full h-12 gap-2 px-6 mb-2 text-sm tracking-wide transition duration-300 border-b-2 rounded-t focus-visible:outline-none whitespace-nowrap hover:border-violet-600 focus:border-violet-700 text-violet-500 hover:text-violet-600 focus:text-violet-700 hover:bg-violet-50 focus:bg-violet-50 disabled:cursor-not-allowed disabled:border-slate-500 stroke-violet-500 hover:stroke-violet-600 focus:stroke-violet-700"
-                                    :class="activeGroupTab === index ? 'border-violet-500 bg-violet-200 font-bold' : 'font-medium'"
+                                    class="inline-flex items-center justify-center w-full h-12 gap-2 px-6 mb-2 text-sm tracking-wide transition duration-200 border-b-2 rounded-t focus-visible:outline-none whitespace-nowrap font-medium shadow-sm hover:scale-105"
+                                    :class="activeGroupTab === index
+                                        ? 'border-blue-500 bg-gradient-to-r from-blue-200 via-green-100 to-yellow-100 text-blue-900 font-bold shadow-lg'
+                                        : 'border-transparent bg-white text-gray-600 hover:bg-blue-100 hover:text-blue-700'"
                                     id="tab-label-1a" role="tab" aria-setsize="3" aria-posinset="1" tabindex="0"
                                     aria-controls="tab-panel-1a" aria-selected="true">
                                     <span>{{ group.name + ' (' + group.members.length + ')'  }}</span>
@@ -65,8 +67,10 @@ const activeGroupMembers = computed(() => {
                             </li>
                             <li v-if="unGroupedMembers.length > 0" class="w-1/2 md:w-1/3 lg:w-1/4" role="presentation ">
                                 <button @click.prevent="setActiveGroupTab($page.props.groups.data.length)"
-                                    class="inline-flex items-center justify-center w-full h-12 gap-2 px-6 mb-2 text-sm tracking-wide transition duration-300 border-b-2 rounded-t focus-visible:outline-none whitespace-nowrap hover:border-violet-600 focus:border-violet-700 text-violet-500 hover:text-violet-600 focus:text-violet-700 hover:bg-violet-50 focus:bg-violet-50 disabled:cursor-not-allowed disabled:border-slate-500 stroke-violet-500 hover:stroke-violet-600 focus:stroke-violet-700"
-                                    :class="activeGroupTab === $page.props.groups.data.length ? 'border-violet-500 bg-violet-200 font-bold' : 'font-medium'"
+                                    class="inline-flex items-center justify-center w-full h-12 gap-2 px-6 mb-2 text-sm tracking-wide transition duration-200 border-b-2 rounded-t focus-visible:outline-none whitespace-nowrap font-medium shadow-sm hover:scale-105"
+                                    :class="activeGroupTab === $page.props.groups.data.length
+                                        ? 'border-blue-500 bg-gradient-to-r from-blue-200 via-green-100 to-yellow-100 text-blue-900 font-bold shadow-lg'
+                                        : 'border-transparent bg-white text-gray-600 hover:bg-blue-100 hover:text-blue-700'"
                                     id="tab-label-1a" role="tab" aria-setsize="3" aria-posinset="1" tabindex="0"
                                     aria-controls="tab-panel-1a" aria-selected="true">
                                     <span>{{ 'ไม่มีกลุ่ม'+ ' (' + unGroupedMembers.length + ')' }}</span>
@@ -75,7 +79,7 @@ const activeGroupMembers = computed(() => {
                         </ul>
                     </section>
                     <section class="">
-                        <div class="bg-white mt-4 p-2 rounded-lg" id="tab-panel-1a" aria-hidden="false"
+                        <div class="bg-gradient-to-br from-blue-50 via-green-50 to-yellow-50 mt-4 p-4 rounded-xl shadow-lg border border-blue-100" id="tab-panel-1a" aria-hidden="false"
                             role="tabpanel" aria-labelledby="tab-label-1a" tabindex="-1">
                             <staggered-fade :duration="50" tag="ul" class="flex flex-col w-full ">
                                 <MembersProgress 
