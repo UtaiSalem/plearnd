@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import MemberProgressItem from './MemberProgressItem.vue';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
@@ -12,21 +12,8 @@ const props = defineProps({
 
 //member-progress-table const
 const membersProgressTable = ref(null);
-const sheetName = computed(() => props.groupName); // Example sheet name
-const sanitizedSheetName = computed(() => sheetName.value.replace(/[:\\\/?*\[\]]/g, '')); // Remove invalid characters
-
-// Optimize member sorting and filtering with computed properties
-const sortedMembersWithOrder = computed(() => {
-    return props.members
-        .filter(member => member.order_number !== null)
-        .sort((a, b) => a.order_number - b.order_number);
-});
-
-const sortedMembersWithoutOrder = computed(() => {
-    return props.members
-        .filter(member => member.order_number === null)
-        .sort((a, b) => (a.order_number || 0) - (b.order_number || 0));
-});
+const sheetName = ref(props.groupName); // Example sheet name
+const sanitizedSheetName = ref(sheetName.value.replace(/[:\\\/?*\[\]]/g, '')); // Remove invalid characters
 
 const exportTableToExcel = () => {
     const table = membersProgressTable.value; // อ้างอิงไปที่ตาราง
@@ -46,62 +33,62 @@ const exportTableToExcel = () => {
 
 <template>
     <div class="relative overflow-x-auto rounded-lg">
-        <table ref="membersProgressTable" class="w-screen text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
+        <table ref="membersProgressTable" class="w-screen text-sm text-left rtl:text-right text-gray-700">
+            <thead class="text-xs font-bold text-gray-800">
                 <tr class="text-center">
-                    <th scope="col" class="w-12 px-1 py-3 border border-slate-300">
+                    <th scope="col" class="w-12 px-1 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
                         เลขที่
                     </th>
-                    <th scope="col" class="w-20 px-1 py-3 border border-slate-300">
+                    <th scope="col" class="w-20 px-1 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
                         รหัส
                     </th>
-                    <th scope="col" class="pl-2 py-3 border border-slate-300 min-w-48">
+                    <th scope="col" class="pl-2 py-3 border border-slate-300 min-w-48 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
                         ชื่อ - สกุล
                     </th>
-                    <th scope="col" class="px-2 py-3 border border-slate-300"
+                    <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-purple-100 to-purple-200 shadow-sm"
                         v-for="(assignment, index) in $page.props.assignments.data" :key="assignment.id">
                         {{ '@' + (index + 1) + '(' + assignment.points +')'  }}
                     </th>
-                    <th scope="col" class="px-2 py-3 border border-slate-300"
+                    <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-cyan-100 to-cyan-200 shadow-sm"
                         v-for="(quiz, index) in $page.props.quizzes.data" :key="quiz.id">
                         {{ '#' + (index + 1) + '(' + quiz.total_score +')' }}
                     </th>
-                    <th scope="col" class="px-2 py-3 border border-slate-300">
+                    <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-yellow-100 to-yellow-200 shadow-sm">
                         {{ 'คะแนนเก็บ (' + $page.props.course.data.total_score +')' }}
                     </th>
-                    <th scope="col" class="px-2 py-3 border border-slate-300">
+                    <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-green-100 to-green-200 shadow-sm">
                         คะแนนพิเศษ
                     </th>
-                    <th scope="col" class="px-2 py-3 border border-slate-300">
+                    <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-indigo-100 to-indigo-200 shadow-sm">
                         คะแนน (ได้/เต็ม)
                     </th>
-                    <th scope="col" class="px-2 py-3 border border-slate-300">
+                    <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-pink-100 to-pink-200 shadow-sm">
                         คะแนน (%)
                     </th>
-                    <th scope="col" class="px-2 py-3 border border-slate-300">
+                    <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-emerald-100 to-emerald-200 shadow-sm">
                         เกรดที่ทำได้
                     </th>
-                    <th scope="col" class="px-2 py-3 border border-slate-300">
+                    <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
                         เกรดที่แก้ได้
                     </th>
-                    <th scope="col" class="px-2 py-3 border border-slate-300">
+                    <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
                         หมายเหตุ
                     </th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="member in sortedMembersWithOrder"
+                <tr v-for="member in members.sort(function (a, b) { return a.order_number - b.order_number }).filter((member)=> member.order_number !== null)"
                     :key="member.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                     <MemberProgressItem :member="member" :isCourseAdmin="isCourseAdmin" />
                 </tr>
-                <tr v-for="member in sortedMembersWithoutOrder"
+                <tr v-for="member in members.sort(function (a, b) { return a.order_number - b.order_number }).filter((member)=> member.order_number === null)"
                     :key="member.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                     <MemberProgressItem :member="member" :isCourseAdmin="isCourseAdmin" />
                 </tr>
             </tbody>
         </table>
         <div class="flex w-full justify-end my-4"> <!-- เพิ่ม div นี้เพื่อจัดตำแหน่งปุ่มไปทางขวา -->
-            <button ref="downloadButton" @click.prevent="exportTableToExcel" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            <button ref="downloadButton" @click.prevent="exportTableToExcel" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded shadow-md hover:from-blue-600 hover:to-blue-700 transition-all duration-200">
                 ดาวน์โหลด Excel
             </button>
         </div>

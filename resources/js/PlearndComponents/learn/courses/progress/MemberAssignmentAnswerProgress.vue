@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, watch } from 'vue';
+import { onMounted } from 'vue';
 
 const props = defineProps({
     member_info: Object,
@@ -9,33 +9,22 @@ const props = defineProps({
 
 const emit = defineEmits(['handleEmptyPoints']);
 
-// Pre-filter answers for this member to avoid repeated filtering
-const memberAnswers = computed(() => {
-    if (!props.answers || !props.answers.length) return [];
-    return props.answers.filter(answer => answer.student.id === props.member_info.user.id);
-});
-
-// Check for empty answers and emit error
-const hasAnswers = computed(() => {
-    return memberAnswers.value.length > 0;
-});
-
-watch(hasAnswers, (newValue) => {
-    if (!newValue) {
+onMounted(() => {
+    if (!props.answers.length) {
         emit('handleEmptyPoints');
     }
-}, { immediate: true });
+});
 
 </script>
 
 <template>
-    <div v-if="memberAnswers.length">
-        <div v-for="(answer) in memberAnswers" :key="answer.id" class="text-center">
-            <div v-if="answer.points" class="text-gray-900 py-1 px-2 rounded-md text-sm font-semibold border-2 shadow-sm"
-            :class="answer.points >= assignment.points/2 ? 'bg-teal-200 text-teal-800 border-teal-400' : answer.points > 0 ? 'bg-teal-100 text-teal-700 border-teal-300' : 'bg-teal-50 text-teal-600 border-teal-200'">
+    <div v-if="answers.length">
+        <div v-for="(answer) in answers" :key="answer.id" class="text-center">
+            <div v-if="answer.points" class="py-1 px-2 rounded-md text-md font-medium shadow-sm"
+                :class="answer.points >= assignment.points/2 ? 'bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200' : answer.points > 0 ? 'bg-gradient-to-r from-amber-50 to-amber-100 text-amber-700 border border-amber-200' : 'bg-gradient-to-r from-rose-50 to-rose-100 text-rose-700 border border-rose-200'">
                 {{ answer.points }}
             </div>
-            <div v-else class="bg-slate-200 text-slate-700 py-1 px-2 rounded-md text-sm font-medium border-2 border-slate-400 shadow-sm">
+            <div v-else class="bg-gradient-to-r from-slate-50 to-slate-100 text-slate-600 py-1 px-2 rounded-md text-xs border border-slate-200 shadow-sm">
                 {{ 'รต' }}
             </div>
         </div>
