@@ -27,9 +27,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     })->name('dashboard');
     
     Route::get('/newsfeed', [NewsfeedController::class, 'index'] )->name('newsfeed');
-    // Route::get('/newsfeed/{user}', [NewsfeedController::class, 'show'] )->name('newsfeed.show');
     Route::get('/api/newsfeed/activities', [NewsfeedController::class, 'getActivities'] )->name('newsfeed.getActivities');
-
     Route::get('/users/{user:reference_code}/profile', [UserProfileController::class, 'index'])->name('user.profile');
 });
 

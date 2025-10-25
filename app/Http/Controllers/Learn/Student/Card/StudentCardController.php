@@ -134,7 +134,7 @@ class StudentCardController extends Controller
         ]);
     }
 
-    public function adminGetStudentByRoom($level, $room)
+        public function adminGetStudentByRoom($level, $room)
     {
         // Logic to fetch students by level and room
         // This is a placeholder; actual implementation will depend on your data source

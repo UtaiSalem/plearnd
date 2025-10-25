@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Filament\Panel;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Lesson;
@@ -30,7 +29,6 @@ use App\Models\UserAnswerQuestion;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Jetstream\HasProfilePhoto;
 use Illuminate\Notifications\Notifiable;
-use Filament\Models\Contracts\FilamentUser;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 // use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -42,7 +40,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 
-class User extends Authenticatable implements MustVerifyEmail, FilamentUser
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens;
     use HasFactory;
@@ -258,10 +256,6 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     }
 
 
-    public function canAccessPanel(Panel $panel): bool
-    {
-        return PlearndAdmin::where('user_id', $this->id)->exists() && $this->hasVerifiedEmail();
-    }
 
     public function isPlearndAdmin(): bool
     {
