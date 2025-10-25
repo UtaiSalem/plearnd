@@ -94,16 +94,14 @@ const handleClick = () => {
             </p>
         </div>
 
-        <button @click.prevent="emit('loading-page')"  preserve-state class="">
-            <h1 class="p-2 cursor-pointer hover:underline">
-                <p class="text-base font-bold text-gray-700 ">
-                    {{ props.course.name }} 
-                </p>               
-                <p v-if="props.course.code" class="text-sm font-bold text-gray-500">{{ props.course.code }} </p>
-                <p v-if="props.course.category" class="text-sm font-bold text-gray-500">{{ props.course.category }} </p>
-                <!-- <p class="text-sm font-bold text-gray-500 truncate">{{ props.course.description }} </p> -->
-            </h1>
-        </button>
+        <h1 class="p-2 cursor-pointer hover:underline">
+            <p class="text-base font-bold text-gray-700 ">
+                {{ props.course.name }}
+            </p>
+            <p v-if="props.course.code" class="text-sm font-bold text-gray-500">{{ props.course.code }} </p>
+            <p v-if="props.course.category" class="text-sm font-bold text-gray-500">{{ props.course.category }} </p>
+            <!-- <p class="text-sm font-bold text-gray-500 truncate">{{ props.course.description }} </p> -->
+        </h1>
 
         <div class="flex justify-between px-2">
             <div class="flex items-center space-x-2 author">
