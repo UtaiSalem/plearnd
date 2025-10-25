@@ -55,7 +55,7 @@ const handleBackLink = () => {
         <div class="bg-white shadow-lg rounded-lg dark:bg-dark-card py-2 relative " v-if="activity">
             
             <div class="absolute flex w-full justify-end pr-4 pt-2" >
-                <PostPagePostSettingMenuItem :activity :postSettingMenus />
+                <PostPagePostSettingMenuItem :activity="activity" :postSettingMenus="postSettingMenus" />
             </div>
 
             <div v-if="!isPostCreation">
@@ -94,12 +94,12 @@ const handleBackLink = () => {
                 </div>
                 
                 <div>
-                    <IndividualPostImageViewer 
+                    <IndividualPostImageViewer
                         :images="activity.target_resource.images"
                         :images_resources="activity.target_resource.imagesResources"
-                        :model_id="activity.target_resource.id" 
+                        :model_id="activity.target_resource.id"
                         :post="activity.target_resource"
-                        :edit="activity.target_resource.author.id === $page.props.auth.user.id"
+                        :edit="activity.target_resource.author && activity.target_resource.author.id === $page.props.auth.user.id"
                     />
                 </div>
 

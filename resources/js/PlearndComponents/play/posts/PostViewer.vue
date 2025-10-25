@@ -35,7 +35,7 @@ onMounted(() => {
         <div class="bg-white shadow-lg rounded-lg dark:bg-dark-card py-2 relative " v-if="activity">
             
             <div class="absolute flex w-full justify-end pr-4 pt-2" >
-                <NewsFeedPagePostSettingMenuItem :activity :postSettingMenus="setPostSettingMenus" />
+                <NewsFeedPagePostSettingMenuItem :activity="activity" :postSettingMenus="setPostSettingMenus" />
             </div>
 
             <div v-if="!isPostCreation">
@@ -65,27 +65,27 @@ onMounted(() => {
             <div :class="!isPostCreation ? 'm-2 border-[1.5px] border-gray-200 rounded-lg':''" class="px-4">
 
                 <div class="text-gray-700 text-base rounded-lg" >
-                    <PostContentViewer 
+                    <!-- <PostContentViewer 
                         :post="activity.target_resource" 
                         :action_to_id="activity.action_to_id"
                         :actorId="activity.action_by.id"
                         :acting="activity.action" 
-                    />
+                    /> -->
                 </div>
                 
                 <div v-if="$page.component === 'Newsfeed'">
-                    <PostImagesViewer 
-                        :images="activity.target_resource.images" 
-                        :model_id="activity.target_resource.id" 
-                        :edit="activity.target_resource.author.id === $page.props.auth.user.id"
+                    <PostImagesViewer
+                        :images="activity.target_resource.images"
+                        :model_id="activity.target_resource.id"
+                        :edit="activity.target_resource.author && activity.target_resource.author.id === $page.props.auth.user.id"
                     />
                 </div>
 
                 <div v-if="$page.component === 'Post'">
-                    <IndividualPostImageViewer 
-                        :images="activity.target_resource.images" 
-                        :model_id="activity.target_resource.id" 
-                        :edit="activity.target_resource.author.id === $page.props.auth.user.id"
+                    <IndividualPostImageViewer
+                        :images="activity.target_resource.images"
+                        :model_id="activity.target_resource.id"
+                        :edit="activity.target_resource.author && activity.target_resource.author.id === $page.props.auth.user.id"
                     />
                 </div>
 

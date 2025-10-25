@@ -26,8 +26,8 @@ const privacyOptions = reactive([
     <div>
         <div class="flex flex-wrap w-full gap-4">
             <div class="flex items-center gap-2 min-w-fit">
-                <img :src="post.author.avatar" class="w-12 h-12 p-[3px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500" alt="">
-                <h6 class="">{{ post.author.name }}</h6>
+                <!-- <img :src="post.author.avatar" class="w-12 h-12 p-[3px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500" alt=""> -->
+                <!-- <h6 class="">{{ post.author.name }}</h6> -->
                 <div class="flex justify-between">
                     <div class="flex flex-wrap items-center gap-1">
                         <small class="text-gray-800 dark:text-secondary-600">
@@ -42,7 +42,7 @@ const privacyOptions = reactive([
                         <small class="text-gray-800 dark:text-secondary-600">
                             {{ post.diff_humans_created_at }}
                         </small>
-                        <span class="mx-2">
+                        <span class="mx-2" v-if="post.privacy_settings && privacyOptions[post.privacy_settings-1]">
                             <Icon :icon="privacyOptions[post.privacy_settings-1].icon" class="w-5 h-5"/>
                         </span>
                         <!-- <span class="mx-2"><Icon :icon="props.privacy_settings" class="w-5 h-5"/></span> -->

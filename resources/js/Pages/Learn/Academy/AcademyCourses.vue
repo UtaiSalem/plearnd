@@ -110,7 +110,7 @@ async function onRequestToBeAMember(){
         <template #mainContent>
             <div class="section-header my-4 p-4 bg-white rounded-xl shadow-lg">
                 <div class="section-header-info">
-                    <h2 class="section-title font-mali">รายวิชาทั้งหมด
+                    <h2 class="section-title font-prompt">รายวิชาทั้งหมด
                         {{ ' ' + props.courses.data.length + ' วิชา' || 'ยังไม่มีรายวิชา' }}</h2>
                 </div>
             </div>

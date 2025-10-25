@@ -25,10 +25,11 @@
     const navigation = [
         // { name: 'แผงจัดการ',     href: '/dashboard', },
         // { name: 'แหล่งเรียนรู้',     href: '/academies', icon: 'teenyicons:school-outline'},
-        { name: 'กระดานข่าว',        href: '/newsfeed',              icon: 'fluent:feed-24-regular',},
-        { name: 'รายวิชา',           href: '/courses',               icon: 'fluent-mdl2:publish-course'},
-        { name: 'สะสมแต้ม',          href: '/donates',               icon: 'mdi:hand-coin-outline'},
-        { name: 'ดูสินค้า',            href: '/supports',              icon: 'eos-icons:product-subscriptions-outlined'},
+        { name: 'ข่าว',        href: '/newsfeed',                icon: 'fluent:feed-24-regular',},
+        { name: 'รายวิชา',           href: '/courses',           icon: 'fluent-mdl2:publish-course'},
+        { name: 'แต้ม',          href: '/donates',              icon: 'mdi:hand-coin-outline'},
+        { name: 'ดูสินค้า',            href: '/supports',         icon: 'eos-icons:product-subscriptions-outlined'},
+        { name: 'เกมส์',            href: '/play/games',              icon: 'mdi:gamepad-variant-outline'},
 
     ];
 
@@ -94,14 +95,6 @@
             <!-- Navigation Menus -->
             <div class="items-center justify-center hidden w-1/3 md:flex">
                 <div class="flex space-x-1">
-                    <!-- <Link v-for="navbarMenu in navigation" :key="navbarMenu.name" :href="navbarMenu.href"
-                        :class="[$page.url.startsWith(navbarMenu.href) ? 'bg-violet-500 text-white' : 'text-gray-300 hover:bg-violet-700 hover:text-white', 'flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium']"
-                        :aria-current="navbarMenu.current ? 'page' : undefined">
-                        <Icon :icon="navbarMenu.icon" class="w-6 h-6 mr-2" />
-                        <span class="hidden lg:block">
-                            {{ navbarMenu.name }}
-                        </span>
-                    </Link> -->
                     <button v-for="navbarMenu in navigation" :key="navbarMenu.name" @click.prevent="handleLinkToPage(navbarMenu.href)"
                         :class="[$page.url.startsWith(navbarMenu.href) ? 'bg-violet-500 text-white' : 'text-gray-300 hover:bg-violet-700 hover:text-white', 'flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium']"
                         :aria-current="navbarMenu.current ? 'page' : undefined">
@@ -284,7 +277,7 @@
 
                             <div class="flex items-center justify-center p-2 ">
                                 <button @click.prevent="logout"
-                                    class="flex items-center justify-center w-full p-2 space-x-2 font-bold text-indigo-500 rounded-md font-mali hover:bg-indigo-200">
+                                    class="flex items-center justify-center w-full p-2 space-x-2 font-bold text-indigo-500 rounded-md font-prompt hover:bg-indigo-200">
                                     <span>
                                         <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
@@ -346,7 +339,7 @@
                                     </g>
                                 </svg>
                             </span>
-                            <span class="font-semibold font-mali" :class="{ 'hidden': !isSidebarOpen }">แผงจัดการ</span>
+                            <span class="font-semibold font-prompt" :class="{ 'hidden': !isSidebarOpen }">แผงจัดการ</span>
                         </Link>
                     </li> -->
                     <!-- <li>
@@ -364,14 +357,14 @@
                                             h2V20z M13,20h-2v-2h2V20z" />
                            </svg>
                        </span>
-                       <span class="font-semibold font-mali"
+                       <span class="font-semibold font-prompt"
                            :class="{ 'hidden': !isSidebarOpen }">แหล่งเรียนรู้</span>
                        </Link>
                    </li> -->
                     <!-- <li>
                        <Link href="/academies" class="plearnd-sidebar-link " :class="{'justify-center': !isSidebarOpen}">
                         <SVGJoinGroup  />
-                       <span class="font-semibold font-mali"
+                       <span class="font-semibold font-prompt"
                            :class="{ 'hidden': !isSidebarOpen }">โรงเรียนของฉัน</span>
                        </Link>
                    </li> -->
@@ -392,7 +385,7 @@
                                         c-1.102,0-1.996,0.896-1.996,2.001H4.996H3.02c0-2.211,1.788-4,3.993-4h1.996v-2.001h0.998h0.998V15.999z" />
                            </svg>
                        </span>
-                       <span class="font-semibold font-mali"
+                       <span class="font-semibold font-prompt"
                            :class="{ 'hidden': !isSidebarOpen }">เปิดแหล่งเรียนรู้ใหม่</span>
                        </Link>
                    </li> -->
@@ -403,7 +396,7 @@
                        <span>
                            <Icon icon="mingcute:profile-line" class="w-6 h-6 opacity-80" />
                        </span>
-                       <span class="font-semibold font-mali"
+                       <span class="font-semibold font-prompt"
                            :class="{ 'hidden': !isSidebarOpen }">รวมรายวิชา</span>
                        </button>
                    </li> -->

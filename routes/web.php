@@ -5,8 +5,6 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\FriendController;
-use App\Http\Controllers\MentalMathController;
-use App\Http\Controllers\NewsfeedController;
 use App\Http\Controllers\SuggesterController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\UserProfileController;
@@ -26,10 +24,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
         ]);
     })->name('dashboard');
     
-    Route::get('/newsfeed', [NewsfeedController::class, 'index'] )->name('newsfeed');
-    // Route::get('/newsfeed/{user}', [NewsfeedController::class, 'show'] )->name('newsfeed.show');
-    Route::get('/api/newsfeed/activities', [NewsfeedController::class, 'getActivities'] )->name('newsfeed.getActivities');
-
     Route::get('/users/{user:reference_code}/profile', [UserProfileController::class, 'index'])->name('user.profile');
 });
 
@@ -54,14 +48,15 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 
 });
 
-Route::get('/mental-math', [MentalMathController::class, 'index'])->name('mental-math');
-Route::get('/exam/{level}', [MentalMathController::class, 'examLink'])->name('exam.link');
-
 require __DIR__ . '/earn/donate.php';
 require __DIR__ . '/earn/advert.php';
+require __DIR__ . '/play/newsfeed.php';
 require __DIR__ . '/play/post.php';
+
 require __DIR__ . '/play/game.php';
 require __DIR__ . '/learn/academy.php';
 require __DIR__ . '/learn/course.php';
 require __DIR__ . '/learn/student.php';
+require __DIR__ . '/homevisit/homevisit.php';
+require __DIR__ . '/studentcard/studentcard.php';
 require __DIR__ . '/apis/academies.php';

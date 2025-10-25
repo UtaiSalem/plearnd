@@ -16,7 +16,7 @@ const props = defineProps({
 });
 
 const refPost = ref(props.post);
-const canLikeOrDisLike = computed( () => props.post.author.id !== pageData.props.auth.user.id );
+const canLikeOrDisLike = computed( () => props.post.author && props.post.author.id !== pageData.props.auth.user.id );
 
 const userLikePostHandler = () => {
     refPost.value.likes++;

@@ -1,6 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Titillium+Web:400,900&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Rajdhani:400,500,600,700&display=swap");
-@import url('https://fonts.googleapis.com/css2?family=Mali&family=Noto+Sans+Thai&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Noto+Sans+Thai&display=swap');
 
 
 *,
@@ -12,7 +12,7 @@
     outline: none; */
     box-sizing: border-box;
 
-    font-family: 'Mali', cursive;
+    font-family: 'Prompt', sans-serif;
     font-family: 'Noto Sans Thai', sans-serif;
 }
 
@@ -57,7 +57,7 @@ input[type=text],
 label,
 select,
 textarea {
-    font-family: Rajdhani, sans-serif, Mali
+    font-family: Rajdhani, sans-serif, Prompt
 } */
 
 label {

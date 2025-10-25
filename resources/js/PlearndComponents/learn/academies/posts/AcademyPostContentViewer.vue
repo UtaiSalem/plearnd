@@ -43,7 +43,9 @@ const privacyOptions = reactive([
                     <small class="text-gray-800 dark:text-secondary-600">
                         {{ post.diff_humans_created_at }}
                     </small>
-                    <span class="mx-2"><Icon :icon="privacyOptions[post.privacy_settings-1].icon" class="w-5 h-5"/></span>
+                    <span class="mx-2" v-if="post.privacy_settings && privacyOptions[post.privacy_settings-1]">
+                        <Icon :icon="privacyOptions[post.privacy_settings-1].icon" class="w-5 h-5"/>
+                    </span>
                     <!-- <span class="mx-2"><Icon :icon="props.privacy_settings" class="w-5 h-5"/></span> -->
                     <!-- <span class="mx-2">{{ post.privacy_settings }}</span> -->
                 </div>

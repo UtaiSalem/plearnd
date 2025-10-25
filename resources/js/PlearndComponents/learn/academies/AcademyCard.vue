@@ -92,7 +92,7 @@ async function onRequestToBeUnmember(msg){
                     </div>
                     </Link>
                     <p class="flex justify-center my-2 text-xl font-bold text-center">
-                        <Link :href="'/academies/'+academy.name" class="font-mali">{{ academy.name }}</Link>
+                        <Link :href="'/academies/'+academy.name" class="font-prompt">{{ academy.name }}</Link>
                     </p>
                     <p class="flex justify-center w-full p-2 text-center">
                         <Link :href="'/academies/'+academy.name" class="">

@@ -157,7 +157,7 @@ const getAllAcademies = async () => {
 
                 <div class="section-header my-4 p-4 bg-white rounded-xl shadow-lg">
                     <div class="flex justify-between">               
-                        <h2 class="font-bold text-2xl text-gray-700 font-mali">{{ academiesType[academiesTypeIndex].title }} {{ ' (' + academies.length +')' || 'ยังไม่มีแหล่งเรียนรู้' }}</h2>
+                        <h2 class="font-bold text-2xl text-gray-700 font-prompt">{{ academiesType[academiesTypeIndex].title }} {{ ' (' + academies.length +')' || 'ยังไม่มีแหล่งเรียนรู้' }}</h2>
                     </div>
                 </div>
 

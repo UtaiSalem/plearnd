@@ -39,8 +39,8 @@ async function deleteImage(index, id) {
 </script>
 
 <template>
-    <div class="mt-4">
-        <div v-if="(images && images.length <= 4)" class="columns-1">
+    <div class="mt-4" v-if="images && images.length > 0">
+        <div v-if="images.length <= 4" class="columns-1">
             <div v-for="(image, index) in images" :key="image.image_url" class="">
                 <div class="relative mb-2 max-h-fit overflow-hidden">
                     <Link :href="`/courses/${props.model.course_id}/posts/${props.model_id}`">

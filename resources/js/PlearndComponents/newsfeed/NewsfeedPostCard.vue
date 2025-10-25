@@ -9,6 +9,7 @@ import AcademyPostViewer from '@/PlearndComponents/learn/academies/posts/Academy
 import CoursePostViewer from '@/PlearndComponents/learn/courses/posts/CoursePostViewer.vue';
 import DonationsViewer from '@/PlearndComponents/earn/donates/DonationsViewer.vue';
 import DonateRecipientViewer from '@/PlearndComponents/earn/donates/DonateRecipientViewer.vue';
+import SupportViewer from '@/PlearndComponents/earn/advertisements/SupportViewer.vue';
 
 const props = defineProps({
     activity: Object,
@@ -43,6 +44,10 @@ const getViewerComponent = () => {
             return DonationsViewer;
         case 'DonateRecipient':
             return DonateRecipientViewer;
+        case 'Support':
+            // For Support activities (advertisements), we don't have a specific viewer yet
+            // Return null to prevent rendering any viewer component
+            return null;
         default:
             return NewsFeedPostsViewer;
     }
@@ -61,6 +66,8 @@ const getActivityTypeInfo = () => {
             return { label: 'การบริจาค', color: 'bg-pink-100 text-pink-800', icon: 'heroicons-outline:heart' };
         case 'DonateRecipient':
             return { label: 'การได้รับการสนับสนุน', color: 'bg-yellow-100 text-yellow-800', icon: 'heroicons-outline:gift' };
+        case 'Support':
+            return { label: 'การสนับสนุน', color: 'bg-orange-100 text-orange-800', icon: 'heroicons-outline:hand' };
         default:
             return { label: 'กิจกรรม', color: 'bg-gray-100 text-gray-800', icon: 'heroicons-outline:information-circle' };
     }
@@ -209,11 +216,15 @@ const getPreviewContent = () => {
             
             <!-- Dynamic Content Viewer -->
             <component 
+                v-if="activity?.target_resource && activity?.target_resource?.id"
                 :is="getViewerComponent()"
                 :activity="activity"
                 :useLazyLoading="true"
                 @delete-post="$emit('delete-post', index)"
             />
+            <div v-else class="text-gray-400 text-sm italic">
+                ไม่สามารถแสดงรายละเอียดกิจกรรมนี้ได้
+            </div>
         </div>
         
         <!-- Loading Overlay -->

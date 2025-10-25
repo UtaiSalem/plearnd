@@ -70,7 +70,7 @@ const handleDeletePostRequest = () => {
         <div class="bg-white shadow-lg rounded-lg dark:bg-dark-card py-2 relative " v-if="activity">
             
             <div class="absolute flex w-full justify-end pr-4 pt-2" >
-                <NewsFeedPagePostSettingMenuItem :activity :postSettingMenus @delete-post="handleDeletePostRequest" />
+                <NewsFeedPagePostSettingMenuItem :activity="activity" :postSettingMenus="postSettingMenus" @delete-post="handleDeletePostRequest" />
             </div>
 
             <div class="absolute top-[50%] left-[50%] z-10" v-if="isDeleting">
@@ -118,10 +118,10 @@ const handleDeletePostRequest = () => {
                 </div>
                 
                 <div>
-                    <PostImagesViewer 
-                        :images="activity.target_resource.images" 
-                        :model_id="activity.target_resource.id" 
-                        :edit="activity.target_resource.author.id === $page.props.auth.user.id"
+                    <PostImagesViewer
+                        :images="activity.target_resource.images"
+                        :model_id="activity.target_resource.id"
+                        :edit="activity.target_resource.author && activity.target_resource.author.id === $page.props.auth.user.id"
                     />
                 </div>
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
 import MainLayout from '@/Layouts/MainLayout.vue';
 import InfiniteLoading from "v3-infinite-loading";
@@ -25,44 +25,56 @@ import NewsfeedNotification from '@/PlearndComponents/newsfeed/NewsfeedNotificat
 import NewsfeedPostCard from '@/PlearndComponents/newsfeed/NewsfeedPostCard.vue';
 
 const props = defineProps({
+    activities: Object, // รับข้อมูลกิจกรรมชุดแรกจาก backend
     peopleMayKnow: Object,
     pendingFriends: Object,
     donates: Object,
     advertises: Object,
-    notifications: Array,
+    notifications: {
+        type: Array,
+        default: () => []
+    },
 });
 
 // State management
 const isLoadingActivities = ref(false);
 const isLoading = ref(false);
-const currentPage = ref(0); // Start with 0 since we're not fetching initial data
-const lastPage = ref(1);
-const newsfeedActivities = ref([]);
+const currentPage = ref(props.activities?.meta?.current_page || 1);
+const lastPage = ref(props.activities?.meta?.last_page || 1);
+const newsfeedActivities = ref(props.activities?.data ? [...props.activities.data] : []);
 const isLoadingNewContent = ref(false);
-const isInitialLoad = ref(true); // Mark as initial load to trigger infinite scroll
+const isInitialLoad = ref(true);
 
-// New state for enhanced features
-const activeFilter = ref('all'); // all, posts, academy, courses, donations
+// UI/UX state for filter/search/notification
+const activeFilter = ref('all');
 const searchQuery = ref('');
-const showNotifications = ref(false);
-const notifications = ref(props.notifications || []);
-const showBackToTop = ref(false);
 const isFilterMenuOpen = ref(false);
 const isSearchMenuOpen = ref(false);
+const notifications = ref(Array.isArray(props.notifications) ? props.notifications : []);
+const showNotifications = ref(false);
+const showBackToTop = ref(false);
 
-// Ensure props have default values to prevent undefined errors
+// Safe props for widgets
 const safeProps = {
     advertises: props.advertises && props.advertises.data ? props.advertises : { data: [] },
     donates: props.donates && props.donates.data ? props.donates : { data: [] },
     pendingFriends: props.pendingFriends && props.pendingFriends.data ? props.pendingFriends : { data: [] },
     peopleMayKnow: props.peopleMayKnow && props.peopleMayKnow.data ? props.peopleMayKnow : { data: [] },
-    initialPagination: props.initialPagination || { total: 0, current_page: 1, last_page: 1 }
+};
+
+// Add/delete activity handlers for child components
+const handleAddNewActivity = (activity) => {
+    newsfeedActivities.value.unshift(activity);
+};
+const handleDeleteActivity = (index) => {
+    newsfeedActivities.value.splice(index, 1);
+    // Reset loading state when deleting a post to prevent showing loading skeleton
+    isLoadingActivities.value = false;
 };
 
 // Computed properties
 const filteredActivities = computed(() => {
     if (activeFilter.value === 'all') return newsfeedActivities.value;
-    
     return newsfeedActivities.value.filter(activity => {
         switch (activeFilter.value) {
             case 'posts':
@@ -80,10 +92,11 @@ const filteredActivities = computed(() => {
 });
 
 const searchedActivities = computed(() => {
-    if (!searchQuery.value.trim()) return filteredActivities.value;
-    
+    // Always filter out invalid activities (no id)
+    let base = filteredActivities.value.filter(activity => activity && activity.id);
+    if (!searchQuery.value.trim()) return base;
     const query = searchQuery.value.toLowerCase();
-    return filteredActivities.value.filter(activity => {
+    return base.filter(activity => {
         // Search in post content
         if (activity.target_resource?.content) {
             return activity.target_resource.content.toLowerCase().includes(query);
@@ -97,78 +110,42 @@ const searchedActivities = computed(() => {
 });
 
 // Debug initial state
-console.log('NewsfeedV2 - Initial state', {
-    currentPage: currentPage.value,
-    lastPage: lastPage.value,
-    newsfeedActivitiesCount: newsfeedActivities.value.length,
-    activeFilter: activeFilter.value,
-    searchQuery: searchQuery.value
-});
+// console.log('NewsfeedV2 - Initial state', {
+//     activities: props.activities,
+//     currentPage: currentPage.value,
+//     lastPage: lastPage.value,
+//     newsfeedActivitiesCount: newsfeedActivities.value.length,
+//     activeFilter: activeFilter.value,
+//     searchQuery: searchQuery.value
+// });
 
 // Visibility API for detecting when user returns to the tab
 let visibilityChangeHandler = null;
 let scrollHandler = null;
 
-// Load more activities for infinite scroll
+// Infinite scroll loader
 const loadMoreActivities = async ($state) => {
-    console.log('loadMoreActivities called', {
-        isLoading: isLoadingActivities.value,
-        currentPage: currentPage.value,
-        lastPage: lastPage.value,
-        shouldStop: currentPage.value >= lastPage.value
-    });
-    
-    if (isLoadingActivities.value || (currentPage.value > 0 && currentPage.value >= lastPage.value)) {
-        console.log('Stopping infinite scroll - loading or reached last page');
+    if (isLoadingActivities.value || currentPage.value >= lastPage.value) {
         $state.complete();
         return;
     }
-
     try {
         isLoadingActivities.value = true;
-        currentPage.value++;
-        
-        console.log('Fetching page', currentPage.value);
-        const response = await axios.get(`/api/newsfeed-v2/activities?page=${currentPage.value}&per_page=5`);
-        
-        console.log('Response received', {
-            success: response.data.success,
-            activitiesCount: response.data.activities?.length || 0,
-            pagination: response.data.pagination
-        });
-        
+        const nextPage = currentPage.value + 1;
+        const response = await axios.get(`/api/newsfeed-v2/activities?page=${nextPage}&per_page=5`);
         if (response.data.success) {
-            // Ensure newsfeedActivities is an array
-            if (!Array.isArray(newsfeedActivities.value)) {
-                console.log('Converting newsfeedActivities to array');
-                newsfeedActivities.value = [];
-            }
-            
-            // Ensure response.data.activities is an array
             const newActivities = Array.isArray(response.data.activities) ? response.data.activities : [];
-            
-            console.log('Adding activities', {
-                currentCount: newsfeedActivities.value.length,
-                newCount: newActivities.length
-            });
-            
             if (newActivities.length > 0) {
-                newActivities.forEach(activity => {
-                    newsfeedActivities.value.push(activity);
-                });
-                $state.loaded();
-                
-                // Update pagination info from response
+                newsfeedActivities.value.push(...newActivities);
+                currentPage.value = nextPage;
                 if (response.data.pagination) {
                     lastPage.value = response.data.pagination.last_page;
-                    console.log('Updated lastPage to', lastPage.value);
                 }
+                $state.loaded();
             } else {
-                console.log('No more activities to load');
                 $state.complete();
             }
         } else {
-            console.error('API returned error', response.data);
             $state.error();
             Swal.fire({
                 icon: 'error',
@@ -177,7 +154,6 @@ const loadMoreActivities = async ($state) => {
             });
         }
     } catch (error) {
-        console.error('Error loading more activities:', error);
         $state.error();
     } finally {
         isLoadingActivities.value = false;
@@ -185,33 +161,16 @@ const loadMoreActivities = async ($state) => {
     }
 };
 
-// Refresh activities
+// Refresh activities function
 const refreshActivities = async () => {
     if (isLoadingNewContent.value) return;
     
-    console.log('Refreshing activities');
-    isLoadingNewContent.value = true;
     try {
-        const response = await axios.get(`/api/newsfeed-v2/activities?page=1&per_page=5`);
-        
-        console.log('Refresh response', {
-            success: response.data.success,
-            activitiesCount: response.data.activities?.length || 0,
-            pagination: response.data.pagination
-        });
-        
-        if (response.data.success) {
-            // Ensure response.data.activities is an array
-            newsfeedActivities.value = Array.isArray(response.data.activities) ? response.data.activities : [];
-            currentPage.value = 1;
-            if (response.data.pagination) {
-                lastPage.value = response.data.pagination.last_page;
-            }
-            console.log('Refresh complete', {
-                newCount: newsfeedActivities.value.length,
-                currentPage: currentPage.value,
-                lastPage: lastPage.value
-            });
+        isLoadingNewContent.value = true;
+        const response = await axios.get('/newsfeed-v2/refresh');
+        if (response.data.success && response.data.activities) {
+            // Add new activities at the beginning
+            newsfeedActivities.value.unshift(...response.data.activities);
         }
     } catch (error) {
         console.error('Error refreshing activities:', error);
@@ -220,47 +179,32 @@ const refreshActivities = async () => {
     }
 };
 
-// Handle adding new activity to the top of the feed
-const handleAddNewActivity = (activity) => {
-    newsfeedActivities.value.unshift(activity);
-};
-
-// Handle deleting an activity
-const handleDeleteActivity = (index) => {
-    newsfeedActivities.value.splice(index, 1);
-};
-
 // Handle navigation to other pages
 const handleLinkToPage = (href) => {
     isLoading.value = true;
     router.visit(href);
 };
 
-// Handle filter change
 const handleFilterChange = (filter) => {
     activeFilter.value = filter;
     isFilterMenuOpen.value = false;
 };
 
-// Handle search
 const handleSearch = (query) => {
     searchQuery.value = query;
     isSearchMenuOpen.value = false;
 };
 
-// Toggle filter menu
 const toggleFilterMenu = () => {
     isFilterMenuOpen.value = !isFilterMenuOpen.value;
     isSearchMenuOpen.value = false;
 };
 
-// Toggle search menu
 const toggleSearchMenu = () => {
     isSearchMenuOpen.value = !isSearchMenuOpen.value;
     isFilterMenuOpen.value = false;
 };
 
-// Scroll to top
 const scrollToTop = () => {
     window.scrollTo({
         top: 0,
@@ -268,42 +212,34 @@ const scrollToTop = () => {
     });
 };
 
-// Handle scroll events
 const handleScroll = () => {
     showBackToTop.value = window.pageYOffset > 300;
 };
 
-// Setup visibility change handler to refresh content when user returns to tab
 const setupVisibilityHandler = () => {
     visibilityChangeHandler = () => {
         if (!document.hidden && newsfeedActivities.value.length > 0) {
-            // Only refresh if content might be stale (more than 5 minutes old)
             const lastActivityTime = new Date(newsfeedActivities.value[0].created_at);
             const now = new Date();
             const diffInMinutes = (now - lastActivityTime) / (1000 * 60);
-             
             if (diffInMinutes > 5) {
                 refreshActivities();
             }
         }
     };
-    
     document.addEventListener('visibilitychange', visibilityChangeHandler);
 };
 
-// Setup scroll handler
 const setupScrollHandler = () => {
     scrollHandler = handleScroll;
     window.addEventListener('scroll', scrollHandler);
 };
 
-// Setup visibility and scroll handlers on mount
 onMounted(() => {
     setupVisibilityHandler();
     setupScrollHandler();
 });
 
-// Cleanup
 onUnmounted(() => {
     if (visibilityChangeHandler) {
         document.removeEventListener('visibilitychange', visibilityChangeHandler);
@@ -451,7 +387,10 @@ onUnmounted(() => {
                         </div>
                         
                         <!-- Display filtered/searched activities -->
-                        <div v-for="activity in searchedActivities" :key="activity.id">
+                        <div
+                            v-for="activity in searchedActivities"
+                            :key="activity.id"
+                        >
                             <!-- Use the new NewsfeedPostCard component -->
                             <NewsfeedPostCard
                                 :activity="activity"

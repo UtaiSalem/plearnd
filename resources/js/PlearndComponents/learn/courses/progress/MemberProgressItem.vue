@@ -159,45 +159,65 @@ const navigateToMemberSettings = (courseId, memberId) => {
 
 </script>
 
+
 <template>
-    <td scope="row" :class="gradeStatus ? 'bg-green-200 text-green-800' : 'bg-red-50 text-red-600'"
-        class="border border-slate-300 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+    <td scope="row"
+        :class="[
+            'border border-slate-300 font-medium whitespace-nowrap text-center',
+            gradeStatus ? 'bg-gradient-to-r from-green-100 via-green-200 to-green-300 text-green-900' : 'bg-gradient-to-r from-red-50 via-orange-50 to-yellow-100 text-red-700',
+            'dark:text-white'
+        ]"
+    >
         <div v-if="!isCourseAdmin" class="w-12 min-w-fit">
             {{ member.order_number }}
         </div>
         <form v-else @submit.prevent="handleOrderNumberInputSubmit" class="flex items-center justify-center">
-            <input type="number" name="orderNumber" v-model="orderNumberForm.orderNumber" :id="`member-${member.id}-order-number`" autocomplete="order-number" class="block w-16 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-            <button type="submit" class="rounded-md  px-1 py-0 ml-1 text-sm font-base text-green-800 shadow-md  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-800">
+            <input type="number" name="orderNumber" v-model="orderNumberForm.orderNumber" :id="`member-${member.id}-order-number`" autocomplete="order-number" class="block w-16 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-400 sm:text-sm sm:leading-6">
+            <button type="submit" class="rounded-md px-1 py-0 ml-1 text-sm font-base text-green-800 shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-800">
                 <Icon icon="icomoon-free:spinner" class="w-5 h-5 animate-spin" v-if="isOrderLoading" />
                 <Icon icon="fluent:save-24-regular" class="w-5 h-5" v-else />
             </button>
         </form>
     </td>
-    <td :class="gradeStatus ? 'bg-green-200 text-green-800' : 'bg-red-50 text-red-600'"
-        class="px-1 py-1  border border-slate-300 text-center">
+    <td
+        :class="[
+            'px-1 py-1 border border-slate-300 text-center',
+            gradeStatus ? 'bg-green-100 text-green-900' : 'bg-red-50 text-red-700'
+        ]"
+    >
         <p>{{ member.member_code }}</p>
     </td>
-    <td :class="gradeStatus ? 'bg-green-200 text-green-800' : 'bg-red-50 text-red-600'"
-        class="pl-2 py-1 border border-slate-300 text-start w-48 ">
-        {{ member.member_name?? member.user.name }}
+    <td
+        :class="[
+            'pl-2 py-1 border border-slate-300 text-start w-48',
+            gradeStatus ? 'bg-green-50 text-green-900' : 'bg-red-50 text-red-700'
+        ]"
+    >
+        {{ member.member_name ?? member.user.name }}
     </td>
 
-    <td :class="gradeStatus ? 'bg-green-200 text-green-800' : 'bg-red-50 text-red-600'"
+    <td
         v-for="(assignment, asmIndx) in $page.props.assignments.data" :key="assignment.id"
-        class="px-2 py-1 border border-slate-300 text-center w-8"
+        :class="[
+            'px-2 py-1 border border-slate-300 text-center w-8',
+            gradeStatus ? 'bg-blue-50 text-blue-900' : 'bg-orange-50 text-orange-700'
+        ]"
     >
         <MemberAssignmentsAnswerProgress 
             :member_info="member" 
             :assignment="assignment" 
             :answers="assignment.answers.filter((answer) => answer.student.id === props.member.user.id)"
-
             @handleEmptyPoints="setGradeStatus(' ภาระงานที่ ' + (asmIndx+1) + ' ไม่มีคะแนน')"
         />
     </td>
 
-    <td :class="gradeStatus ? 'bg-green-200 text-green-800' : 'bg-red-50 text-red-600'"
-        v-for="(quiz, qzIndx) in $page.props.quizzes.data" :key="quiz.id" 
-        class="px-2 py-1 border border-slate-300 text-center w-8">
+    <td
+        v-for="(quiz, qzIndx) in $page.props.quizzes.data" :key="quiz.id"
+        :class="[
+            'px-2 py-1 border border-slate-300 text-center w-8',
+            gradeStatus ? 'bg-purple-50 text-purple-900' : 'bg-yellow-50 text-yellow-700'
+        ]"
+    >
         <MemberQuizzesAnswerProgress 
             :quiz="quiz" 
             :member_id="member.user.id"
@@ -205,41 +225,61 @@ const navigateToMemberSettings = (courseId, memberId) => {
         />
     </td>
 
-    <td :class="gradeStatus ? 'bg-green-200 text-green-800' : 'bg-red-50 text-red-600'"
-        class="px-2 py-0 border border-slate-300 text-center">
+    <td
+        :class="[
+            'px-2 py-0 border border-slate-300 text-center',
+            gradeStatus ? 'bg-green-100 text-green-900' : 'bg-red-50 text-red-700'
+        ]"
+    >
         {{ member.achieved_score }}
     </td>
 
-    <td :class="gradeStatus ? 'bg-green-200 text-green-800' : 'bg-red-50 text-red-600'"
-        class="px-2 py-0 border border-slate-300 text-center">
+    <td
+        :class="[
+            'px-2 py-0 border border-slate-300 text-center',
+            gradeStatus ? 'bg-green-50 text-green-900' : 'bg-orange-50 text-orange-700'
+        ]"
+    >
         <form @submit.prevent="handleBonusPointsInputSubmit" class="flex items-center justify-center">
             <span class="mr-2">{{ refBonusPoints }}</span>
-            <input type="number" name="bonusPoints" v-model="bonusPointsForm.bonusPoints" :id="`member-${member.id}-bonus-points`" autocomplete="bonus-points" class="block w-16 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
-            <button type="submit" class="rounded-md  px-1 py-0 ml-1 text-sm font-base text-green-800 shadow-md  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-800">
+            <input type="number" name="bonusPoints" v-model="bonusPointsForm.bonusPoints" :id="`member-${member.id}-bonus-points`" autocomplete="bonus-points" class="block w-16 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-400 sm:text-sm sm:leading-6">
+            <button type="submit" class="rounded-md px-1 py-0 ml-1 text-sm font-base text-green-800 shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-800">
                 <Icon icon="icomoon-free:spinner" class="w-5 h-5 animate-spin" v-if="isLoading" />
                 <Icon icon="fluent:save-24-regular" class="w-5 h-5" v-else />
             </button>
         </form>
     </td>
 
-    <td :class="gradeStatus ? 'bg-green-200 text-green-800' : 'bg-red-50 text-red-600'"
-        class="px-2 py-0 border border-slate-300 text-center">
+    <td
+        :class="[
+            'px-2 py-0 border border-slate-300 text-center',
+            gradeStatus ? 'bg-green-100 text-green-900' : 'bg-red-50 text-red-700'
+        ]"
+    >
         {{ totalMemberScore + '/' + $page.props.course.data.total_score }}
     </td>
 
-    <td :class="gradeStatus ? 'bg-green-200 text-green-800' : 'bg-red-50 text-red-600'"
-        class="px-2 py-0 border border-slate-300 text-center">
+    <td
+        :class="[
+            'px-2 py-0 border border-slate-300 text-center',
+            gradeStatus ? 'bg-green-50 text-green-900' : 'bg-orange-50 text-orange-700'
+        ]"
+    >
         {{ gradePercentage }}
     </td>
 
-    <td :class="gradeStatus ? 'bg-green-200 text-green-800' : 'bg-red-50 text-red-600'"
-        class="px-2 py-0 border border-slate-300 text-center text-lg font-bold">
-        <span class="rounded-md px-2" v-if="gradeStatus"
-            :class="`bg-${gradeProgress(gradePercentage).color}-300 text-${gradeProgress(gradePercentage).color}-600`">
+    <td
+        :class="[
+            'px-2 py-0 border border-slate-300 text-center text-lg font-bold',
+            gradeStatus ? 'bg-gradient-to-r from-green-200 via-green-300 to-green-400 text-green-900' : 'bg-gradient-to-r from-red-100 via-orange-100 to-yellow-200 text-red-700'
+        ]"
+    >
+        <span class="rounded-md px-2 py-1 shadow-md border border-green-300" v-if="gradeStatus"
+            :class="`bg-${gradeProgress(gradePercentage).color}-200 text-${gradeProgress(gradePercentage).color}-900`">
             {{  gradeProgress(gradePercentage).grade }}
         </span>
-        <span class="rounded-md px-2" v-else
-            :class="`bg-${gradeProgress(gradePercentage).color}-300 text-${gradeProgress(gradePercentage).color}-600`">
+        <span class="rounded-md px-2 py-1 shadow-md border border-red-300" v-else
+            :class="`bg-${gradeProgress(gradePercentage).color}-200 text-${gradeProgress(gradePercentage).color}-900`">
             ร
         </span>
     </td>
@@ -250,7 +290,6 @@ const navigateToMemberSettings = (courseId, memberId) => {
             :gradeStatus="gradeStatus"
             :member_id="member.id"
             :course_id="member.course_id"
-
             v-model:grade-progress="props.member.grade_progress"
         />
     </td>
@@ -259,7 +298,6 @@ const navigateToMemberSettings = (courseId, memberId) => {
             :member_id="props.member.id"
             :course_id="props.member.course_id"
             :notes_comments="props.member.notes_comments"
-
             v-model:notes-comments="props.member.notes_comments"
         />
     </td>

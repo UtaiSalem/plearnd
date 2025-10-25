@@ -122,27 +122,27 @@ const handleGetDonate = async (donateId, idx) => {
 
                 <template v-else>
                     <Link :href="route('login')"
-                        class="p-2 text-sm font-semibold text-gray-800 bg-gray-200 bg-opacity-50 rounded-md md:text-lg font-mali hover:text-white hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
+                        class="p-2 text-sm font-semibold text-gray-800 bg-gray-200 bg-opacity-50 rounded-md md:text-lg font-prompt hover:text-white hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
                     เข้าใช้งาน</Link>
 
                     <Link v-if="canRegister" :href="route('register')"
-                        class="p-2 ml-4 text-sm font-semibold text-gray-800 bg-gray-200 bg-opacity-50 rounded-md md:text-lg font-mali hover:text-white hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
+                        class="p-2 ml-4 text-sm font-semibold text-gray-800 bg-gray-200 bg-opacity-50 rounded-md md:text-lg font-prompt hover:text-white hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
                     สมัครสมาชิก</Link>
                 </template>
             </div>
 
-            <p class="text-xs text-white sm:text-2xl sm:mt-6 font-mali ">เรียนบ้าง เล่นบ้าง สร้างรายได้ด้วย</p>
+            <p class="text-xs text-white sm:text-2xl sm:mt-6 font-prompt ">เรียนบ้าง เล่นบ้าง สร้างรายได้ด้วย</p>
             <h3 class="text-base text-white md:text-4xl ">www.<b class="text-base md:text-6xl ">plearnd</b>.com</h3>
 
 
             <div class="p-3 mb-4 font-medium min-w-32 min-h-48">
                 <div class="flex-none w-32 text-center rounded-t shadow-lg lg:rounded-t-none lg:rounded-l ">
-                    <div class="block overflow-hidden text-center rounded-t font-mali">
+                    <div class="block overflow-hidden text-center rounded-t font-prompt">
                         <div class="py-1 bg-blue-500">
-                            <p class="text-white font-mali ">
+                            <p class="text-white font-prompt ">
                                 {{ months }}
                             </p>
-                            <p class="text-white font-mali ">
+                            <p class="text-white font-prompt ">
                                 {{ years }}
                             </p>
                         </div>
@@ -244,7 +244,7 @@ const handleGetDonate = async (donateId, idx) => {
             </section>
 
             <div class="max-w-6xl mt-20 mb-4 text-center">
-                <p class="text-white text-md sm:text-lg font-mali">***อยู่ระหว่างการพัฒนาและทดลองใช้งาน***</p>
+                <p class="text-white text-md sm:text-lg font-prompt">***อยู่ระหว่างการพัฒนาและทดลองใช้งาน***</p>
             </div>
         </div>
     </div>
@@ -335,7 +335,7 @@ const handleGetDonate = async (donateId, idx) => {
                 <b class=" md:text-4xl">plearnd</b>
                 <span>.com</span>
             </h3>
-            <p class="mt-5 text-sm leading-6 text-center text-gray-800 font-mali">เล่นบ้าง เรียนบ้าง สร้างรายได้ด้วย เพลิน!!</p>
+            <p class="mt-5 text-sm leading-6 text-center text-gray-800 font-prompt">เล่นบ้าง เรียนบ้าง สร้างรายได้ด้วย เพลิน!!</p>
             <div class="flex items-center justify-center mt-8 space-x-4 text-sm font-semibold leading-6 text-slate-700">
                 <img :src="'/storage/landing/ceo.jpg'" alt="" class="w-24 h-24 rounded-full">
             </div>

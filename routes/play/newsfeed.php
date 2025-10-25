@@ -7,6 +7,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     // Newsfeed routes
     Route::get('/newsfeed', [NewsfeedController::class, 'index'])->name('newsfeed');
     Route::get('/api/newsfeed/activities', [NewsfeedController::class, 'getPaginatedActivities'])->name('api.newsfeed.activities.paginated');
+    Route::get('/api/newsfeed-v2/activities', [NewsfeedController::class, 'getPaginatedActivities'])->name('api.newsfeedv2.activities.paginated');
+    Route::get('/newsfeed-v2/refresh', [NewsfeedController::class, 'refreshActivities'])->name('newsfeedv2.refresh');
     Route::post('/api/newsfeed/clear-cache', [NewsfeedController::class, 'clearNewsfeedCache'])->name('api.newsfeed.clear-cache');
     Route::post('/api/newsfeed/clear-activity-cache', [NewsfeedController::class, 'clearActivityCache'])->name('api.newsfeed.clear-activity-cache');
     

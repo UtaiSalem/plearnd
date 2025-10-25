@@ -1,24 +1,31 @@
 <?php
 
-use App\Http\Controllers\Learn\StudentCardController;
+use App\Http\Controllers\Learn\Student\Card\StudentCardController;
+use Inertia\Inertia;
 
-Route::prefix('student')->group(function () {
-    Route::get('card', [StudentCardController::class, 'index'])->name('student-card');
-    Route::put('card/{student}', [StudentCardController::class, 'update'])->name('student-card.update');
-    
-    Route::delete('card/{student}/photo', [StudentCardController::class, 'destroyPhoto'])->name('student-card.photo.destroy');
-    
-    Route::get('card/{level}/{room}', [StudentCardController::class, 'getStudentByRoom'])->name('student-card.get-by-room');
+/*
+|--------------------------------------------------------------------------
+| Student Management Routes
+|--------------------------------------------------------------------------
+| 
+| Routes for managing student-related functionality including:
+| - Student Cards (CRUD operations, photo management)
+|
+| Note: Home Visit System routes have been moved to /routes/homevisit/homevisit.php
+|
+*/
 
-    Route::patch('upload-photo/{student_card}', [StudentCardController::class, 'updateImage'])->name('student-card.update-image');
+// =====================================
+// STUDENT ROUTES GROUP  
+// =====================================
+// Note: Student Card routes have been moved to /routes/studentcard/studentcard.php with independent authentication
 
-    Route::patch('update-code/{student_card}', [StudentCardController::class, 'updateStudentID'])->name('student-card.update-student-id');
-    Route::patch('update-name-th/{student_card}', [StudentCardController::class, 'updateStudentNameTh'])->name('student-card.update-student-name-th');
-    Route::patch('update-name-en/{student_card}', [StudentCardController::class, 'updateStudentNameEn'])->name('student-card.update-student-name-en');
+// Note: Home Visit routes have been moved to /routes/homevisit/homevisit.php
 
-});
-
-Route::prefix('admin')->group(function () {
-    Route::get('/student/card', [StudentCardController::class, 'adminIndex'])->name('admin.student-card');
-    Route::get('student/card/{level}/{room}', [StudentCardController::class, 'adminGetStudentByRoom'])->name('admin.student-card.get-by-room');
-});
+// =====================================
+// ADMIN ROUTES GROUP
+// =====================================
+// =====================================
+// ADMIN ROUTES GROUP
+// =====================================
+// Note: Admin Student Card routes have been moved to /routes/studentcard/studentcard.php with independent authentication

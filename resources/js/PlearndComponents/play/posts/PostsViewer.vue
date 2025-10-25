@@ -35,7 +35,7 @@ onMounted(() => {
         <div class="bg-white shadow-lg rounded-lg dark:bg-dark-card py-2 relative " v-if="activity">
             
             <div class="absolute flex w-full justify-end pr-4 pt-2" >
-                <NewsFeedPagePostSettingMenuItem :activity :postSettingMenus="setPostSettingMenus" />
+                <NewsFeedPagePostSettingMenuItem :activity="activity" :postSettingMenus="setPostSettingMenus" />
             </div>
 
             <div v-if="!isPostCreation">
@@ -73,18 +73,18 @@ onMounted(() => {
                 </div>
                 
                 <div v-if="$page.component === 'Newsfeed'">
-                    <PostImagesViewer 
-                        :images="activity.target_resource.images" 
-                        :model_id="activity.target_resource.id" 
-                        :edit="activity.target_resource.author.id === $page.props.auth.user.id"
+                    <PostImagesViewer
+                        :images="activity.target_resource.images"
+                        :model_id="activity.target_resource.id"
+                        :edit="activity.target_resource.author && activity.target_resource.author.id === $page.props.auth.user.id"
                     />
                 </div>
 
                 <div v-if="$page.component === 'Post'">
-                    <IndividualPostImageViewer 
-                        :images="activity.target_resource.images" 
-                        :model_id="activity.target_resource.id" 
-                        :edit="activity.target_resource.author.id === $page.props.auth.user.id"
+                    <IndividualPostImageViewer
+                        :images="activity.target_resource.images"
+                        :model_id="activity.target_resource.id"
+                        :edit="activity.target_resource.author && activity.target_resource.author.id === $page.props.auth.user.id"
                     />
                 </div>
 
