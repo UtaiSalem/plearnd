@@ -20,4 +20,9 @@ class GameController extends Controller
     {
         return Inertia::render('Play/Games/SnakeGame');
     }
+    
+    public function mental_match_game()
+    {
+        return Inertia::render('Play/Games/MentalMatch');
+    }
 }

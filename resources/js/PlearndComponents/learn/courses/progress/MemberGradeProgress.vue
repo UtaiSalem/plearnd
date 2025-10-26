@@ -36,11 +36,11 @@ async function handleGradeStatusChange(event) {
 </script>
 
 <template>
-    <select
-        :id="`select-grade-status-progress-${props.member_id}`"
-        v-model="localGradeStatus"
+    <select 
+        :id="`select-grade-status-progress-${props.member_id}`" 
+        v-model="localGradeStatus" 
         @change="handleGradeStatusChange"
-        class="bg-slate-100 border-2 border-slate-400 text-slate-800 text-sm font-medium rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-600 block w-[72px] p-2.5 hover:bg-slate-200 transition-colors shadow-sm">
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[72px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
       <option :value="5">{{ 'ร' }}</option>
       <option :value="grade">{{ grade }}</option>
     </select>
