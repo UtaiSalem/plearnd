@@ -53,7 +53,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
 });
 
 Route::get('/mental-math', [MentalMathController::class, 'index'])->name('mental-math');
-Route::get('/exam/{level}', [MentalMathController::class, 'examLink'])->name('exam.link');
 
 require __DIR__ . '/earn/donate.php';
 require __DIR__ . '/earn/advert.php';
