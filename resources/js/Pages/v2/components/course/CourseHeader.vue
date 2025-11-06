@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     courseId: {
@@ -17,7 +17,7 @@ const props = defineProps({
     },
 });
 
-const route = useRoute();
+const page = usePage();
 
 // Computed
 const breadcrumbs = computed(() => {
@@ -36,14 +36,14 @@ const breadcrumbs = computed(() => {
     if (props.title) {
         crumbs.push({ 
             name: props.title, 
-            href: route.path 
+            href: page.url 
         });
     }
 
     return crumbs;
 });
 
-const currentRouteName = computed(() => route.name);
+const currentRouteName = computed(() => page.url);
 </script>
 
 <template>

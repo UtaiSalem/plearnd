@@ -8,7 +8,7 @@
  * - Search and filtering
  */
 
-import { useApi } from '@/v2/stores/composables/useApi';
+import { useApi } from '@/Pages/v2/stores/composables/useApi';
 
 const { get, post, put, del, upload } = useApi();
 

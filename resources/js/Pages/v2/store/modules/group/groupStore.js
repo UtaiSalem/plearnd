@@ -10,9 +10,9 @@
 
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { useCache } from '@/v2/stores/composables/useCache';
-import { useLoading } from '@/v2/stores/composables/useLoading';
-import { groupService } from '@/v2/api/groupService';
+import { useCache } from '@/Pages/v2/stores/composables/useCache';
+import { useLoading } from '@/Pages/v2/stores/composables/useLoading';
+import { groupService } from '@/Pages/v2/api/groupService';
 
 export const useGroupStore = defineStore('group', () => {
     // ============= STATE =============

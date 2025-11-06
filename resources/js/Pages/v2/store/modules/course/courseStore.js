@@ -10,9 +10,9 @@
 
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { courseService } from '@/v2/api/courseService';
-import { useCache } from '@/v2/stores/composables/useCache';
-import { useLoading } from '@/v2/stores/composables/useLoading';
+import { courseService } from '@/Pages/v2/api/courseService';
+import { useCache } from '@/Pages/v2/stores/composables/useCache';
+import { useLoading } from '@/Pages/v2/stores/composables/useLoading';
 
 export const useCourseStore = defineStore('course', () => {
     // ============= STATE =============

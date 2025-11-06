@@ -1,12 +1,12 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
-import { useMemberStore } from '@/v2/store/modules/member/memberStore';
-import { useGroupStore } from '@/v2/store/modules/group/groupStore';
-import CourseHeader from '@/v2/components/course/CourseHeader.vue';
-import CourseSidebar from '@/v2/components/course/CourseSidebar.vue';
-import MemberList from '@/v2/components/course/MemberList.vue';
-import MemberInviteModal from '@/v2/components/course/MemberInviteModal.vue';
-import Pagination from '@/v2/components/common/Pagination.vue';
+import { useMemberStore } from '@/Pages/v2/store/modules/member/memberStore';
+import { useGroupStore } from '@/Pages/v2/store/modules/group/groupStore';
+import CourseHeader from '@/Pages/v2/components/course/CourseHeader.vue';
+import CourseSidebar from '@/Pages/v2/components/course/CourseSidebar.vue';
+import MemberList from '@/Pages/v2/components/course/MemberList.vue';
+import MemberInviteModal from '@/Pages/v2/components/course/MemberInviteModal.vue';
+import Pagination from '@/Pages/v2/components/common/Pagination.vue';
 
 const props = defineProps({
     courseId: {

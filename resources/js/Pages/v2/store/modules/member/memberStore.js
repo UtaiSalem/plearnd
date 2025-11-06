@@ -11,9 +11,9 @@
 
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { useCache } from '@/v2/stores/composables/useCache';
-import { useLoading } from '@/v2/stores/composables/useLoading';
-import { memberService } from '@/v2/api/memberService';
+import { useCache } from '@/Pages/v2/stores/composables/useCache';
+import { useLoading } from '@/Pages/v2/stores/composables/useLoading';
+import { memberService } from '@/Pages/v2/api/memberService';
 
 export const useMemberStore = defineStore('member', () => {
     // ============= STATE =============

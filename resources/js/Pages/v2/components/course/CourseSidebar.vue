@@ -1,8 +1,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useCourseStore } from '@/v2/store/modules/course/courseStore';
-import { useGroupStore } from '@/v2/store/modules/group/groupStore';
+import { usePage, router } from '@inertiajs/vue3';
+import { useCourseStore } from '@/Pages/v2/store/modules/course/courseStore';
+import { useGroupStore } from '@/Pages/v2/store/modules/group/groupStore';
 
 const props = defineProps({
     courseId: {
@@ -23,8 +23,7 @@ const props = defineProps({
     },
 });
 
-const route = useRoute();
-const router = useRouter();
+const page = usePage();
 const courseStore = useCourseStore();
 const groupStore = useGroupStore();
 
@@ -34,7 +33,7 @@ const isGroupsExpanded = ref(true);
 
 // Computed
 const groups = computed(() => groupStore.groupsArray);
-const currentRouteName = computed(() => route.name);
+const currentRouteName = computed(() => page.url);
 
 // Navigation items
 const navigationItems = computed(() => [
@@ -104,7 +103,34 @@ const navigationItems = computed(() => [
 
 // Methods
 const navigateTo = (item) => {
-    router.push(item.route);
+    // Build URL from route object
+    let url = `/courses/${props.courseId}`;
+    
+    // Map route names to URL paths
+    const routeMap = {
+        'Course.Dashboard': '',
+        'Course.Announcements': '/announcements',
+        'Course.Attendance': '/attendances',
+        'Course.Lessons': '/lessons',
+        'Course.Assignments': '/assignments',
+        'Course.Exams': '/quizzes',
+        'Course.Groups': '/groups',
+        'Course.Members': '/members',
+        'Course.Summary': '/summary',
+        'Course.Settings': '/settings',
+    };
+    
+    if (item.route && routeMap[item.route.name]) {
+        url += routeMap[item.route.name];
+    }
+    
+    // Add query parameters if present
+    if (item.route && item.route.query) {
+        const queryString = new URLSearchParams(item.route.query).toString();
+        url += `?${queryString}`;
+    }
+    
+    router.visit(url);
 };
 
 const toggleSidebar = () => {

@@ -9,12 +9,12 @@
 
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-import { useMemberStore } from '@/v2/store/modules/member/memberStore';
-import { useGroupStore } from '@/v2/store/modules/group/groupStore';
-import { useCourseStore } from '@/v2/store/modules/course/courseStore';
-import { memberService } from '@/v2/api/memberService';
-import { groupService } from '@/v2/api/groupService';
-import { courseService } from '@/v2/api/courseService';
+import { useMemberStore } from '@/Pages/v2/store/modules/member/memberStore';
+import { useGroupStore } from '@/Pages/v2/store/modules/group/groupStore';
+import { useCourseStore } from '@/Pages/v2/store/modules/course/courseStore';
+import { memberService } from '@/Pages/v2/api/memberService';
+import { groupService } from '@/Pages/v2/api/groupService';
+import { courseService } from '@/Pages/v2/api/courseService';
 
 // Test configuration
 const TEST_COURSE_ID = 1;

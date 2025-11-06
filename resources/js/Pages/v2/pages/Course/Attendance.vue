@@ -1,10 +1,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useCourseStore } from '@/v2/store/modules/course/courseStore';
-import { useGroupStore } from '@/v2/store/modules/group/groupStore';
-import { useMemberStore } from '@/v2/store/modules/member/memberStore';
-import CourseHeader from '@/v2/components/course/CourseHeader.vue';
-import CourseSidebar from '@/v2/components/course/CourseSidebar.vue';
+import { useCourseStore } from '@/Pages/v2/store/modules/course/courseStore';
+import { useGroupStore } from '@/Pages/v2/store/modules/group/groupStore';
+import { useMemberStore } from '@/Pages/v2/store/modules/member/memberStore';
+import CourseHeader from '@/Pages/v2/components/course/CourseHeader.vue';
+import CourseSidebar from '@/Pages/v2/components/course/CourseSidebar.vue';
 
 const props = defineProps({
     courseId: {
