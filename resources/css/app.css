@@ -1,0 +1,113 @@
+@import 'sweetalert-custom.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   🎨 Theme CSS Variables
+   ============================================ */
+
+/* Theme Colors - Light Mode (Default) */
+:root {
+  /* Success Colors */
+  --success-color: #22c55e;
+  --success-light: #86efac;
+  --success-dark: #16a34a;
+  
+  /* Primary Colors */
+  --primary-color: #3b82f6;
+  --primary-light: #93c5fd;
+  --primary-dark: #2563eb;
+  
+  /* Warning Colors */
+  --warning-color: #eab308;
+  --warning-light: #fde047;
+  --warning-dark: #ca8a04;
+  
+  /* Danger Colors */
+  --danger-color: #ef4444;
+  --danger-light: #fca5a5;
+  --danger-dark: #dc2626;
+  
+  /* Neutral Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+}
+
+/* Theme Colors - Dark Mode */
+[data-theme="dark"] {
+  /* Success Colors */
+  --success-color: #16a34a;
+  --success-light: #22c55e;
+  --success-dark: #15803d;
+  
+  /* Primary Colors */
+  --primary-color: #2563eb;
+  --primary-light: #3b82f6;
+  --primary-dark: #1e40af;
+  
+  /* Warning Colors */
+  --warning-color: #ca8a04;
+  --warning-light: #eab308;
+  --warning-dark: #a16207;
+  
+  /* Danger Colors */
+  --danger-color: #dc2626;
+  --danger-light: #ef4444;
+  --danger-dark: #b91c1c;
+  
+  /* Neutral Colors */
+  --bg-primary: #1f2937;
+  --bg-secondary: #111827;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+}
+
+[x-cloak] {
+    display: none;
+}
+
+@layer reset, primevue;
+
+@layer components {
+    .plearnd-btn-primary {
+        @apply w-full px-4 py-2 font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75;
+    }
+
+    .plearnd-btn-indigo {
+        @apply w-full px-4 py-2 font-semibold text-white bg-indigo-500 rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-75;
+    }
+
+    .plearnd-btn-success {
+        @apply w-full px-4 py-2 font-semibold text-white bg-green-500 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75;
+    }
+
+    .plearnd-btn-secondary {
+        @apply w-full px-4 py-2 font-semibold text-white bg-gray-400 rounded-lg shadow-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75;
+    }
+
+    .plearnd-btn-warning {
+        @apply w-full px-4 py-2 font-semibold text-white bg-yellow-400 rounded-lg shadow-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-opacity-75;
+    }
+    
+    .plearnd-btn-danger {
+        @apply px-4 py-2 text-white bg-red-400 border rounded-lg shadow-lg hover:bg-red-600; 
+    }
+
+    .plearn-navbar-icon {
+        @apply flex items-center justify-between space-x-1 pr-2 text-sm font-bold text-yellow-600 bg-indigo-100 rounded-full hover:bg-indigo-200 focus:outline-none focus:ring;
+    }
+
+    .plearnd-sidebar-link {
+        @apply flex items-center p-2 space-x-2 rounded-md bg-indigo-100 hover:bg-indigo-200 text-indigo-500 hover:text-indigo-700;
+    }
+
+    .plearnd-card {
+        @apply bg-white p-4 rounded-lg shadow-xl
+    }
+}
