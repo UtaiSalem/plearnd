@@ -1,15 +1,11 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { usePage } from "@inertiajs/vue3";
 import { Icon } from '@iconify/vue';
 import { useAttendanceStore } from '@/stores/attendance.js';
 import AuthMemberAttendanceDetail  from './AuthMemberAttendanceDetail.vue';
 
 const props = defineProps({
-    attendances: {
-        type: Object,
-        required: true,
-    },
     courseMemberOfAuth: {
         type: Object,
         required: true,
@@ -17,6 +13,7 @@ const props = defineProps({
 });
 
 const attendanceStore = useAttendanceStore();
+const page = usePage();
 
 // Pagination and loading states
 const currentPage = ref(1);
@@ -24,17 +21,26 @@ const isLoading = ref(false);
 const isLoadingMore = ref(false);
 const attendanceError = ref(null);
 
-// Computed properties
+// Get course and group information
+const course = computed(() => page.props.course);
+const groupId = computed(() => props.courseMemberOfAuth?.group_id);
+
+// Computed properties using store
+const groupAttendances = computed(() => {
+    if (!groupId.value) return [];
+    return attendanceStore.getGroupAttendances(groupId.value) || [];
+});
+
 const paginatedAttendances = computed(() => {
-    if (!props.attendances?.data) return [];
+    if (!groupAttendances.value.length) return [];
     // เรียงลำดับจากวันที่ล่าสุดก่อน
-    return [...props.attendances.data].sort((a, b) => {
+    return [...groupAttendances.value].sort((a, b) => {
         return new Date(b.date) - new Date(a.date);
     });
 });
 
 const totalCount = computed(() => {
-    return props.attendances?.total || 0;
+    return paginatedAttendances.value.length;
 });
 
 const displayedCount = computed(() => {
@@ -45,19 +51,41 @@ const canLoadMore = computed(() => {
     return displayedCount.value < totalCount.value;
 });
 
+const isLoadingAttendances = computed(() => {
+    return groupId.value ? attendanceStore.isLoading(`group_${groupId.value}`) : false;
+});
+
+const attendanceErrorFromStore = computed(() => {
+    return groupId.value ? attendanceStore.getError(`group_${groupId.value}`) : null;
+});
+
 // Methods
-const refreshAttendances = async () => {
-    isLoading.value = true;
-    attendanceError.value = null;
+const loadAttendances = async () => {
+    if (!groupId.value || !course.value) return;
     
     try {
-        // This would typically trigger a parent component method or emit an event
-        // For now, we'll just simulate a refresh
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await attendanceStore.fetchGroupAttendances(
+            course.value.data.id,
+            groupId.value,
+            page.props.isCourseAdmin
+        );
     } catch (error) {
-        attendanceError.value = 'Failed to refresh attendances';
-    } finally {
-        isLoading.value = false;
+        console.error('Failed to load attendances:', error);
+    }
+};
+
+const refreshAttendances = async () => {
+    if (!groupId.value || !course.value) return;
+    
+    try {
+        await attendanceStore.fetchGroupAttendances(
+            course.value.data.id,
+            groupId.value,
+            page.props.isCourseAdmin,
+            true // force refresh
+        );
+    } catch (error) {
+        console.error('Failed to refresh attendances:', error);
     }
 };
 
@@ -78,11 +106,16 @@ const loadMoreAttendances = async () => {
     }
 };
 
+// Load attendances when component is mounted
+onMounted(async () => {
+    await loadAttendances();
+});
+
 </script>
 
 <template>
     <!-- Enhanced Loading State -->
-    <div v-if="isLoading && currentPage === 1" class="flex justify-center items-center py-20">
+    <div v-if="isLoadingAttendances && currentPage === 1" class="flex justify-center items-center py-20">
         <div class="text-center">
             <div class="relative">
                 <div class="w-20 h-20 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin"></div>
@@ -98,7 +131,7 @@ const loadMoreAttendances = async () => {
     </div>
 
     <!-- Enhanced Error State -->
-    <div v-if="attendanceError && !paginatedAttendances.length" class="bg-gradient-to-r from-red-50 via-pink-50 to-rose-50 border-l-4 border-red-500 rounded-xl p-8 mb-6 shadow-lg">
+    <div v-if="attendanceErrorFromStore && !paginatedAttendances.length" class="bg-gradient-to-r from-red-50 via-pink-50 to-rose-50 border-l-4 border-red-500 rounded-xl p-8 mb-6 shadow-lg">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0 w-14 h-14 bg-red-100 rounded-full flex items-center justify-center animate-pulse">
@@ -106,7 +139,7 @@ const loadMoreAttendances = async () => {
                 </div>
                 <div>
                     <p class="text-xl font-bold text-red-800">เกิดข้อผิดพลาด</p>
-                    <p class="text-red-600 mt-1">{{ attendanceError }}</p>
+                    <p class="text-red-600 mt-1">{{ attendanceErrorFromStore }}</p>
                 </div>
             </div>
             <button @click="refreshAttendances"
@@ -118,7 +151,7 @@ const loadMoreAttendances = async () => {
     </div>
 
     <!-- Enhanced Empty State -->
-    <div v-if="!isLoading && !attendanceError && !paginatedAttendances.length" class="text-center py-20">
+    <div v-if="!isLoadingAttendances && !attendanceErrorFromStore && !paginatedAttendances.length" class="text-center py-20">
         <div class="inline-flex items-center justify-center w-32 h-32 bg-gradient-to-br from-gray-100 to-slate-100 rounded-full mb-8 shadow-lg">
             <Icon icon="heroicons:calendar-days" class="h-16 w-16 text-gray-400" />
         </div>

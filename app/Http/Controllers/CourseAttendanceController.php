@@ -33,11 +33,9 @@ class CourseAttendanceController extends Controller
 
         return Inertia::render('Learn/Course/Attendance/Attendances', [
             'course'        => new CourseResource($course),
-            'lessons'       => LessonResource::collection($course->courseLessons),
             'groups'        => CourseGroupResource::collection($course->courseGroups),
-            // 'attendances'   => $member_attendances,
             'courseMemberOfAuth'  => $courseMemberOfAuth,
-            'attendances'   => $course_attendances,
+            'isCourseAdmin' => $course->user_id === auth()->id(),
         ]);
 
     }

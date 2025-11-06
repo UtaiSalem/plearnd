@@ -8,10 +8,8 @@ import { Icon } from '@iconify/vue';
 const props = defineProps({
     course: Object,
     groups: Object,
-    lessons: Object,
     isCourseAdmin: Boolean,
     courseMemberOfAuth: Object,
-    attendances: Object,
 });
 
 
@@ -21,8 +19,6 @@ const props = defineProps({
     <div>
         <CourseLayout 
             :course 
-            :groups
-            :lessons
             :isCourseAdmin
             :courseMemberOfAuth
             :activeTab="7"
@@ -33,7 +29,7 @@ const props = defineProps({
                     <CourseAttendance :groups="props.groups.data" />
                 </div>
                 
-                <div class=" mt-4" v-if="!props.isCourseAdmin && props.courseMemberOfAuth">
+                <div class=" mt-4" v-else-if="props.courseMemberOfAuth">
                     <!-- Show warning if member has no group -->
                     <div v-if="!props.courseMemberOfAuth.group_id" class="bg-gradient-to-r from-amber-50 via-orange-50 to-yellow-50 border-l-4 border-amber-500 rounded-xl p-8 mb-6 shadow-lg">
                         <div class="flex items-center justify-between">
@@ -57,7 +53,6 @@ const props = defineProps({
                     <!-- Show attendance card if member has a group -->
                     <div v-else class="w-full mx-auto">
                         <CourseMemberAttendanceCard
-                            :attendances
                             :courseMemberOfAuth
                         />
                     </div>

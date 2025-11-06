@@ -215,7 +215,27 @@ const refreshAllAttendanceStatuses = async () => {
 
 <template>
     <div class="w-full mx-auto">
-        <section class="max-w-full" aria-multiselectable="false">
+        <!-- Warning message when there are no groups -->
+        <div v-if="!props.groups || props.groups.length === 0" class="bg-gradient-to-r from-amber-50 via-orange-50 to-yellow-50 border-l-4 border-amber-500 rounded-xl p-8 mb-6 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="flex-shrink-0 w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center animate-pulse">
+                        <Icon icon="heroicons:exclamation-triangle" class="h-8 w-8 text-amber-600" />
+                    </div>
+                    <div>
+                        <p class="text-xl font-bold text-amber-800">ยังไม่มีกลุ่มในรายวิชานี้</p>
+                        <p class="text-amber-600 mt-1">กรุณาสร้างกลุ่มก่อนเพื่อจัดการข้อมูลการเข้าเรียน</p>
+                    </div>
+                </div>
+                <a :href="`/courses/${$page.props.course.data.id}/groups`"
+                   class="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl hover:from-amber-700 hover:to-orange-700 transition-all duration-300 text-sm font-bold flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105">
+                    <Icon icon="heroicons:user-group" class="h-5 w-5" />
+                    ไปที่เมนูกลุ่ม
+                </a>
+            </div>
+        </div>
+
+        <section v-else class="max-w-full" aria-multiselectable="false">
             <!-- Enhanced Group Tabs -->
             <div v-if="$page.props.isCourseAdmin" class="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl shadow-xl overflow-hidden p-4 border border-gray-100">
                 <div class="flex flex-wrap items-center gap-2">
@@ -354,30 +374,30 @@ const refreshAllAttendanceStatuses = async () => {
                     </staggered-fade>
                 </div>
             </div>
-        </section>
 
-        <!-- Enhanced Form Sections -->
-        <section v-if="openCreateNewAttendanceForm" class="mt-6">
-            <div class="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-                <CreateNewCourseAttendanceForm
-                    :groupId="props.groups[activeGroupTab].id"
-                    @close-form="openCreateNewAttendanceForm = false"
-                    @cancle-create-new-attendance="handleCancleCreateNewAttendance"
-                    @add-new-attendance="(atdn)=> handleAddNewAttendance(atdn)"
-                />
-            </div>
-        </section>
+            <!-- Enhanced Form Sections -->
+            <section v-if="openCreateNewAttendanceForm" class="mt-6">
+                <div class="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+                    <CreateNewCourseAttendanceForm
+                        :groupId="props.groups[activeGroupTab].id"
+                        @close-form="openCreateNewAttendanceForm = false"
+                        @cancle-create-new-attendance="handleCancleCreateNewAttendance"
+                        @add-new-attendance="(atdn)=> handleAddNewAttendance(atdn)"
+                    />
+                </div>
+            </section>
 
-        <section v-if="isShowCurrentAttendance" class="mt-6">
-            <div class="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-                <ShowCourseAttendanceForm
-                    :groupId="props.groups[activeGroupTab].id"
-                    :attendance="currentAttendance"
-                    @close-form="isShowCurrentAttendance = false"
-                    @delete-attendance="preDeleteAttendance"
-                    @updat-attendance="(respAtd)=>handleUpdateAttendance(respAtd)"
-                />
-            </div>
+            <section v-if="isShowCurrentAttendance" class="mt-6">
+                <div class="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+                    <ShowCourseAttendanceForm
+                        :groupId="props.groups[activeGroupTab].id"
+                        :attendance="currentAttendance"
+                        @close-form="isShowCurrentAttendance = false"
+                        @delete-attendance="preDeleteAttendance"
+                        @updat-attendance="(respAtd)=>handleUpdateAttendance(respAtd)"
+                    />
+                </div>
+            </section>
         </section>
     </div>
 </template>
