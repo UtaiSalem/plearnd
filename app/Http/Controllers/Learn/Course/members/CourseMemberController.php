@@ -121,8 +121,6 @@ class CourseMemberController extends Controller
             $newCourseGroupMember->group_id     = $new_course_member->group_id;
             $newCourseGroupMember->status       = $courseAutoAcceptMembers;
             $newCourseGroupMember->save();
-
-            if ($new_course_member->status == 1) { $course->increment('enrolled_students'); }
             
         }else{
 
@@ -148,11 +146,8 @@ class CourseMemberController extends Controller
         try {
 
             $member_group = CourseGroupMember::where('group_id', $member->group_id)->where('user_id', $member->user_id)->first();
-            $member_group->delete();
-            
-            
-            if ($member->status == 1) {
-                if($course->enrolled_students > 0){ $course->decrement('enrolled_students'); };
+            if ($member_group) {
+                $member_group->delete();
             }
 
             $member->delete();
@@ -252,10 +247,6 @@ class CourseMemberController extends Controller
 
             $user_answer_questions = UserAnswerQuestion::where('course_id', $course->id)->where('user_id', $member->user_id)->delete();
             $course_quiz_results = CourseQuizResult::where('course_id', $course->id)->where('user_id', $member->user_id)->delete();
-
-            if ($member->status == 1) {
-                if($course->enrolled_students > 0) $course->decrement('enrolled_students');
-            }
 
             if ($member_group) $member_group->delete();
 
@@ -423,22 +414,15 @@ class CourseMemberController extends Controller
             'reason' => 'nullable|string|max:255',
         ]);
 
-        $oldStatus = $member->status;
         $member->update([
             'status' => $request->status,
+            'course_member_status' => $request->status,
             'status_changed_by' => auth()->id(),
             'status_change_reason' => $request->reason,
             'status_changed_at' => now(),
         ]);
 
-        // Update course enrolled students count
-        if ($oldStatus !== $request->status) {
-            if ($request->status) {
-                $course->increment('enrolled_students');
-            } else {
-                $course->decrement('enrolled_students');
-            }
-        }
+        // Observer will handle enrolled_students increment/decrement
 
         return response()->json([
             'success' => true,
@@ -651,22 +635,24 @@ class CourseMemberController extends Controller
     {
         $member->update([
             'status' => 1,
+            'course_member_status' => 1,
             'status_changed_by' => auth()->id(),
             'status_change_reason' => $reason,
             'status_changed_at' => now(),
         ]);
-        $member->course->increment('enrolled_students');
+        // Observer will handle enrolled_students increment
     }
 
     private function deactivateMember(CourseMember $member, ?string $reason)
     {
         $member->update([
             'status' => 0,
+            'course_member_status' => 0,
             'status_changed_by' => auth()->id(),
             'status_change_reason' => $reason,
             'status_changed_at' => now(),
         ]);
-        $member->course->decrement('enrolled_students');
+        // Observer will handle enrolled_students decrement
     }
 
     private function moveMemberToGroup(CourseMember $member, int $groupId)
@@ -706,10 +692,7 @@ class CourseMemberController extends Controller
         // Clean up member data
         $this->cleanupMemberData($member);
         
-        if ($member->status == 1) {
-            $member->course->decrement('enrolled_students');
-        }
-        
+        // Observer will handle enrolled_students decrement
         $member->delete();
     }
 

@@ -53,7 +53,7 @@ class CourseGroupMemberController extends Controller
             $new_course_member->save();
             $new_course_member->refresh();
 
-            if ($new_course_member->status == 1) { $course->increment('enrolled_students'); }
+            // Observer will handle enrolled_students increment
 
             $newCourseGroupMember = new CourseGroupMember();
             $newCourseGroupMember->user_id      = auth()->id();

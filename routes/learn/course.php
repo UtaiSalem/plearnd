@@ -197,6 +197,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     // Route::get('/attendances/{attendance}', [CourseAttendanceController::class, 'show'])->name('attendances.show');
     Route::patch('/attendances/{attendance}', [CourseAttendanceController::class, 'update'])->name('attendances.update');
     Route::delete('/attendances/{attendance}', [CourseAttendanceController::class, 'destroy'])->name('attendances.destroy');
+    
+    // Update member attendance status by admin
+    Route::post('/attendances/{attendance}/member/{member}/update-status', [CourseAttendanceController::class, 'updateMemberStatus'])->name('attendances.member.update-status');
+    
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {

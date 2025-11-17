@@ -62,10 +62,7 @@ class CourseGroupMemberController extends Controller
                     ]
                 );
 
-                // อัพเดทจำนวน enrolled_students ถ้าได้รับการอนุมัติทั้งคอร์สและกลุ่ม
-                if ($new_course_member->course_member_status == 1 && $courseGroupMember->status == 1) {
-                    $course->increment('enrolled_students');
-                }
+                // Observer will handle enrolled_students increment
 
                 $course_member = $new_course_member;
                 
@@ -95,12 +92,7 @@ class CourseGroupMemberController extends Controller
                     ]
                 );
 
-                // ตรวจสอบว่าเปลี่ยนจากไม่อนุมัติเป็นอนุมัติหรือไม่
-                if (($oldCourseMemberStatus == 0 || $oldGroupMemberStatus == 0) && 
-                    ($course_member->course_member_status == 1 && $courseGroupMember->status == 1)) {
-                    $wasNotApproved = true;
-                    $course->increment('enrolled_students');
-                }
+                // Observer will handle enrolled_students changes
             }
 
             DB::commit();

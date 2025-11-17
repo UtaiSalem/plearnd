@@ -73,8 +73,6 @@ class CourseMemberController extends Controller
             $newCourseGroupMember->group_id     = $new_course_member->group_id;
             $newCourseGroupMember->status       = $courseAutoAcceptMembers;
             $newCourseGroupMember->save();
-
-            if ($new_course_member->status == 1) { $course->increment('enrolled_students'); }
             
         }else{
 
@@ -100,11 +98,8 @@ class CourseMemberController extends Controller
         try {
 
             $member_group = CourseGroupMember::where('group_id', $member->group_id)->where('user_id', $member->user_id)->first();
-            $member_group->delete();
-            
-            
-            if ($member->status == 1) {
-                if($course->enrolled_students > 0){ $course->decrement('enrolled_students'); };
+            if ($member_group) {
+                $member_group->delete();
             }
 
             $member->delete();
@@ -166,26 +161,6 @@ class CourseMemberController extends Controller
                                                 ->where('user_id', $member->user_id)
                                                 ->first();
             
-            // if ($member_group) $member_group->delete();
-            
-            // if ($member->status == 1) {
-            //     if($course->enrolled_students > 0) $course->decrement('enrolled_students');
-            // }
-
-            // $user_answer_questions = UserAnswerQuestion::where('course_id', $course->id)->where('user_id', $member->user_id)->get();
-            // if ($user_answer_questions->count() > 0) {
-            //     foreach ($user_answer_questions as $user_answer_question) {
-            //         if($user_answer_question) $user_answer_question->delete();
-            //     }
-            // }
-
-            // $course_quiz_results = CourseQuizResult::where('course_id', $course->id)->where('user_id', $member->user_id)->get();
-            // if ($course_quiz_results->count() > 0) {
-            //     foreach ($course_quiz_results as $course_quiz_result) {
-            //         if($course_quiz_result) $course_quiz_result->delete();
-            //     }
-            // }
-
             $assignments = $course->assignments()->get();
             if ($assignments->count() > 0) {
                 foreach ($assignments as $assignment) {
@@ -204,10 +179,6 @@ class CourseMemberController extends Controller
 
             $user_answer_questions = UserAnswerQuestion::where('course_id', $course->id)->where('user_id', $member->user_id)->delete();
             $course_quiz_results = CourseQuizResult::where('course_id', $course->id)->where('user_id', $member->user_id)->delete();
-
-            if ($member->status == 1) {
-                if($course->enrolled_students > 0) $course->decrement('enrolled_students');
-            }
 
             if ($member_group) $member_group->delete();
 
@@ -508,6 +479,5 @@ class CourseMemberController extends Controller
             'achieved_score' => $totalScore
         ]);
     }
-
 
 }
