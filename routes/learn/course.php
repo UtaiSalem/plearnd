@@ -258,3 +258,12 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     // Route::post('/postimage/{post_image}/comments', [PostImageController::class, 'storeComment'])->name('course.post.image.comments.store');
 
 });
+
+// Course cover and logo update routes
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    Route::post('/courses/{course}/cover', [CourseController::class, 'updateCover'])->name('course.cover.update');
+    Route::post('/courses/{course}/logo', [CourseController::class, 'updateLogo'])->name('course.logo.update');
+    Route::patch('/courses/{course}/header', [CourseController::class, 'updateHeader'])->name('course.header.update');
+    Route::patch('/courses/{course}/subheader', [CourseController::class, 'updateSubheader'])->name('course.subheader.update');
+    Route::get('/courses/{course}/profile', [CourseController::class, 'profile'])->name('course.profile');
+});

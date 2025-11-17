@@ -23,21 +23,40 @@ class CourseAttendanceController extends Controller
     {
         $courseMemberOfAuth = $course->courseMembers()->where('user_id', auth()->id())->first();
 
-        // Get course attendances where user is authenticated member
-        $course_attendances = $course->courseAttendances;
-
-        // $member_attendances = $course_attendances->attendanceDetails;
-        
-        // Get course attendances
-        // $attendances = CourseAttendanceResource::collection($attendances);
-
         return Inertia::render('Learn/Course/Attendance/Attendances', [
             'course'        => new CourseResource($course),
             'groups'        => CourseGroupResource::collection($course->courseGroups),
             'courseMemberOfAuth'  => $courseMemberOfAuth,
             'isCourseAdmin' => $course->user_id === auth()->id(),
         ]);
+    }
 
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Course $course, CourseGroup $group, Request $request)
+    {
+        $request->validate([
+            'start_at' => 'required|date',
+            'finish_at' => 'required|date',
+            'late_time' => 'nullable|integer',
+            'description' => 'nullable|string',
+        ]);
+
+        $attendance = $course->courseAttendances()->create([
+            'instructor_id' => auth()->id(),
+            'group_id'      => $group->id,
+            'date'          => Carbon::parse($request->start_at)->setTimezone('Asia/Bangkok')->format('Y-m-d H:i:s'),
+            'start_at'      => Carbon::parse($request->start_at)->setTimezone('Asia/Bangkok')->format('Y-m-d H:i:s'),
+            'finish_at'     => Carbon::parse($request->finish_at)->setTimezone('Asia/Bangkok')->format('Y-m-d H:i:s'),
+            'late_time'     => $request->late_time,
+            'description'   => $request->description,
+        ]);
+
+        return response()->json([
+            'success'       => true,
+            'attendance'    => new CourseAttendanceResource($attendance),
+        ], 200);
     }
 
     // Update Attendance

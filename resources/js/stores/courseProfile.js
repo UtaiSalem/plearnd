@@ -118,27 +118,20 @@ export const useCourseProfileStore = defineStore('courseProfile', () => {
         if (!tempImages.value[courseId]) {
             tempImages.value[courseId] = {};
         }
-        // Revoke previous URL if it exists to prevent memory leaks
-        if (tempImages.value[courseId][imageType]) {
-            URL.revokeObjectURL(tempImages.value[courseId][imageType]);
-        }
+        // Store the new URL (don't revoke yet - let component handle it)
         tempImages.value[courseId][imageType] = imageUrl;
     };
     
     const clearTempImage = (courseId, imageType) => {
         if (tempImages.value[courseId] && tempImages.value[courseId][imageType]) {
-            // Revoke URL to prevent memory leaks
-            URL.revokeObjectURL(tempImages.value[courseId][imageType]);
+            // Just delete the reference (component will handle URL.revokeObjectURL)
             delete tempImages.value[courseId][imageType];
         }
     };
     
     const clearAllTempImages = (courseId) => {
         if (tempImages.value[courseId]) {
-            // Revoke all URLs to prevent memory leaks
-            Object.values(tempImages.value[courseId]).forEach(url => {
-                if (url) URL.revokeObjectURL(url);
-            });
+            // Just delete all references (component will handle URL.revokeObjectURL)
             delete tempImages.value[courseId];
         }
     };

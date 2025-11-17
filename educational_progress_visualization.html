@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>การแสดงความก้าวหน้าทางการศึกษาด้วยรูปหกเหลี่ยม</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+
+        .levels-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .level-section {
+            text-align: center;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .level-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .elementary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+
+        .secondary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+
+        .university {
+            background: linear-gradient(45deg, #9C27B0, #7B1FA2);
+        }
+
+        .hexagon-container {
+            position: relative;
+            width: 200px;
+            height: 220px;
+            margin: 0 auto 20px;
+        }
+
+        .hexagon {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .year-progress {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .year-item {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f5f5f5;
+            min-width: 60px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .year-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .year-number {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .year-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin: 0 auto 5px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .legend {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .legend-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .legend-items {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+        }
+
+        .explanation {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+
+        .explanation h3 {
+            color: #333;
+            margin-top: 0;
+        }
+
+        .explanation ul {
+            padding-left: 20px;
+        }
+
+        .explanation li {
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .levels-container {
+                flex-direction: column;
+            }
+            
+            .hexagon-container {
+                width: 150px;
+                height: 165px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>การแสดงความก้าวหน้าทางการศึกษา</h1>
+        <p class="subtitle">ระบบรูปหกเหลี่ยมขอบหลายชั้นสำหรับแสดงระดับการศึกษาและปีการศึกษา</p>
+
+        <div class="levels-container">
+            <!-- ระดับประถมศึกษา -->
+            <div class="level-section">
+                <div class="level-title elementary">ระดับประถมศึกษา (ขอบ 1 ชั้น)</div>
+                <div class="hexagon-container">
+                    <canvas id="elementary-hexagon" class="hexagon" width="200" height="220"></canvas>
+                </div>
+                <div class="year-progress">
+                    <div class="year-item">
+                        <div class="year-number">ปี1</div>
+                        <div class="year-color" style="background: #FF6B6B;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี2</div>
+                        <div class="year-color" style="background: #4ECDC4;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี3</div>
+                        <div class="year-color" style="background: #45B7D1;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี4</div>
+                        <div class="year-color" style="background: #96CEB4;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี5</div>
+                        <div class="year-color" style="background: #DDA0DD;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี6</div>
+                        <div class="year-color" style="background: #FFD700;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ระดับมัธยมศึกษา -->
+            <div class="level-section">
+                <div class="level-title secondary">ระดับมัธยมศึกษา (ขอบ 2 ชั้น)</div>
+                <div class="hexagon-container">
+                    <canvas id="secondary-hexagon" class="hexagon" width="200" height="220"></canvas>
+                </div>
+                <div class="year-progress">
+                    <div class="year-item">
+                        <div class="year-number">ปี1</div>
+                        <div class="year-color" style="background: #FF6B6B;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี2</div>
+                        <div class="year-color" style="background: #4ECDC4;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี3</div>
+                        <div class="year-color" style="background: #45B7D1;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี4</div>
+                        <div class="year-color" style="background: #96CEB4;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี5</div>
+                        <div class="year-color" style="background: #DDA0DD;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี6</div>
+                        <div class="year-color" style="background: #FFD700;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ระดับมหาวิทยาลัย -->
+            <div class="level-section">
+                <div class="level-title university">ระดับมหาวิทยาลัย (ขอบ 3 ชั้น)</div>
+                <div class="hexagon-container">
+                    <canvas id="university-hexagon" class="hexagon" width="200" height="220"></canvas>
+                </div>
+                <div class="year-progress">
+                    <div class="year-item">
+                        <div class="year-number">ปี1</div>
+                        <div class="year-color" style="background: #FF6B6B;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี2</div>
+                        <div class="year-color" style="background: #4ECDC4;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี3</div>
+                        <div class="year-color" style="background: #45B7D1;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี4</div>
+                        <div class="year-color" style="background: #96CEB4;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี5</div>
+                        <div class="year-color" style="background: #DDA0DD;"></div>
+                    </div>
+                    <div class="year-item">
+                        <div class="year-number">ปี6</div>
+                        <div class="year-color" style="background: #FFD700;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-title">คำอธิบายสีปีการศึกษา</div>
+            <div class="legend-items">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FF6B6B;"></div>
+                    <span>ปีที่ 1</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4ECDC4;"></div>
+                    <span>ปีที่ 2</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #45B7D1;"></div>
+                    <span>ปีที่ 3</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #96CEB4;"></div>
+                    <span>ปีที่ 4</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #DDA0DD;"></div>
+                    <span>ปีที่ 5</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #FFD700;"></div>
+                    <span>ปีที่ 6</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="explanation">
+            <h3>วิธีการอ่านภาพความก้าวหน้าทางการศึกษา</h3>
+            <ul>
+                <li><strong>จำนวนชั้นของขอบ:</strong> แสดงระดับการศึกษาหลัก (1 ชั้น = ประถมศึกษา, 2 ชั้น = มัธยมศึกษา, 3 ชั้น = มหาวิทยาลัย)</li>
+                <li><strong>สีของขอบชั้นนอกสุด:</strong> แสดงปีการศึกษาปัจจุบัน โดยจำนวนด้านที่มีสีจะแสดงถึงปีที่กำลังศึกษาอยู่</li>
+                <li><strong>สีของขอบชั้นใน:</strong> แสดงระดับการศึกษาโดยรวม (เขียว = ประถมศึกษา, น้ำเงิน = มัธยมศึกษา, ม่วง = มหาวิทยาลัย)</li>
+                <li><strong>ด้านที่มีสี:</strong> ปีที่ 1 จะมีสี 1 ด้าน, ปีที่ 2 จะมีสี 2 ด้าน, ไปจนถึงปีที่ 6 ที่จะมีสีทั้ง 6 ด้าน</li>
+                <li><strong>ความคืบหน้า:</strong> การเพิ่มจำนวนด้านที่มีสีแสดงถึงความก้าวหน้าในแต่ละปีการศึกษา</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // ฟังก์ชันสำหรับวาดรูปหกเหลี่ยม
+        function drawHexagon(ctx, centerX, centerY, radiusX, radiusY, fillColor, strokeColor, lineWidth) {
+            ctx.beginPath();
+            const angleStep = Math.PI / 3;
+            let angle = Math.PI / 2; // เริ่มจากด้านบน
+            
+            for (let i = 0; i <= 6; i++) {
+                const x = centerX + radiusX * Math.cos(angle);
+                const y = centerY + radiusY * Math.sin(angle);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+                
+                angle += angleStep;
+            }
+            
+            ctx.closePath();
+            
+            if (fillColor) {
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+            }
+            
+            if (strokeColor) {
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = lineWidth;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+            }
+        }
+
+        // ฟังก์ชันสำหรับวาดรูปหกเหลี่ยมบางส่วน (สำหรับแสดงความคืบหน้า)
+        function drawPartialHexagon(ctx, centerX, centerY, radiusX, radiusY, color, completedSides, lineWidth) {
+            const angleStep = Math.PI / 3;
+            let startAngle = Math.PI / 2; // เริ่มจากด้านบน
+            
+            ctx.lineWidth = lineWidth;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // วาดด้านที่เสร็จสิ้นแล้ว
+            if (completedSides > 0) {
+                ctx.strokeStyle = color;
+                ctx.beginPath();
+                
+                for (let i = 0; i < completedSides; i++) {
+                    const angle1 = startAngle + (i * angleStep);
+                    const angle2 = startAngle + ((i + 1) * angleStep);
+                    
+                    const x1 = centerX + radiusX * Math.cos(angle1);
+                    const y1 = centerY + radiusY * Math.sin(angle1);
+                    const x2 = centerX + radiusX * Math.cos(angle2);
+                    const y2 = centerY + radiusY * Math.sin(angle2);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x1, y1);
+                    }
+                    ctx.lineTo(x2, y2);
+                }
+                ctx.stroke();
+            }
+            
+            // วาดด้านที่ยังไม่เสร็จสิ้น (สีขาว)
+            if (completedSides < 6) {
+                ctx.strokeStyle = '#ffffff';
+                ctx.beginPath();
+                
+                for (let i = completedSides; i < 6; i++) {
+                    const angle1 = startAngle + (i * angleStep);
+                    const angle2 = startAngle + ((i + 1) * angleStep);
+                    
+                    const x1 = centerX + radiusX * Math.cos(angle1);
+                    const y1 = centerY + radiusY * Math.sin(angle1);
+                    const x2 = centerX + radiusX * Math.cos(angle2);
+                    const y2 = centerY + radiusY * Math.sin(angle2);
+                    
+                    if (i === completedSides) {
+                        ctx.moveTo(x1, y1);
+                    }
+                    ctx.lineTo(x2, y2);
+                }
+                ctx.stroke();
+            }
+        }
+
+        // ฟังก์ชันสำหรับวาดรูปหกเหลี่ยมพร้อมขอบหลายชั้น
+        function drawMultiLayerHexagon(canvasId, educationLevel, currentYear) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            // ล้าง canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // กำหนดสีตามระดับการศึกษา
+            let educationColor;
+            let borderLayers;
+            
+            switch (educationLevel) {
+                case 'elementary':
+                    educationColor = '#4CAF50';
+                    borderLayers = 1;
+                    break;
+                case 'secondary':
+                    educationColor = '#2196F3';
+                    borderLayers = 2;
+                    break;
+                case 'university':
+                    educationColor = '#9C27B0';
+                    borderLayers = 3;
+                    break;
+            }
+            
+            // กำหนดสีตามปีการศึกษา
+            const yearColors = [
+                '#FF6B6B', // ปีที่ 1 - แดง
+                '#4ECDC4', // ปีที่ 2 - เขียวมะนาว
+                '#45B7D1', // ปีที่ 3 - ฟ้า
+                '#96CEB4', // ปีที่ 4 - เขียวอ่อน
+                '#DDA0DD', // ปีที่ 5 - ม่วงอ่อน
+                '#FFD700'  // ปีที่ 6 - ทอง
+            ];
+            
+            const currentYearColor = yearColors[currentYear - 1] || yearColors[0];
+            
+            // วาดพื้นหลัง
+            drawHexagon(ctx, centerX, centerY, width/2 - 5, height/2 - 5, '#f0f0f0', null, 0);
+            
+            // วาดขอบหลายชั้น (จากนอกสู่ใน)
+            const lineWidth = 8;
+            for (let layer = borderLayers - 1; layer >= 0; layer--) {
+                const layerOffset = layer * lineWidth;
+                const adjustedLineWidth = lineWidth;
+                const radiusX = width / 2 - layerOffset - adjustedLineWidth / 2;
+                const radiusY = height / 2 - layerOffset - adjustedLineWidth / 2;
+                
+                // กำหนดสีสำหรับแต่ละชั้น
+                let layerColor;
+                if (layer === borderLayers - 1) {
+                    // ชั้นนอกสุด (ชั้นปัจจุบัน) - ใช้สีตามปีการศึกษา
+                    layerColor = currentYearColor;
+                } else {
+                    // ชั้นที่เสร็จสิ้นแล้ว - ใช้สีตามระดับการศึกษา
+                    layerColor = educationColor;
+                }
+                
+                // วาดเส้นขอบแบบมีด้านสีขาว (สำหรับชั้นปัจจุบัน)
+                if (layer === borderLayers - 1) {
+                    drawPartialHexagon(ctx, centerX, centerY, radiusX, radiusY, layerColor, currentYear, adjustedLineWidth);
+                } else {
+                    // วาดเส้นขอบแบบปกติ (สำหรับชั้นที่เสร็จสิ้นแล้ว)
+                    drawHexagon(ctx, centerX, centerY, radiusX, radiusY, null, layerColor, adjustedLineWidth);
+                }
+                
+                // เพิ่มขอบสีขาวระหว่างชั้น (ยกเว้นชั้นสุดท้าย)
+                if (layer > 0) {
+                    const whiteRadiusX = width / 2 - layerOffset - adjustedLineWidth + 1;
+                    const whiteRadiusY = height / 2 - layerOffset - adjustedLineWidth + 1;
+                    drawHexagon(ctx, centerX, centerY, whiteRadiusX, whiteRadiusY, null, '#ffffff', 1);
+                }
+            }
+            
+            // วาดข้อความแสดงปีการศึกษา
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`ปีที่ ${currentYear}`, centerX, centerY);
+        }
+
+        // วาดรูปหกเหลี่ยมสำหรับแต่ละระดับการศึกษา
+        document.addEventListener('DOMContentLoaded', function() {
+            // ระดับประถมศึกษา - แสดงปีที่ 3
+            drawMultiLayerHexagon('elementary-hexagon', 'elementary', 3);
+            
+            // ระดับมัธยมศึกษา - แสดงปีที่ 4
+            drawMultiLayerHexagon('secondary-hexagon', 'secondary', 4);
+            
+            // ระดับมหาวิทยาลัย - แสดงปีที่ 2
+            drawMultiLayerHexagon('university-hexagon', 'university', 2);
+        });
+    </script>
+</body>
+</html>

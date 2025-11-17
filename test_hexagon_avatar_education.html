@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ทดสอบ HexagonAvatar สำหรับการศึกษา</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .demo-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .demo-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .avatars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            justify-items: center;
+        }
+
+        .avatar-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .avatar-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .avatar-label {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .avatar-description {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .control-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .control-item label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .control-item select,
+        .control-item input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .control-item select:focus,
+        .control-item input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .preview-section {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .preview-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .legend {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .legend-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <h1>ทดสอบ HexagonAvatar สำหรับการศึกษา</h1>
+
+            <div class="controls">
+                <div class="control-group">
+                    <div class="control-item">
+                        <label>ระดับการศึกษา:</label>
+                        <select v-model="educationLevel">
+                            <option value="elementary">ประถมศึกษา</option>
+                            <option value="secondary">มัธยมศึกษา</option>
+                            <option value="university">มหาวิทยาลัย</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label>ปีการศึกษา:</label>
+                        <select v-model="gradeLevel">
+                            <option :value="1">ปีที่ 1</option>
+                            <option :value="2">ปีที่ 2</option>
+                            <option :value="3">ปีที่ 3</option>
+                            <option :value="4">ปีที่ 4</option>
+                            <option :value="5">ปีที่ 5</option>
+                            <option :value="6">ปีที่ 6</option>
+                        </select>
+                    </div>
+                    <div class="control-item">
+                        <label>ขนาด:</label>
+                        <input type="range" min="50" max="200" v-model="avatarSize">
+                        <span>{{ avatarSize }}px</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-title">ตัวอย่างแบบกำหนดเอง</div>
+                <hexagon-avatar
+                    :image-src="avatarImage"
+                    :education-level="educationLevel"
+                    :grade-level="gradeLevel"
+                    :width="avatarSize"
+                    :height="avatarSize * 1.1"
+                    :show-badge="true"
+                    :level="gradeLevel"
+                ></hexagon-avatar>
+            </div>
+
+            <div class="demo-section">
+                <div class="demo-title">ระดับประถมศึกษา (ขอบ 1 ชั้น)</div>
+                <div class="avatars-grid">
+                    <div class="avatar-item" v-for="year in 6" :key="`elementary-${year}`">
+                        <hexagon-avatar
+                            :image-src="avatarImage"
+                            education-level="elementary"
+                            :grade-level="year"
+                            :width="120"
+                            :height="132"
+                            :show-badge="true"
+                            :level="year"
+                        ></hexagon-avatar>
+                        <div class="avatar-label">ปีที่ {{ year }}</div>
+                        <div class="avatar-description">ด้านที่มีสี: {{ year }}/6</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <div class="demo-title">ระดับมัธยมศึกษา (ขอบ 2 ชั้น)</div>
+                <div class="avatars-grid">
+                    <div class="avatar-item" v-for="year in 6" :key="`secondary-${year}`">
+                        <hexagon-avatar
+                            :image-src="avatarImage"
+                            education-level="secondary"
+                            :grade-level="year"
+                            :width="120"
+                            :height="132"
+                            :show-badge="true"
+                            :level="year"
+                        ></hexagon-avatar>
+                        <div class="avatar-label">ปีที่ {{ year }}</div>
+                        <div class="avatar-description">ด้านที่มีสี: {{ year }}/6</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <div class="demo-title">ระดับมหาวิทยาลัย (ขอบ 3 ชั้น)</div>
+                <div class="avatars-grid">
+                    <div class="avatar-item" v-for="year in 6" :key="`university-${year}`">
+                        <hexagon-avatar
+                            :image-src="avatarImage"
+                            education-level="university"
+                            :grade-level="year"
+                            :width="120"
+                            :height="132"
+                            :show-badge="true"
+                            :level="year"
+                        ></hexagon-avatar>
+                        <div class="avatar-label">ปีที่ {{ year }}</div>
+                        <div class="avatar-description">ด้านที่มีสี: {{ year }}/6</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-title">คำอธิบายระบบสี</div>
+                <div class="legend-grid">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4CAF50;"></div>
+                        <span>ประถมศึกษา (ขอบ 1 ชั้น)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #2196F3;"></div>
+                        <span>มัธยมศึกษา (ขอบ 2 ชั้น)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #9C27B0;"></div>
+                        <span>มหาวิทยาลัย (ขอบ 3 ชั้น)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #FF6B6B;"></div>
+                        <span>ปีที่ 1 (1 ด้านสี)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4ECDC4;"></div>
+                        <span>ปีที่ 2 (2 ด้านสี)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #45B7D1;"></div>
+                        <span>ปีที่ 3 (3 ด้านสี)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #96CEB4;"></div>
+                        <span>ปีที่ 4 (4 ด้านสี)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #DDA0DD;"></div>
+                        <span>ปีที่ 5 (5 ด้านสี)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #FFD700;"></div>
+                        <span>ปีที่ 6 (6 ด้านสี)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue;
+
+        // HexagonAvatar Component (simplified version for testing)
+        const HexagonAvatar = {
+            props: {
+                imageSrc: { type: String, required: true },
+                educationLevel: { type: String, default: 'elementary' },
+                gradeLevel: { type: Number, default: 1 },
+                width: { type: Number, default: 82 },
+                height: { type: Number, default: 90 },
+                showBadge: { type: Boolean, default: true },
+                level: { type: [String, Number], default: '' },
+                lineWidth: { type: Number, default: 7 },
+                roundedCorners: { type: Boolean, default: true },
+                roundedCornerRadius: { type: Number, default: 9 }
+            },
+            setup(props) {
+                const hexagonCanvas = ref(null);
+                const badgeCanvas = ref(null);
+
+                const educationLevelColors = () => {
+                    switch (props.educationLevel) {
+                        case 'elementary': return '#4CAF50';
+                        case 'secondary': return '#2196F3';
+                        case 'university': return '#9C27B0';
+                        default: return '#4CAF50';
+                    }
+                };
+
+                const gradeLevelColors = () => {
+                    switch (props.gradeLevel) {
+                        case 1: return '#FF6B6B';
+                        case 2: return '#4ECDC4';
+                        case 3: return '#45B7D1';
+                        case 4: return '#96CEB4';
+                        case 5: return '#DDA0DD';
+                        case 6: return '#FFD700';
+                        default: return '#FF6B6B';
+                    }
+                };
+
+                const drawHexagon = (ctx, centerX, centerY, radiusX, radiusY, fillColor, strokeColor, lineWidth) => {
+                    ctx.beginPath();
+                    const angleStep = Math.PI / 3;
+                    let angle = Math.PI / 2;
+                    
+                    for (let i = 0; i <= 6; i++) {
+                        const x = centerX + radiusX * Math.cos(angle);
+                        const y = centerY + radiusY * Math.sin(angle);
+                        
+                        if (i === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                        
+                        angle += angleStep;
+                    }
+                    
+                    ctx.closePath();
+                    
+                    if (fillColor) {
+                        ctx.fillStyle = fillColor;
+                        ctx.fill();
+                    }
+                    
+                    if (strokeColor) {
+                        ctx.strokeStyle = strokeColor;
+                        ctx.lineWidth = lineWidth;
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                        ctx.stroke();
+                    }
+                };
+
+                const drawPartialHexagonBorder = (ctx, centerX, centerY, radiusX, radiusY, color, gradeLevel) => {
+                    const angleStep = Math.PI / 3;
+                    let startAngle = Math.PI / 2;
+                    
+                    ctx.lineWidth = props.lineWidth;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    
+                    // วาดด้านที่เสร็จสิ้นแล้วตามปีการศึกษา
+                    if (gradeLevel > 0) {
+                        ctx.strokeStyle = color;
+                        ctx.beginPath();
+                        
+                        for (let i = 0; i < gradeLevel; i++) {
+                            const angle1 = startAngle + (i * angleStep);
+                            const angle2 = startAngle + ((i + 1) * angleStep);
+                            
+                            const x1 = centerX + radiusX * Math.cos(angle1);
+                            const y1 = centerY + radiusY * Math.sin(angle1);
+                            const x2 = centerX + radiusX * Math.cos(angle2);
+                            const y2 = centerY + radiusY * Math.sin(angle2);
+                            
+                            if (i === 0) {
+                                ctx.moveTo(x1, y1);
+                            }
+                            ctx.lineTo(x2, y2);
+                        }
+                        ctx.stroke();
+                    }
+                    
+                    // วาดด้านที่ยังไม่เสร็จสิ้น (สีขาว)
+                    if (gradeLevel < 6) {
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.beginPath();
+                        
+                        for (let i = gradeLevel; i < 6; i++) {
+                            const angle1 = startAngle + (i * angleStep);
+                            const angle2 = startAngle + ((i + 1) * angleStep);
+                            
+                            const x1 = centerX + radiusX * Math.cos(angle1);
+                            const y1 = centerY + radiusY * Math.sin(angle1);
+                            const x2 = centerX + radiusX * Math.cos(angle2);
+                            const y2 = centerY + radiusY * Math.sin(angle2);
+                            
+                            if (i === gradeLevel) {
+                                ctx.moveTo(x1, y1);
+                            }
+                            ctx.lineTo(x2, y2);
+                        }
+                        ctx.stroke();
+                    }
+                };
+
+                const initHexagon = () => {
+                    const canvas = hexagonCanvas.value;
+                    if (!canvas) return;
+                    
+                    const ctx = canvas.getContext('2d');
+                    const { width, height } = props;
+                    
+                    // ล้าง canvas
+                    ctx.clearRect(0, 0, width, height);
+                    
+                    // โหลดรูปภาพ
+                    const img = new Image();
+                    img.onload = () => {
+                        // สร้าง clipping path สำหรับ hexagon
+                        ctx.save();
+                        
+                        // กำหนดจำนวนชั้นขอบตามระดับการศึกษา
+                        let actualBorderLayers = 1;
+                        if (props.educationLevel === 'elementary') {
+                            actualBorderLayers = 1;
+                        } else if (props.educationLevel === 'secondary') {
+                            actualBorderLayers = 2;
+                        } else if (props.educationLevel === 'university') {
+                            actualBorderLayers = 3;
+                        }
+                        
+                        const radiusX = width / 2 - (props.lineWidth * actualBorderLayers) / 2;
+                        const radiusY = height / 2 - (props.lineWidth * actualBorderLayers) / 2;
+                        
+                        drawHexagon(ctx, width/2, height/2, radiusX, radiusY, null, null, 0);
+                        ctx.clip();
+                        
+                        // วาดรูปภาพใน hexagon
+                        const imgSize = Math.max(width, height);
+                        const offsetX = (width - imgSize) / 2;
+                        const offsetY = (height - imgSize) / 2;
+                        
+                        ctx.drawImage(img, offsetX, offsetY, imgSize, imgSize);
+                        ctx.restore();
+                        
+                        // วาดเส้นขอบหลายชั้น
+                        for (let layer = actualBorderLayers - 1; layer >= 0; layer--) {
+                            const layerOffset = layer * props.lineWidth;
+                            const adjustedLineWidth = props.lineWidth;
+                            
+                            const centerX = width / 2;
+                            const centerY = height / 2;
+                            const radiusX = width / 2 - layerOffset - adjustedLineWidth / 2;
+                            const radiusY = height / 2 - layerOffset - adjustedLineWidth / 2;
+                            
+                            let layerColor;
+                            if (layer === actualBorderLayers - 1) {
+                                layerColor = gradeLevelColors();
+                            } else {
+                                layerColor = educationLevelColors();
+                            }
+                            
+                            if (layer === actualBorderLayers - 1) {
+                                drawPartialHexagonBorder(ctx, centerX, centerY, radiusX, radiusY, layerColor, props.gradeLevel);
+                            } else {
+                                drawHexagon(ctx, centerX, centerY, radiusX, radiusY, null, layerColor, adjustedLineWidth);
+                            }
+                            
+                            if (layer > 0) {
+                                const whiteRadiusX = width / 2 - layerOffset - adjustedLineWidth + 1;
+                                const whiteRadiusY = height / 2 - layerOffset - adjustedLineWidth + 1;
+                                drawHexagon(ctx, centerX, centerY, whiteRadiusX, whiteRadiusY, null, '#ffffff', 1);
+                            }
+                        }
+                        
+                        // วาด badge
+                        if (props.showBadge) {
+                            drawBadge();
+                        }
+                    };
+                    img.src = props.imageSrc;
+                };
+
+                const drawBadge = () => {
+                    const canvas = badgeCanvas.value;
+                    if (!canvas) return;
+                    
+                    const ctx = canvas.getContext('2d');
+                    const size = 22;
+                    
+                    ctx.clearRect(0, 0, size, size);
+                    
+                    const centerX = size / 2;
+                    const centerY = size / 2;
+                    const radius = size / 2 - 2;
+                    
+                    drawHexagon(ctx, centerX, centerY, radius, radius, gradeLevelColors(), '#ffffff', 1);
+                };
+
+                return {
+                    hexagonCanvas,
+                    badgeCanvas,
+                    initHexagon
+                };
+            },
+            template: `
+                <div class="hexagon-avatar-container" style="position: relative; display: inline-block;">
+                    <canvas 
+                        ref="hexagonCanvas"
+                        :width="width"
+                        :height="height"
+                        style="position: absolute; top: 0; left: 0;"
+                        @vue:mounted="initHexagon"
+                    ></canvas>
+                    <div v-if="showBadge" class="hexagon-badge" style="position: absolute; top: -8px; right: -8px; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; z-index: 20; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);">
+                        <canvas
+                            ref="badgeCanvas"
+                            width="22"
+                            height="22"
+                        ></canvas>
+                        <div class="badge-text" style="position: absolute; color: #ffffff; font-size: 8px; font-weight: bold; z-index: 21; pointer-events: none;">{{ level }}</div>
+                    </div>
+                </div>
+            `
+        };
+
+        createApp({
+            components: {
+                HexagonAvatar
+            },
+            setup() {
+                const educationLevel = ref('elementary');
+                const gradeLevel = ref(1);
+                const avatarSize = ref(120);
+                const avatarImage = ref('https://picsum.photos/seed/avatar/200/200.jpg');
+
+                return {
+                    educationLevel,
+                    gradeLevel,
+                    avatarSize,
+                    avatarImage
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

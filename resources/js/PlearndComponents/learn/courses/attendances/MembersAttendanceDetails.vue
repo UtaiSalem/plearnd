@@ -55,9 +55,9 @@ const props = defineProps({
         <td v-for="(groupAttendance) in groupAttendances" :key="groupAttendance.id" class="p-3 whitespace-nowrap border text-center">
             <div class="flex justify-center">
                 <AttendanceStatus
-                 :status="groupAttendance.details.filter(detail => detail.course_member_id === member.user.id)[0]?.status"
+                 :status="groupAttendance.details.filter(detail => detail.course_member_id === member.id)[0]?.status"
                  :attendance="groupAttendance"
-                 :memberUserID="member.user.id"
+                 :memberId="member.id"
                 />
             </div>
         </td>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tooltip Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-10px) translateY(-50%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) translateY(-50%);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .animate-fadeInLeft {
+            animation: fadeInLeft 0.3s ease-out;
+        }
+
+        .animate-fadeInUp {
+            animation: fadeInUp 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div id="app">
+        <h1 class="text-2xl font-bold mb-6">ทดสอบ Tooltip</h1>
+        
+        <div class="space-y-4">
+            <p class="text-gray-600">Hover over the buttons below to test the tooltip animations:</p>
+            
+            <!-- Desktop tooltip test -->
+            <div class="flex items-center gap-4 p-4 bg-white rounded-lg shadow">
+                <span class="font-medium">Desktop (แสดงจากซ้ายไปขวา):</span>
+                <div class="relative group">
+                    <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+                        Hover me
+                    </button>
+                    <div class="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white text-xs rounded-lg shadow-2xl z-[9999] whitespace-nowrap pointer-events-none transition-all duration-300 opacity-0 scale-95 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible group-hover:animate-fadeInLeft">
+                        นี่คือทูลทิพสำหรับหน้าจอกว้าง
+                        <div class="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile tooltip test -->
+            <div class="flex items-center gap-4 p-4 bg-white rounded-lg shadow">
+                <span class="font-medium">Mobile (แสดงจากล่างขึ้นบน):</span>
+                <div class="relative group">
+                    <button class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
+                        Hover me
+                    </button>
+                    <div class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white text-xs rounded-lg shadow-2xl z-[9999] whitespace-nowrap pointer-events-none transition-all duration-300 opacity-0 scale-95 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible group-hover:animate-fadeInUp">
+                        นี่คือทูลทิพสำหรับหน้าจอเล็ก
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Z-index test with overlapping elements -->
+            <div class="relative p-4 bg-white rounded-lg shadow">
+                <span class="font-medium block mb-4">ทดสอบ Z-index (ควรแสดงอยู่เหนือสิ่งอื่น):</span>
+                <div class="relative z-10 p-4 bg-yellow-100 rounded border-2 border-yellow-300">
+                    <p class="mb-2">นี่คือองค์ประกอบที่มี z-index: 10</p>
+                    <div class="relative group">
+                        <button class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors">
+                            Tooltip with high z-index
+                        </button>
+                        <div class="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-2 bg-gradient-to-r from-gray-900 to-gray-800 text-white text-xs rounded-lg shadow-2xl z-[9999] whitespace-nowrap pointer-events-none transition-all duration-300 opacity-0 scale-95 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:visible group-hover:animate-fadeInLeft">
+                            ทูลทิพควรแสดงอยู่เหนือทุกอย่าง
+                            <div class="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute inset-0 bg-red-200 rounded border-2 border-red-300 z-20 flex items-center justify-center">
+                    <p class="text-red-700 font-bold">องค์ประกอบที่มี z-index: 20 (ทูลทิพควรแสดงอยู่เหนือนี้)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        
+        createApp({
+            data() {
+                return {
+                    message: 'Tooltip Test'
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

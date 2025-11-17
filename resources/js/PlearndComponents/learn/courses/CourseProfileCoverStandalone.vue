@@ -48,6 +48,16 @@ const courseGroups = computed(() => {
     return mockCourseGroups.value;
 });
 
+// Check if user is course admin
+const isCourseAdmin = computed(() => {
+    // Try to get from window.page props if available
+    if (typeof window !== 'undefined' && window.page?.props?.isCourseAdmin !== undefined) {
+        return window.page.props.isCourseAdmin;
+    }
+    // Default to true for testing if not available
+    return true;
+});
+
 // Check if groups are available and has content
 const hasGroups = computed(() => courseGroups.value && courseGroups.value.length > 0);
 
@@ -423,7 +433,7 @@ watch(isRequestingMember, (newVal, oldVal) => {
     <div class="relative w-full bg-white bg-cover rounded-lg ">
         <div class="">
             <img :src="tempCover" alt="" class="w-full rounded-t-lg h-36 sm:h-52 md:h-72 lg:h-70">
-            <div id="cover-input-label" class="absolute top-2 left-2 md:h-28 lg:h-60" v-if="$page.props.isCourseAdmin">
+            <div id="cover-input-label" class="absolute top-2 left-2 md:h-28 lg:h-60" v-if="isCourseAdmin">
                 <input type="file" class="hidden" ref="coverInput" accept="image/*" @change="onCoverInputChange">
                 <button type="button" @click.prevent="browseCover" :disabled="isUpdatingCover"
                     class="p-1 text-gray-600 bg-white rounded-full bg-opacity-60 disabled:opacity-50">
@@ -446,8 +456,8 @@ watch(isRequestingMember, (newVal, oldVal) => {
                 <!-- <div class="relative max-w-fit w-[88px] h-[88px] sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-40 lg:h-40 flex justify-center items-center border-gray-400 border-2 rounded-full overflow-hidden"> -->
                 <div class="relative min-w-fit flex justify-center items-center border-white border-[4px] rounded-full overflow-hidden ">
                     <img class="bg-cover object-center w-[88px] h-[88px] sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-40 lg:h-40" :src="tempLogo" alt='school logo'>
-                    <input type="file" class="hidden" accept="image/*" ref="logoInput" @change="onLogoInputChange" v-if="$page.props.isCourseAdmin" >
-                    <button type="button" @click.prevent="browseLogo" v-if="$page.props.isCourseAdmin" :disabled="isUpdatingLogo"
+                    <input type="file" class="hidden" accept="image/*" ref="logoInput" @change="onLogoInputChange" v-if="isCourseAdmin" >
+                    <button type="button" @click.prevent="browseLogo" v-if="isCourseAdmin" :disabled="isUpdatingLogo"
                         class="absolute bottom-0 bg-white bg-opacity-60 text-gray-600 border-[1px] border-gray-300 transition duration-200 rounded-full md:p-1 disabled:opacity-50">
                         <Icon v-if="isUpdatingLogo" icon="eos-icons:loading" class="w-4 h-4 animate-spin" />
                         <Icon v-else icon="heroicons:camera" class="w-4 h-4 " />
@@ -474,7 +484,7 @@ watch(isRequestingMember, (newVal, oldVal) => {
                                     </button>
                                 </div>
                                 <div v-else class="absolute -top-4 -right-2 sm:-right-6 sm:top-0">
-                                    <button  @click="startHeaderEditing" class="" v-if=" $page.props.isCourseAdmin">
+                                    <button  @click="startHeaderEditing" class="" v-if="isCourseAdmin">
                                         <Icon icon="heroicons:pencil-square"
                                             class="w-6 h-6 p-1 text-gray-700 bg-white rounded-full bg-opacity-60" />
                                     </button>
@@ -491,7 +501,7 @@ watch(isRequestingMember, (newVal, oldVal) => {
                             class="w-full text-lg font-normal text-center rounded-lg sm:text-start"
                             ></textarea>
                             <p v-else-if="coverSubheader" class="p-2 mx-4 text-lg font-normal text-center rounded-md min-h-fit bg-slate-300 bg-opacity-80 sm:mx-0 sm:text-start">{{ coverSubheader }}</p>
-                            <p v-else-if="$page.props.isCourseAdmin" class="p-2 mx-4 text-lg font-normal text-center rounded-md min-h-fit bg-slate-300 bg-opacity-80 sm:mx-0 sm:text-start">{{ 'แก้ไขรหัสวิชา' }}</p>
+                            <p v-else-if="isCourseAdmin" class="p-2 mx-4 text-lg font-normal text-center rounded-md min-h-fit bg-slate-300 bg-opacity-80 sm:mx-0 sm:text-start">{{ 'แก้ไขรหัสวิชา' }}</p>
                             <div class="absolute top-0 -right-6">
                             <!-- <div class="absolute top-0 -right-1 sm:-right-6"> -->
                                 <div v-if="inputSubheaderEditing" class="flex flex-col-reverse">
@@ -506,7 +516,7 @@ watch(isRequestingMember, (newVal, oldVal) => {
                                     </button>
                                 </div>
                                 <div v-else class="">
-                                    <button  @click="startSubheaderEditing" class="" v-if="$page.props.isCourseAdmin">
+                                    <button  @click="startSubheaderEditing" class="" v-if="isCourseAdmin">
                                         <Icon icon="heroicons:pencil-square"
                                             class="w-6 h-6 p-1 text-gray-700 bg-gray-200 rounded-full bg-opacity-60" />
                                     </button>
@@ -518,7 +528,7 @@ watch(isRequestingMember, (newVal, oldVal) => {
             </div>
 
 
-            <div  v-if="!$page.props.isCourseAdmin" class="hidden md:block space-x-2 mx-4 w-[31%] justify-end">
+            <div  v-if="!isCourseAdmin" class="hidden md:block space-x-2 mx-4 w-[31%] justify-end">
                 <!-- สถานะรอการตอบรับ -->
                 <div v-if="props.courseMemberOfAuth && props.modelData.member_status==='0'" ref="membershipDropdownRef" class="relative w-56 py-2 ml-auto cursor-pointer group">
                     <div class="flex justify-center w-full bg-yellow-500 rounded-md shadow-md hover:shadow-lg transition-all duration-200">
@@ -638,7 +648,7 @@ watch(isRequestingMember, (newVal, oldVal) => {
             </div>
 
             <!-- Mobile version - ระบบสมาชิก -->
-            <div v-if="!$page.props.isCourseAdmin" class="justify-center m-2 space-x-4 md:hidden">
+            <div v-if="!isCourseAdmin" class="justify-center m-2 space-x-4 md:hidden">
                 <!-- สถานะรอการตอบรับ (Mobile) -->
                 <div v-if="props.courseMemberOfAuth && props.modelData.member_status==='0'" class="relative w-56 py-2 mx-auto cursor-pointer group">
                     <div class="flex justify-center w-full bg-yellow-500 rounded-md shadow-md transition-all duration-200">

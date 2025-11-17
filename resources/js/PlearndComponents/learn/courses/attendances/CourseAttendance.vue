@@ -183,9 +183,12 @@ const refreshAllAttendanceStatuses = async () => {
         for (const attendance of activeAttendances) {
             for (const member of activeGroupMembers.value) {
                 try {
-                    await attendanceStore.fetchMemberJoinStatus(attendance.id, member.user.id);
+                    const status = await attendanceStore.fetchMemberJoinStatus(attendance.id, member.id);
+                    if (status !== null && status !== undefined) {
+                        attendanceStore.updateMemberStatusInAttendance(attendance.id, member.id, status);
+                    }
                 } catch (error) {
-                    console.error(`Failed to refresh status for member ${member.user.id} in attendance ${attendance.id}:`, error);
+                    console.error(`Failed to refresh status for member ${member.id} in attendance ${attendance.id}:`, error);
                 }
             }
         }

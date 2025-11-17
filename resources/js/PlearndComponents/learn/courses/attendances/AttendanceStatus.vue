@@ -7,14 +7,22 @@ import { useAttendanceStore } from '@/stores/attendance';
 const props = defineProps({
     status: Number,
     attendance: Object,
-    memberUserID: Number,
+    memberId: Number,
 });
 
 const attendanceStore = useAttendanceStore();
 const refStatus = ref(props.status);
-const isPending = ref( new Date() < new Date(props.attendance.finish_at) && !props.status);
+const isPending = ref(new Date() < new Date(props.attendance.finish_at) && (props.status === null || props.status === undefined));
 const isCheckingStatus = ref(false);
 const refreshInterval = ref(null);
+
+// Watch for props.status changes to update refStatus
+watch(() => props.status, (newStatus) => {
+    if (newStatus !== null && newStatus !== undefined) {
+        refStatus.value = newStatus;
+        isPending.value = false;
+    }
+}, { immediate: false });
 
 const attendanceStatus = computed(()=>{
     switch (refStatus.value) {
@@ -45,16 +53,16 @@ const checkAttendanceStatus = async () => {
     
     try {
         // Use the attendance store to fetch member join status
-        const status = await attendanceStore.fetchMemberJoinStatus(props.attendance.id, props.memberUserID);
+        const status = await attendanceStore.fetchMemberJoinStatus(props.attendance.id, props.memberId);
         
         // Update status if it has changed
-        if (status !== null && status !== refStatus.value) {
+        if (status !== null && status !== undefined && status !== refStatus.value) {
             refStatus.value = status;
             // Update isPending based on new status
-            isPending.value = new Date() < new Date(props.attendance.finish_at) && !refStatus.value;
+            isPending.value = false;
             
             // Also update the status in the store for consistency
-            attendanceStore.updateMemberStatusInAttendance(props.attendance.id, props.memberUserID, status);
+            attendanceStore.updateMemberStatusInAttendance(props.attendance.id, props.memberId, status);
         }
     } catch (error) {
         // Handle errors silently in production
@@ -86,9 +94,9 @@ const handlePendingClick = async () => {
 const setupAutoRefresh = () => {
     // Only set up auto-refresh for pending attendances
     if (isPending.value) {
-        // สุ่มเวลาระหว่าง 10,000 - 20,000 มิลลิวินาที (10-20 วินาที)
+        // สุ่มเวลาระหว่าง 1,000 - 6,000 มิลลิวินาที (1-6 วินาที)
         // เพื่อป้องกันการโหลดข้อมูลพร้อมกันทั้งหมด
-        const randomInterval = Math.floor(Math.random() * (20000 - 10000 + 1)) + 10000;
+        const randomInterval = Math.floor(Math.random() * (6000 - 1000 + 1)) + 1000;
         
         refreshInterval.value = setInterval(() => {
             checkAttendanceStatus();
@@ -135,7 +143,7 @@ onUnmounted(() => {
 
 <template>
     <!-- Handle case when attendance data is not available -->
-    <div v-if="!props.attendance || !props.memberUserID" class="flex items-center justify-center p-3">
+    <div v-if="!props.attendance || !props.memberId" class="flex items-center justify-center p-3">
         <div class="text-center bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 shadow-sm border border-gray-200">
             <Icon icon="heroicons-outline:question-mark-circle" width="28" height="28" class="text-gray-400 mx-auto mb-2" />
             <p class="text-xs text-gray-500 font-medium">ไม่มีข้อมูล</p>

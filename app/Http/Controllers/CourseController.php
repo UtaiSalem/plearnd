@@ -306,4 +306,192 @@ class CourseController extends Controller
         ]);
     }
 
+    /**
+     * Update course cover image
+     */
+    public function updateCover(Course $course, Request $request)
+    {
+        // Check if user is authorized to update the course
+        if ($course->user_id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        try {
+            $request->validate([
+                'cover_image' => 'required|image|mimes:jpg,jpeg,png,gif,svg|max:4096',
+            ]);
+
+            // Delete old cover if exists
+            if ($course->cover) {
+                $oldFilePath = public_path('storage/images/courses/covers/' . $course->cover);
+                if (File::exists($oldFilePath)) {
+                    File::delete($oldFilePath);
+                }
+            }
+
+            // Upload new cover
+            $coverFile = $request->file('cover_image');
+            $coverFilename = uniqid() . '.' . $coverFile->getClientOriginalExtension();
+            Storage::disk('public')->putFileAs('images/courses/covers', $coverFile, $coverFilename);
+
+            // Update course record
+            $course->cover = $coverFilename;
+            $course->save();
+
+            return response()->json([
+                'success' => true,
+                'cover_image' => Storage::url('images/courses/covers/' . $coverFilename),
+                'message' => 'Cover image updated successfully'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update course logo image
+     */
+    public function updateLogo(Course $course, Request $request)
+    {
+        // Check if user is authorized to update the course
+        if ($course->user_id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        try {
+            $request->validate([
+                'logo_image' => 'required|image|mimes:jpg,jpeg,png,gif,svg|max:4096',
+            ]);
+
+            // Delete old logo if exists
+            if ($course->logo) {
+                $oldFilePath = public_path('storage/images/courses/logos/' . $course->logo);
+                if (File::exists($oldFilePath)) {
+                    File::delete($oldFilePath);
+                }
+            }
+
+            // Upload new logo
+            $logoFile = $request->file('logo_image');
+            $logoFilename = uniqid() . '.' . $logoFile->getClientOriginalExtension();
+            Storage::disk('public')->putFileAs('images/courses/logos', $logoFile, $logoFilename);
+
+            // Update course record
+            $course->logo = $logoFilename;
+            $course->save();
+
+            return response()->json([
+                'success' => true,
+                'logo_image' => Storage::url('images/courses/logos/' . $logoFilename),
+                'message' => 'Logo image updated successfully'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update course header
+     */
+    public function updateHeader(Course $course, Request $request)
+    {
+        // Check if user is authorized to update the course
+        if ($course->user_id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        try {
+            $request->validate([
+                'header' => 'required|string|max:255',
+            ]);
+
+            // Update course record
+            $course->cover_header = $request->header;
+            $course->save();
+
+            return response()->json([
+                'success' => true,
+                'header' => $course->cover_header,
+                'message' => 'Header updated successfully'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update course subheader
+     */
+    public function updateSubheader(Course $course, Request $request)
+    {
+        // Check if user is authorized to update the course
+        if ($course->user_id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        try {
+            $request->validate([
+                'subheader' => 'nullable|string|max:500',
+            ]);
+
+            // Update course record
+            $course->cover_subheader = $request->subheader;
+            $course->save();
+
+            return response()->json([
+                'success' => true,
+                'subheader' => $course->cover_subheader,
+                'message' => 'Subheader updated successfully'
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get course profile data
+     */
+    public function profile(Course $course)
+    {
+        try {
+            return response()->json([
+                'success' => true,
+                'course' => new CourseResource($course)
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 }

@@ -24,8 +24,8 @@ const props = defineProps({
 const emit = defineEmits([
     'update:coverHeader',
     'update:coverSubheader',
-    'cover-image-change', 
-    'logo-image-change',
+    'update:coverImage',
+    'update:logoImage',
     'header-change',
     'subheader-change',
     'request-tobe-member',
@@ -61,12 +61,36 @@ const inputSubheaderEditing = computed(() => courseProfileStore.getInputSubheade
 // Temporary images using store
 const tempLogo = computed(() => {
     const storeTempLogo = courseProfileStore.getTempImage(courseId.value, 'logo');
-    return storeTempLogo || props.logoImage || '/images/default-logo.png';
+    
+    // If there's a temporary image (blob URL), use it for immediate preview
+    if (storeTempLogo) {
+        return storeTempLogo;
+    }
+    
+    // Otherwise, use the prop image
+    if (props.logoImage) {
+        // Return as-is - the parent already provides the correct path
+        return props.logoImage;
+    }
+    
+    return '/images/default-logo.png';
 });
 
 const tempCover = computed(() => {
     const storeTempCover = courseProfileStore.getTempImage(courseId.value, 'cover');
-    return storeTempCover || props.coverImage || '/images/default-cover.png';
+    
+    // If there's a temporary image (blob URL), use it for immediate preview
+    if (storeTempCover) {
+        return storeTempCover;
+    }
+    
+    // Otherwise, use the prop image
+    if (props.coverImage) {
+        // Return as-is - the parent already provides the correct path
+        return props.coverImage;
+    }
+    
+    return '/images/default-cover.png';
 });
 
 // Loading states
@@ -90,21 +114,22 @@ async function onCoverInputChange(event) {
     const tempUrl = URL.createObjectURL(file);
     courseProfileStore.setTempImage(courseId.value, 'cover', tempUrl);
     
-    // Emit for backward compatibility
-    emit('cover-image-change', file);
-    
     try {
-        // Update via store
-        await courseProfileStore.updateCourseCover(courseId.value, file);
-        // Clear temporary image after successful upload
-        courseProfileStore.clearTempImage(courseId.value, 'cover');
-        // Revoke the temporary URL to free memory
-        URL.revokeObjectURL(tempUrl);
+        // Update via store and get the new image path
+        const newImagePath = await courseProfileStore.updateCourseCover(courseId.value, file);
+        
+        // Emit the new path to parent component
+        emit('update:coverImage', newImagePath);
+        
+        // Clear temporary image after a delay to ensure smooth transition
+        setTimeout(() => {
+            courseProfileStore.clearTempImage(courseId.value, 'cover');
+            URL.revokeObjectURL(tempUrl);
+        }, 1000);
     } catch (error) {
         console.error('Failed to update cover:', error);
         // Revert temporary image on error
         courseProfileStore.clearTempImage(courseId.value, 'cover');
-        // Revoke the temporary URL to free memory
         URL.revokeObjectURL(tempUrl);
     }
 }
@@ -117,21 +142,22 @@ async function onLogoInputChange(event) {
     const tempUrl = URL.createObjectURL(file);
     courseProfileStore.setTempImage(courseId.value, 'logo', tempUrl);
     
-    // Emit for backward compatibility
-    emit('logo-image-change', file);
-    
     try {
-        // Update via store
-        await courseProfileStore.updateCourseLogo(courseId.value, file);
-        // Clear temporary image after successful upload
-        courseProfileStore.clearTempImage(courseId.value, 'logo');
-        // Revoke the temporary URL to free memory
-        URL.revokeObjectURL(tempUrl);
+        // Update via store and get the new image path
+        const newImagePath = await courseProfileStore.updateCourseLogo(courseId.value, file);
+        
+        // Emit the new path to parent component
+        emit('update:logoImage', newImagePath);
+        
+        // Clear temporary image after a delay to ensure smooth transition
+        setTimeout(() => {
+            courseProfileStore.clearTempImage(courseId.value, 'logo');
+            URL.revokeObjectURL(tempUrl);
+        }, 1000);
     } catch (error) {
         console.error('Failed to update logo:', error);
         // Revert temporary image on error
         courseProfileStore.clearTempImage(courseId.value, 'logo');
-        // Revoke the temporary URL to free memory
         URL.revokeObjectURL(tempUrl);
     }
 }
@@ -165,8 +191,8 @@ async function onRequestToBeMember(groupId, groupIndx){
     
     try {
         await courseProfileStore.requestToBeMember(courseId.value, groupId);
-        courseProfileStore.setShowOptionGroups(courseId.value, false);
-        // emit('request-tobe-member', groupId, groupIndx);
+        courseProfileStore.setShowOptionGroups(false);
+        emit('request-tobe-member', groupId, groupIndx);
     } catch (error) {
         console.error('Failed to request membership:', error);
     }

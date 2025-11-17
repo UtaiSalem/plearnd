@@ -100,7 +100,7 @@ const handleDeleteFriendRequest = async () => {
 
     <div class="m-2 p-2 bg-gray-200 rounded-lg">
             <!-- <p class="py-1 text-sm">ให้การสนับสนุน</p> -->
-        <p class="w-full text-base font-bold tracking-tight text-blue-500">
+        <div class="w-full text-base font-bold tracking-tight text-blue-500">
             <!-- <span>
                 {{ donate.amounts }} บาท
             </span> -->
@@ -109,7 +109,7 @@ const handleDeleteFriendRequest = async () => {
                 <span class="text-[16px] text-yellow-400 mt-1"><span class="text-[14px] text-blue-500 mt-1 ml-1">เหลือ </span>{{ donate.remaining_points }}</span>
                 <span class="text-[14px] mt-1 ml-1"> แต้ม</span>
             </div>
-        </p>
+        </div>
 
     </div>
 
