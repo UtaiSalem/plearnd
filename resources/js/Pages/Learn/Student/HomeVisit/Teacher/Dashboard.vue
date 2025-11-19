@@ -233,6 +233,7 @@
         <HomeVisitCard
           :home-visits="homeVisits" 
           :visit-form="visitForm"
+          :zones="zones"
           :create-new-home-visit="createNewHomeVisit"
           :handle-image-upload="handleImageUpload"
           :remove-image="removeImage"
@@ -399,6 +400,25 @@
 
               <div>
                 <label class="block text-sm font-medium text-gray-700">
+                  โซน <span class="text-gray-500 text-xs">(ไม่บังคับ)</span>
+                </label>
+                <select
+                  v-model="visitForm.zone_id"
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                >
+                  <option value="">ไม่ระบุโซน</option>
+                  <option 
+                    v-for="zone in zones" 
+                    :key="zone.id" 
+                    :value="zone.id"
+                  >
+                    {{ zone.zone_name }}
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700">
                   หัวข้อการเยี่ยม
                 </label>
                 <input
@@ -466,6 +486,10 @@ const props = defineProps({
   stats: Object,
   students: Object,
   classrooms: Array,
+  zones: {
+    type: Array,
+    default: () => []
+  },
   filters: Object
 })
 
@@ -483,6 +507,7 @@ const visitForm = useForm({
   visit_date: '',
   visit_time: '',
   notes: '',
+  zone_id: '',
   images: []
 })
 
@@ -591,6 +616,11 @@ const selectStudent = (student) => {
       formData.append('visit_time', visitForm.visit_time)
       formData.append('observations', visitForm.observations || '')
       formData.append('notes', visitForm.notes || '')
+      
+      // Add zone_id if selected
+      if (visitForm.zone_id) {
+        formData.append('zone_id', visitForm.zone_id)
+      }
       
       // Add participants
       if (visitForm.participants && visitForm.participants.length > 0) {

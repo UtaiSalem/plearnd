@@ -10,6 +10,7 @@ use App\Http\Controllers\Learn\Student\HomeVisit\StudentAddressController;
 use App\Http\Controllers\Learn\Student\HomeVisit\StudentContactController;
 use App\Http\Controllers\Learn\Student\HomeVisit\StudentHealthController;
 use App\Http\Controllers\Learn\Student\HomeVisit\StudentGuardianController;
+use App\Http\Controllers\Learn\Student\HomeVisit\ZoneController;
 
 // Main Home Visit System Routes
 Route::prefix('home-visit')->name('homevisit.')->group(function () {
@@ -139,6 +140,7 @@ Route::prefix('home-visit')->name('homevisit.')->group(function () {
     // Admin Routes (protected by admin session authentication)
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard/mock', [AdminController::class, 'dashboardMock'])->name('dashboard.mock');
         Route::get('/students', [AdminController::class, 'students'])->name('students');
         Route::get('/students/{id}', [AdminController::class, 'showStudent'])->name('students.show');
         Route::put('/students/{id}', [AdminController::class, 'updateStudent'])->name('students.update');
@@ -148,5 +150,19 @@ Route::prefix('home-visit')->name('homevisit.')->group(function () {
         Route::get('/export/visits', [AdminController::class, 'exportVisits'])->name('export.visits');
         Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
         Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
+        
+        // Zone Management Routes
+        Route::prefix('zones')->name('zones.')->group(function () {
+            Route::get('/', [ZoneController::class, 'list'])->name('list');
+            Route::post('/', [ZoneController::class, 'store'])->name('store');
+            Route::get('/{id}', [ZoneController::class, 'show'])->name('show');
+            Route::put('/{id}', [ZoneController::class, 'update'])->name('update');
+            Route::delete('/{id}', [ZoneController::class, 'destroy'])->name('destroy');
+            Route::put('/{id}/toggle-status', [ZoneController::class, 'toggleStatus'])->name('toggle-status');
+            Route::post('/reorder', [ZoneController::class, 'reorder'])->name('reorder');
+        });
     });
+
+    // Public/Shared Routes for Zones (accessible by teachers)
+    Route::get('/zones', [ZoneController::class, 'index'])->name('zones.index');
 });

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Learn\Student\HomeVisit\TeacherController;
+use App\Http\Controllers\Learn\Student\HomeVisit\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,14 @@ Route::prefix('home-visit')->group(function () {
         // TODO: Implement image description update
         return response()->json(['success' => true, 'message' => 'Image description updated']);
     })->name('api.home-visit.image.update-description');
+    
+    // Admin Reports API
+    Route::prefix('admin')->group(function () {
+        Route::get('/visits', [AdminController::class, 'getAllVisits'])->name('api.home-visit.admin.visits');
+        Route::get('/visits/{visit}/report', [AdminController::class, 'downloadReport'])->name('api.home-visit.admin.report');
+        Route::post('/visits/export/excel', [AdminController::class, 'exportToExcel'])->name('api.home-visit.admin.export.excel');
+        Route::post('/visits/export/pdf', [AdminController::class, 'exportToPDF'])->name('api.home-visit.admin.export.pdf');
+    });
 });
 
 // Course V2 API Routes

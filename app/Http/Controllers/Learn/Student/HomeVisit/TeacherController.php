@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Models\Student;
 use App\Models\StudentHomeVisit;
 use App\Models\HomeVisitImage;
+use App\Models\HomeVisitZone;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
@@ -43,6 +44,7 @@ class TeacherController extends Controller
         return Inertia::render('Learn/Student/HomeVisit/Teacher/Dashboard', [
             'students' => (object)['data' => []], // Empty initial state
             'classrooms' => $classrooms,
+            'zones' => HomeVisitZone::active()->ordered()->get(),
             'stats' => $stats,
             'filters' => [],
         ]);
@@ -95,6 +97,9 @@ class TeacherController extends Controller
             ->filter()
             ->values(); // Convert to array
 
+        // Get active zones for dropdown
+        $zones = HomeVisitZone::active()->ordered()->get();
+
         // Get stats for dashboard
         $stats = [
             'total_students' => Student::count(),
@@ -107,6 +112,7 @@ class TeacherController extends Controller
         return Inertia::render('Learn/Student/HomeVisit/Teacher/Dashboard', [
             'students' => $students,
             'classrooms' => $classrooms,
+            'zones' => $zones,
             'stats' => $stats,
             'filters' => $request->only(['search', 'classroom']),
         ]);
@@ -126,14 +132,19 @@ class TeacherController extends Controller
         
         // Get student's home visit records
         $homeVisits = StudentHomeVisit::where('student_id', $studentId)
+            ->with(['zone', 'images', 'participants'])
             ->orderBy('visit_date', 'desc')
             ->get();
 
         // Add home visits to student object
         $student->home_visits = $homeVisits;
 
+        // Get active zones for dropdown
+        $zones = HomeVisitZone::active()->ordered()->get();
+
         return Inertia::render('Learn/Student/HomeVisit/Teacher/ManageStudent', [
-            'student' => $student
+            'student' => $student,
+            'zones' => $zones,
         ]);
     }
 
@@ -315,6 +326,7 @@ class TeacherController extends Controller
         $request->validate([
             'visit_date' => 'required|date',
             'visit_time' => 'nullable',
+            'zone_id' => 'nullable|exists:home_visit_zones,id',
             'observations' => 'nullable|string',
             'notes' => 'nullable|string',
             'participants' => 'nullable|array',
@@ -329,6 +341,7 @@ class TeacherController extends Controller
             $homeVisit = StudentHomeVisit::createFromStudent($student, [
                 'visit_date' => $request->visit_date,
                 'visit_time' => $request->visit_time,
+                'zone_id' => $request->zone_id,
                 'observations' => $request->observations,
                 'notes' => $request->notes,
                 'visitor_name' => session('homevisit_user_name', 'ครู'), // Keep for backward compatibility
@@ -388,6 +401,7 @@ class TeacherController extends Controller
         $request->validate([
             'visit_date' => 'required|date',
             'visit_time' => 'nullable',
+            'zone_id' => 'nullable|exists:home_visit_zones,id',
             'observations' => 'nullable|string',
             'notes' => 'nullable|string',
             'recommendations' => 'nullable|string',
@@ -408,6 +422,7 @@ class TeacherController extends Controller
             $homeVisit->update([
                 'visit_date' => $request->visit_date,
                 'visit_time' => $request->visit_time,
+                'zone_id' => $request->zone_id,
                 'observations' => $request->observations,
                 'notes' => $request->notes,
                 'recommendations' => $request->recommendations,

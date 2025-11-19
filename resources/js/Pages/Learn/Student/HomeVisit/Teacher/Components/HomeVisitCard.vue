@@ -54,6 +54,27 @@
             </div>
           </div>
 
+          <!-- Zone Selection -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              <i class="fas fa-map-marker-alt mr-2 text-green-600"></i>
+              โซน <span class="text-gray-500 text-xs">(ไม่บังคับ)</span>
+            </label>
+            <select
+              v-model="visitForm.zone_id"
+              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+            >
+              <option value="">ไม่ระบุโซน</option>
+              <option 
+                v-for="zone in zones" 
+                :key="zone.id" 
+                :value="zone.id"
+              >
+                {{ zone.zone_name }}
+              </option>
+            </select>
+          </div>
+
           <!-- Participants Section -->
           <div class="bg-white p-4 rounded-lg border border-gray-200">
             <div class="flex items-center justify-between mb-3">
@@ -297,6 +318,30 @@
                 </div>
               </div>
 
+              <!-- Zone Selection -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <i class="fas fa-map-marker-alt mr-2 text-green-600"></i>
+                  โซน <span class="text-gray-500 text-xs">(ไม่บังคับ)</span>
+                </label>
+                <select
+                  v-model="visit.zone_id"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                >
+                  <option :value="null">ไม่ระบุโซน</option>
+                  <option 
+                    v-for="zone in zones" 
+                    :key="zone.id" 
+                    :value="zone.id"
+                  >
+                    {{ zone.zone_name }}
+                  </option>
+                </select>
+                <p v-if="visit.zone" class="mt-1 text-xs text-gray-500">
+                  โซนปัจจุบัน: {{ visit.zone.zone_name }}
+                </p>
+              </div>
+
               <!-- Participants Section -->
               <div class="bg-white p-4 rounded-lg border border-gray-200">
                 <div class="flex items-center justify-between mb-3">
@@ -500,6 +545,10 @@ import ImageGalleryModal from './ImageGalleryModal.vue'
 const props = defineProps({
   homeVisits: Array,
   visitForm: Object,
+  zones: {
+    type: Array,
+    default: () => []
+  },
   createNewHomeVisit: Function,
   handleImageUpload: Function,
   removeImage: Function,
@@ -603,6 +652,11 @@ async function saveVisit(visit) {
     formData.append('observations', visit.observations || '')
     formData.append('notes', visit.notes || '')
     formData.append('recommendations', visit.recommendations || '')
+    
+    // Add zone_id if selected
+    if (visit.zone_id) {
+      formData.append('zone_id', visit.zone_id)
+    }
     
     // Add participants
     visit.participants.forEach((participant, index) => {

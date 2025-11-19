@@ -13,6 +13,9 @@ class StudentHomeVisit extends Model
         // Foreign key to students table
         'student_id',
         
+        // Zone Information
+        'zone_id',
+        
         // Visit Information
         'visit_date',
         'visit_time',
@@ -131,6 +134,14 @@ class StudentHomeVisit extends Model
     public function getParticipantNamesAttribute()
     {
         return $this->participants->pluck('participant_name')->implode(', ');
+    }
+
+    /**
+     * Relationship to zone
+     */
+    public function zone()
+    {
+        return $this->belongsTo(HomeVisitZone::class, 'zone_id');
     }
 }
 
