@@ -108,13 +108,19 @@ export function useVisitReports(allVisits, zones) {
         responseType: 'blob'
       })
       
-      const url = window.URL.createObjectURL(new Blob([response.data]))
+      // Create blob URL and download
+      const blob = new Blob([response.data], { type: 'text/csv; charset=utf-8' })
+      const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `home-visits-${new Date().toISOString().split('T')[0]}.xlsx`)
+      link.setAttribute('download', `home-visits-${new Date().toISOString().split('T')[0]}.csv`)
       document.body.appendChild(link)
       link.click()
       link.remove()
+      window.URL.revokeObjectURL(url)
+      
+      // Show success message
+      alert('ส่งออกข้อมูลเรียบร้อยแล้ว (ไฟล์ CSV)')
     } catch (error) {
       console.error('Export failed:', error)
       alert('เกิดข้อผิดพลาดในการส่งออก: ' + (error.response?.data?.message || error.message))
