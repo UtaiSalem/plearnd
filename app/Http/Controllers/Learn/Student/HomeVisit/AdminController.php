@@ -606,23 +606,51 @@ class AdminController extends Controller
      */
     public function exportToExcel(Request $request)
     {
-        $visitIds = $request->get('visits', []);
-        
-        $visits = StudentHomeVisit::with([
-            'student',
-            'zone',
-            'participants',
-            'images'
-        ])->whereIn('id', $visitIds)->get();
+        try {
+            $visitIds = $request->get('visits', []);
+            
+            // Validate we have visits to export
+            if (empty($visitIds)) {
+                return response()->json([
+                    'message' => 'ไม่มีข้อมูลที่จะส่งออก กรุณาเลือกข้อมูลก่อน'
+                ], 400);
+            }
+            
+            $visits = StudentHomeVisit::with([
+                'student',
+                'zone',
+                'participants',
+                'images'
+            ])->whereIn('id', $visitIds)->get();
 
-        // Generate filename
-        $filename = 'home-visits-' . now()->format('Y-m-d') . '.xlsx';
+            // Check if visits found
+            if ($visits->isEmpty()) {
+                return response()->json([
+                    'message' => 'ไม่พบข้อมูลการเยี่ยมบ้านที่เลือก'
+                ], 404);
+            }
 
-        // Use Laravel Excel to export
-        return \Maatwebsite\Excel\Facades\Excel::download(
-            new \App\Exports\HomeVisitsExport($visits),
-            $filename
-        );
+            // Generate filename
+            $filename = 'home-visits-' . now()->format('Y-m-d') . '.xlsx';
+
+            // Use Laravel Excel to export
+            return \Maatwebsite\Excel\Facades\Excel::download(
+                new \App\Exports\HomeVisitsExport($visits),
+                $filename,
+                \Maatwebsite\Excel\Excel::XLSX,
+                [
+                    'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+            );
+        } catch (\Exception $e) {
+            \Log::error('Excel Export Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'message' => 'เกิดข้อผิดพลาดในการส่งออกข้อมูล: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

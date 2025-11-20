@@ -681,16 +681,35 @@ const exportToExcel = async () => {
       responseType: 'blob'
     })
     
-    const url = window.URL.createObjectURL(new Blob([response.data]))
+    // Check if response is valid
+    if (!response.data || response.data.size === 0) {
+      throw new Error('ไม่มีข้อมูลที่จะส่งออก')
+    }
+    
+    // Create blob with correct MIME type for Excel
+    const blob = new Blob([response.data], { 
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+    })
+    const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
     link.setAttribute('download', `home-visit-reports-${new Date().toISOString().split('T')[0]}.xlsx`)
     document.body.appendChild(link)
     link.click()
-    link.remove()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+    
+    // Show success message
+    alert(`ส่งออกข้อมูลเรียบร้อยแล้ว (${filteredVisits.value.length} รายการ)`)
   } catch (error) {
     console.error('Export failed:', error)
-    alert('เกิดข้อผิดพลาดในการส่งออก')
+    if (error.response) {
+      // Server responded with error
+      const errorText = await error.response.data.text()
+      alert(`เกิดข้อผิดพลาด: ${errorText || error.message}`)
+    } else {
+      alert('เกิดข้อผิดพลาดในการส่งออก: ' + error.message)
+    }
   } finally {
     isExporting.value = false
   }
