@@ -602,7 +602,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Export multiple visits to Excel (CSV format)
+     * Export multiple visits to Excel
      */
     public function exportToExcel(Request $request)
     {
@@ -615,85 +615,14 @@ class AdminController extends Controller
             'images'
         ])->whereIn('id', $visitIds)->get();
 
-        // Generate CSV content
-        $csvData = [];
-        
-        // Header row
-        $csvData[] = [
-            'ID',
-            'วันที่เยี่ยม',
-            'เวลา',
-            'ชื่อนักเรียน',
-            'ชั้นเรียน',
-            'โซน',
-            'ครูผู้เยี่ยม',
-            'สถานะ',
-            'หมายเหตุ',
-            'ข้อเสนอแนะ',
-            'จำนวนรูปภาพ',
-            'สร้างเมื่อ'
-        ];
-        
-        // Data rows
-        foreach ($visits as $visit) {
-            $studentName = $visit->student 
-                ? trim(($visit->student->first_name_th ?? $visit->student->first_name ?? '') . ' ' . 
-                       ($visit->student->last_name_th ?? $visit->student->last_name ?? ''))
-                : 'ไม่ระบุ';
-            
-            $classroom = $visit->student->classroom ?? '-';
-            $zoneName = $visit->zone->zone_name ?? '-';
-            
-            // Get participant names
-            $participants = $visit->participants->pluck('participant_name')->implode(', ');
-            $teacher = $participants ?: ($visit->visitor_name ?? '-');
-            
-            $statusText = [
-                'pending' => 'รอดำเนินการ',
-                'in-progress' => 'กำลังดำเนินการ',
-                'completed' => 'เสร็จสิ้น',
-                'cancelled' => 'ยกเลิก'
-            ][$visit->visit_status] ?? $visit->visit_status;
-            
-            $csvData[] = [
-                $visit->id,
-                \Carbon\Carbon::parse($visit->visit_date)->format('d/m/Y'),
-                $visit->visit_time ?? '-',
-                $studentName,
-                $classroom,
-                $zoneName,
-                $teacher,
-                $statusText,
-                $visit->notes ?? '-',
-                $visit->recommendations ?? '-',
-                $visit->images->count(),
-                \Carbon\Carbon::parse($visit->created_at)->format('d/m/Y H:i')
-            ];
-        }
-        
-        // Create CSV content with UTF-8 BOM for Excel compatibility
-        $filename = 'home-visits-' . now()->format('Y-m-d') . '.csv';
-        
-        $callback = function() use ($csvData) {
-            $file = fopen('php://output', 'w');
-            
-            // Add UTF-8 BOM for Excel to recognize Thai characters
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
-            foreach ($csvData as $row) {
-                fputcsv($file, $row);
-            }
-            
-            fclose($file);
-        };
-        
-        return response()->stream($callback, 200, [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            'Cache-Control' => 'no-cache, no-store, must-revalidate',
-            'Pragma' => 'no-cache',
-            'Expires' => '0'
-        ]);
+        // Generate filename
+        $filename = 'home-visits-' . now()->format('Y-m-d') . '.xlsx';
+
+        // Use Laravel Excel to export
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\HomeVisitsExport($visits),
+            $filename
+        );
     }
 
     /**
