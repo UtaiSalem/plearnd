@@ -21,7 +21,7 @@ class TopicController extends \App\Http\Controllers\Controller
     {
         $validatedData = $request->validate([
             'title'         => ['required', 'string'],
-            'content'       => ['required', 'string'],
+            'content'       => ['nullable', 'string'],
             'youtube_url'   => ['nullable', 'string'],
             'min_read'      => ['required', 'numeric'],
             'images.*'      => 'image|mimes:jpeg,png,jpg,gif,svg|max:4048|nullable',   
@@ -100,7 +100,7 @@ class TopicController extends \App\Http\Controllers\Controller
         // validate data
         $validatedData = $request->validate([
             'title'         => ['required', 'string'],
-            'content'       => ['required', 'string'],
+            'content'       => ['nullable', 'string'],
             'youtube_url'   => ['nullable', 'string'],
             'min_read'      => ['required', 'numeric'],
             'images.*'      => 'image|mimes:jpeg,png,jpg,gif,svg|max:4048|nullable',    
@@ -142,56 +142,7 @@ class TopicController extends \App\Http\Controllers\Controller
             $topic->images()->delete();
         }
 
-        // if ($topic->assignments) {
-        //     foreach ($topic->assignments as $assignment) {
-        //         if ($assignment->images) {
-        //             foreach ($assignment->images as $image) {
-        //                 Storage::disk('public')->delete($image->image_url);
-        //                 $image->delete();   
-        //             }
-        //         }
-        //         if ($assignment->answers) {
-        //             foreach ($assignment->answers as $answer) {
-        //                 if ($answer->images) {
-        //                     foreach ($answer->images as $image) {
-        //                         Storage::disk('public')->delete($image->image_url);
-        //                         $image->delete();   
-        //                     }
-        //                 }
-        //                 $answer->delete();   
-        //             }
-        //         }
-    
-        //         $assignment->delete();   
-        //     }
-        // }
-
-        // if ($topic->questions) {
-        //     foreach ($topic->questions as $question) {
-        //         if ($question->images) {
-        //             foreach ($question->images as $image) {
-        //                 Storage::disk('public')->delete($image->image_url);
-        //                 $image->delete();   
-        //             }
-        //         }
-                
-        //         if($question->answers){
-        //             foreach ($question->answers as $answer) {
-        //                 if ($answer->images) {
-        //                     foreach ($answer->images as $image) {
-        //                         Storage::disk('public')->delete($image->image_url);
-        //                         $image->delete();   
-        //                     }
-        //                 }
-        //                 $answer->delete();   
-        //             }
-        //         }
-
-        //         $question->delete();   
-        //     }
-        // }
-
-
+        $lesson->decrement('min_read', $topic->min_read);
         $topic->delete();
         
         return response()->json([

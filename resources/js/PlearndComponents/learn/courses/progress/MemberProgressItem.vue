@@ -23,6 +23,8 @@ const refBonusPoints = ref(props.member.bonus_points??0);
 const isLinkingToMemberSettingPage = ref(false);
 const refOrderNumber = ref(props.member.order_number);
 const isOrderLoading = ref(false);
+const refMemberCode = ref(props.member.member_code);
+const isMemberCodeLoading = ref(false);
 const totalMemberScore = computed(() => {
     return props.member.achieved_score + refBonusPoints.value ;
 });
@@ -151,6 +153,10 @@ const orderNumberForm = ref({
     orderNumber: props.member.order_number || 0,
 });
 
+const memberCodeForm = ref({
+    memberCode: props.member.member_code || '',
+});
+
 const handleBonusPointsInputSubmit = async () => {
     isLoading.value = true;
     try {
@@ -215,6 +221,38 @@ const handleOrderNumberInputSubmit = async () => {
     isOrderLoading.value = false;
 }
 
+const handleMemberCodeInputSubmit = async () => {
+    isMemberCodeLoading.value = true;
+    try {
+        let response = await axios.patch(`/courses/${props.member.course_id}/members/${props.member.id}/member-code`, {
+            member_code: memberCodeForm.value.memberCode,
+        });
+
+        if (response.data.success) {
+            refMemberCode.value = memberCodeForm.value.memberCode;
+            props.member.member_code = memberCodeForm.value.memberCode;
+            Swal.fire({
+                icon: 'success',
+                title: 'บันทึกรหัสนักเรียนสำเร็จ',
+                showConfirmButton: false,
+                timer: 1500,
+            });
+            isMemberCodeLoading.value = false;
+        }
+        
+    } catch (error) {
+        console.log(error);
+        isMemberCodeLoading.value = false;
+        Swal.fire({
+            icon: 'error',
+            title: 'บันทึกรหัสนักเรียนไม่สำเร็จ',
+            showConfirmButton: false,
+            timer: 1500,
+        });
+    }
+    isMemberCodeLoading.value = false;
+}
+
 function setGradeStatus(errMsg){
     errorMessages.value.push(errMsg);
 }
@@ -248,7 +286,7 @@ const navigateToMemberSettings = (courseId, memberId) => {
     </td>
     <td :class="gradeStatus ? gradeProgress(gradePercentage).lightGradient : 'bg-gradient-to-r from-red-50 to-red-100'"
         class="px-1 py-1 border border-slate-300 text-center shadow-sm">
-        <div class="flex justify-center items-center">
+        <div v-if="!isCourseAdmin" class="flex justify-center items-center">
             <a 
                 :href="`/courses/${member.course_id}/members/${member.id}/member-grade-progress`"
                 target="_blank" 
@@ -258,6 +296,14 @@ const navigateToMemberSettings = (courseId, memberId) => {
                 <Icon  icon="heroicons:arrow-top-right-on-square" class="w-4 h-4 ml-1.5 opacity-0 group-hover/link:opacity-100 transition-opacity duration-200" />
             </a>
         </div>
+        <form v-else @submit.prevent="handleMemberCodeInputSubmit" class="flex items-center justify-center">
+            <input type="text" name="memberCode" v-model="memberCodeForm.memberCode" :id="`member-${member.id}-member-code`" autocomplete="member-code" class="block w-24 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+            <button type="submit" class="rounded-md px-1 py-0 ml-1 text-sm font-base shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                :class="gradeStatus ? gradeProgress(gradePercentage).textColor : 'text-red-600'">
+                <Icon icon="icomoon-free:spinner" class="w-5 h-5 animate-spin" v-if="isMemberCodeLoading" />
+                <Icon icon="fluent:save-24-regular" class="w-5 h-5" v-else />
+            </button>
+        </form>
     </td>
 
     <td :class="gradeStatus ? gradeProgress(gradePercentage).lightGradient : 'bg-gradient-to-r from-red-50 to-red-100'"

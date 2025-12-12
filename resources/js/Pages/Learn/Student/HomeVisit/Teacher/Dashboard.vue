@@ -1,4 +1,6 @@
 <template>
+  <Head title="ระบบจัดการการเยี่ยมบ้านนักเรียน - ครู" />
+  
   <div class="min-h-screen bg-gray-50">
     <!-- Navigation Header -->
     <nav class="bg-white shadow-sm border-b">
@@ -470,6 +472,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { Head, useForm, router } from '@inertiajs/vue3'
+import { formatTimeAgo, formatDateThai, getCurrentDate } from '@/utils/dateUtils'
 import StudentCard from './Components/StudentCard.vue'
 // Import Shared HomeVisit Components
 import {
@@ -576,7 +579,7 @@ const selectStudent = (student) => {
 
     const createHomeVisit = (student) => {
       selectedStudent.value = student
-      visitForm.visit_date = new Date().toISOString().split('T')[0] // Today's date
+      visitForm.visit_date = getCurrentDate()
       showCreateVisitModal.value = true
     }
 
@@ -735,11 +738,7 @@ const selectStudent = (student) => {
       alert(`ดูรูปภาพของการเยี่ยม ID: ${visit.id}`)
     }
 
-    const formatDateTime = (dateString) => {
-      if (!dateString) return 'ไม่ระบุ'
-      const date = new Date(dateString)
-      return date.toLocaleString('th-TH')
-    }
+    // ใช้ formatTimeAgo จาก date utilities แทน
 
     // Event handlers for student component saves
     const handleStudentSave = (message) => {
@@ -816,14 +815,10 @@ const selectStudent = (student) => {
       router.post(route('homevisit.general.logout'))
     }
 
+    // ใช้ formatDateThai จาก date utilities แทน
     const formatDate = (dateString) => {
       if (!dateString) return 'ไม่ระบุ'
-      const date = new Date(dateString)
-      return date.toLocaleDateString('th-TH', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      })
+      return formatDateThai(dateString, { format: 'short' })
     }
 
     const getEducationLevelText = (level) => {

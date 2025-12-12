@@ -130,9 +130,9 @@ const removeImage = (index) => {
             </div>
 
             <div>
-              <label :for="`topic_content_${lesson.id}`" class="block text-md font-semibold text-gray-700">เนื้อหา</label>
+              <label :for="`topic_content_${lesson.id}`" class="block text-md font-semibold text-gray-700">เนื้อหา <span class="text-xs text-gray-500">(ไม่จำเป็น)</span></label>
               <Textarea :id="`topic_content_${lesson.id}`" v-model="form.content" rows="6" autoResize
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></Textarea>
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="เนื้อหาของหัวข้อ (สามารถเว้นว่างได้หากมีรูปภาพหรือวิดีโอ)"></Textarea>
             </div>
 
             <div class="flex items-center w-full space-x-2">
@@ -184,9 +184,9 @@ const removeImage = (index) => {
               <input type="file" id="topic_images" @change="handleImageUpload" multiple accept="image/*" class="hidden mt-1 w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
             </div> -->
             <div>
-              <label :for="`topic_youtube_url_${lesson.id}`" class="block text-sm font-semibold text-gray-600 dark:text-white">ลิงค์ยูทูป</label>
+              <label :for="`topic_youtube_url_${lesson.id}`" class="block text-sm font-semibold text-gray-600 dark:text-white">ลิงค์ยูทูป <span class="text-xs text-gray-500">(ไม่จำเป็น)</span></label>
               <Textarea :id="`topic_youtube_url_${lesson.id}`" v-model="form.youtube_url" rows="1" autoResize
-              class="mt-1 block w-full rounded-md border-gray-300" ></Textarea>
+              class="mt-1 block w-full rounded-md border-gray-300" placeholder="https://www.youtube.com/watch?v=..."></Textarea>
             </div>
           </form>
         </div>

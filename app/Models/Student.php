@@ -38,8 +38,8 @@ class Student extends Model
     ];
 
     protected $casts = [
-        'date_of_birth' => 'date',
-        'enrollment_date' => 'date',
+        'date_of_birth' => 'date:Y-m-d',
+        'enrollment_date' => 'date:Y-m-d',
         'gender' => 'integer',
     ];
     

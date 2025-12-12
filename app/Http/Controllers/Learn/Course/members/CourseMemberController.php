@@ -375,6 +375,21 @@ class CourseMemberController extends Controller
         ]);
     }
 
+    public function updateMemberCode(Course $course, CourseMember $member, Request $request)
+    {
+        $request->validate([
+            'member_code' => 'required|string|max:50',
+        ]);
+
+        $member->update([
+            'member_code' => $request->member_code,
+        ]);
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
     /**
      * V2: Display member details with enhanced information
      */

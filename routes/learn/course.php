@@ -166,6 +166,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::post('/process-scores', [CourseMemberController::class, 'processMemberScores'])->name('course.members.process-scores');
 
     Route::patch('/{member}/order-number', [CourseMemberController::class, 'updateOrderNumber'])->name('course.member.order-number.update');
+    Route::patch('/{member}/member-code', [CourseMemberController::class, 'updateMemberCode'])->name('course.member.member-code.update');
 
     Route::post('/{member}/process-grades', [CourseMemberGradeProgressController::class, 'processGrades']);
     Route::patch('/{member}/edited-grade', [CourseMemberGradeProgressController::class, 'updateEditedGrade'])->name('course.member.edited-grade.update');

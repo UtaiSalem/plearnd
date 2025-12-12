@@ -19,6 +19,12 @@ const form = ref({
   courseID: pageData.course.data.id,
   title: 'บทเรียนที่ ' + lessonsLength.value,
   description: 'คำอธิบายบทเรียน เนื้อหา รายละอียด',
+  content: '',
+  youtube_url: '',
+  order: lessonsLength.value,
+  min_read: 5,
+  point_tuition_fee: 0,
+  status: 'published',
 });
 
 async function handleCreateLessonFormSubmit(){
