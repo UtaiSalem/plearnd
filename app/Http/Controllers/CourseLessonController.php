@@ -154,7 +154,7 @@ class CourseLessonController extends Controller
                 'order'             => 'required',
                 'point_tuition_fee' => 'required||numeric||min:0',
                 'status'            => 'required',
-                'images.*'          => 'image|mimes:jpeg,png,jpg,gif,svg|max:4048|nullable',
+                'images.*'          => 'image|mimes:jpeg,png,jpg,gif,svg|nullable',
             ]);
 
     
@@ -167,7 +167,7 @@ class CourseLessonController extends Controller
                     // $fileNames[] = $fileName;
     
                     $lessonImages[] = $lesson->images()->create([
-                        'image_url' => $image_url
+                        'filename' => $image_url
                     ]);
                 }
             }

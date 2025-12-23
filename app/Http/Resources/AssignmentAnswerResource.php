@@ -16,10 +16,15 @@ class AssignmentAnswerResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // Load user if not already loaded
+        if (!$this->relationLoaded('user')) {
+            $this->load('user');
+        }
+
         // ดึง course_member เฉพาะเมื่อมี relationship ครบ
         $course_member = null;
         
-        if ($this->relationLoaded('user') && $this->relationLoaded('assignment')) {
+        if ($this->user && $this->relationLoaded('assignment') && $this->assignment) {
             $course_member = CourseMember::where('user_id', $this->user->id)
                 ->where('course_id', $this->assignment->assignmentable->id)
                 ->first();
@@ -29,12 +34,10 @@ class AssignmentAnswerResource extends JsonResource
             'id' => $this->id,
             'assignment_id' => $this->assignment_id,
             
-            // ใช้ whenLoaded สำหรับ relationships
-            'student' => $this->whenLoaded('user', function () {
-                return new UserResource($this->user);
-            }),
+            // ส่ง student เสมอ
+            'student' => $this->user ? new UserResource($this->user) : null,
             
-            'user' => $this->when($this->relationLoaded('user'), $this->user?->id),
+            'user' => $this->user?->id,
             
             'member_name' => $course_member?->member_name,
             

@@ -6,7 +6,7 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "barryvdh/laravel-dompdf": "^3.1",
         "blade-ui-kit/blade-heroicons": "*",
         "blade-ui-kit/blade-icons": "*",
@@ -17,7 +17,7 @@
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",
         "multicaret/laravel-acquaintances": "^3.7",
-        "openspout/openspout": "4.23.0",
+        "openspout/openspout": "^4.24",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {

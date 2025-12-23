@@ -60,9 +60,9 @@ function onDeleteAsmAnswer(answerId,index) {
         <div v-for="(answer,i) in props.answers" :key="answer.id" class="m-2" >
             <AssignmentAnswerItem 
                 :assignment="props.assignment" 
-                :answer
+                :answer="answer"
                 :index="i"
-                :isDeleting
+                :isDeleting="isDeleting"
 
                 @update-answer="(points)=>onSetPoints(points, i)"
                 @delete-answer="onDeleteAsmAnswer(answer.id, i)"

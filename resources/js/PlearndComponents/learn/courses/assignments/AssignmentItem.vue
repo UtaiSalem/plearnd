@@ -99,6 +99,12 @@ const form = ref({
     status: props.assignment.status === 1 ? true : false,
 });
 
+// ตรวจสอบว่า user ปัจจุบันส่งคำตอบแล้วหรือยัง
+const hasUserAnswer = computed(() => {
+    if (!props.assignment.answers || props.assignment.answers.length === 0) return false;
+    return props.assignment.answers.some(answer => answer.student.id === usePage().props.auth.user.id);
+});
+
 const browseAddAsmImages = () => {
     document.getElementById('addAsmImagesInput').click();
     // inputAsmImages.value.click();
@@ -112,8 +118,20 @@ function onAddAsmImageInputChange(e){
 }
 
 function onAddNewAnswerHandler(newAnswer) {
-    props.assignment.answers.splice(0);
-    props.assignment.answers.push(newAnswer);
+    // Ensure newAnswer has valid student data before adding
+    if (newAnswer && newAnswer.student && newAnswer.student.id) {
+        // ไม่ลบ answers ที่มีอยู่ เพียงเพิ่ม answer ใหม่เข้าไป
+        const existingIndex = props.assignment.answers.findIndex(a => a.student?.id === newAnswer.student.id);
+        if (existingIndex !== -1) {
+            // Update existing answer
+            props.assignment.answers.splice(existingIndex, 1, newAnswer);
+        } else {
+            // Add new answer
+            props.assignment.answers.push(newAnswer);
+        }
+    } else {
+        console.warn('Invalid answer data received:', newAnswer);
+    }
 }
 
 function onDeleteTempImagesHandler(index) {
@@ -554,7 +572,7 @@ function handleEndDateSelection(endDateData){
                 </div>
             </div>
 
-            <div class="mb-4" v-if="!$page.props.isCourseAdmin && ($page.props.courseMemberOfAuth && $page.props.courseMemberOfAuth.group_member_status == 1 )">
+            <div class="mb-4" v-if="!$page.props.isCourseAdmin && ($page.props.courseMemberOfAuth && $page.props.courseMemberOfAuth.group_member_status == 1 ) && !hasUserAnswer">
                 <AssignmentAnswerForm 
                     :assignmentableType="props.assignmentableType"
                     :assignmentableId="props.assignmentableId" 

@@ -10,7 +10,7 @@
 
 </script>
 <template>
-    <Menu as="div" class="relative inline-block overflow-visible text-left">
+    <Menu as="div" class="relative inline-block overflow-visible text-left" v-slot="{ close }">
         <div>
             <MenuButton class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white/60 px-3 py-1 text-sm font-semibold text-gray-900  hover:bg-gray-50">
                 <Icon icon="heroicons-solid:dots-horizontal" class="w-5 h-5 text-gray-400 " aria-hidden="true" />
@@ -25,21 +25,21 @@
                 class="absolute right-0 z-10 w-40 mt-1 origin-top-right bg-white rounded-md shadow-lg top-6 ring-2 ring-black ring-opacity-5 focus:outline-none">
                 <div class="p-1">
                     <MenuItem v-slot="{ active }" class="" v-if="$slots.editModel">
-                        <button @click.prevent="emit('edit-model')" class="flex items-center justify-start w-full space-x-2"
+                        <button @click="emit('edit-model'); close()" class="flex items-center justify-start w-full space-x-2"
                             :class="[ active ? 'bg-gray-100 text-gray-900' : 'text-gray-700','block p-2 text-sm', ]">
                             <Icon icon="tabler:edit" class="w-5 h-5 text-red-500 " /> 
                             <slot name="editModel"></slot>
                         </button>
                     </MenuItem>
                     <MenuItem v-slot="{ active }" v-if="$slots.deleteModel">
-                        <button @click.prevent="emit('delete-model')" class="flex items-center justify-start w-full space-x-2"
+                        <button @click="emit('delete-model'); close()" class="flex items-center justify-start w-full space-x-2"
                             :class="[ active ? 'bg-gray-100 text-gray-900' : 'text-gray-700','block p-2 text-sm', ]">
                             <Icon icon="heroicons-solid:trash" class="w-5 h-5 text-red-500 " /> 
                             <slot name="deleteModel"></slot>
                         </button>
                     </MenuItem>
                     <MenuItem v-slot="{ active }" v-if="$slots.deleteDescription">
-                        <button @click.prevent="emit('delete-description')" class="flex items-center justify-start w-full space-x-2"
+                        <button @click="emit('delete-description'); close()" class="flex items-center justify-start w-full space-x-2"
                             :class="[ active ? 'bg-gray-100 text-gray-900' : 'text-gray-700','block p-2 text-sm', ]">
                             <Icon icon="heroicons-solid:trash" class="w-5 h-5 text-red-500 " /> 
                             <slot name="delete-description"></slot>
