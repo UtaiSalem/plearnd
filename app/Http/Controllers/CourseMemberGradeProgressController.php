@@ -159,25 +159,33 @@ class CourseMemberGradeProgressController extends Controller
                 );
             }
 
-            // 5. ดึงคะแนนรวมสูงสุดของคอร์ส
+            // 5. คำนวณคะแนน Assignment
+            $assignmentScore = $this->calculateAssignmentScore($courseId, $userId);
+
+            // 6. รวมคะแนนทั้งหมด (Quiz + Assignment)
+            $totalScore = $totalScore + $assignmentScore;
+
+            // 7. ดึงคะแนนรวมสูงสุดของคอร์ส
             $course = Course::findOrFail($courseId);
             $courseTotalScore = $course->total_score ?? 0;
 
-            // 6. ตรวจสอบความถูกต้องของคะแนน
+            // 8. ตรวจสอบความถูกต้องของคะแนน
             $scoreValidation = $this->validateScore($totalScore, $courseTotalScore, $memberId, $courseId);
 
-            // 7. อัปเดตคะแนนรวมในตาราง course_members
+            // 9. อัปเดตคะแนนรวมในตาราง course_members
             CourseMember::where('course_id', $courseId)
                 ->where('id', $memberId)
                 ->update(['achieved_score' => $totalScore]);
 
             DB::commit();
 
-            // 8. ส่งข้อมูลกลับไปยัง Frontend พร้อมผลการตรวจสอบ
+            // 10. ส่งข้อมูลกลับไปยัง Frontend พร้อมผลการตรวจสอบ
             $response = [
                 'success' => true,
                 'message' => 'Grades processed successfully',
                 'total_score' => $totalScore,
+                'quiz_score' => $totalScore - $assignmentScore,
+                'assignment_score' => $assignmentScore,
                 'course_total_score' => $courseTotalScore,
                 'quizzes_processed' => count($updateData),
                 'validation' => $scoreValidation
@@ -194,6 +202,35 @@ class CourseMemberGradeProgressController extends Controller
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    /**
+     * คำนวณคะแนน Assignment ของนักเรียน
+     * หลักการ: นับเฉพาะคะแนนสูงสุดของแต่ละ Assignment (ไม่นับซ้ำหากตอบหลายครั้ง)
+     */
+    protected function calculateAssignmentScore(int $courseId, int $userId): float
+    {
+        $course = Course::findOrFail($courseId);
+        $courseAssignments = $course->courseAssignments;
+
+        if ($courseAssignments->isEmpty()) {
+            return 0;
+        }
+
+        $assignmentIds = $courseAssignments->pluck('id');
+
+        // ดึงคำตอบของนักเรียน แล้วเลือกคะแนนสูงสุดของแต่ละ Assignment
+        $answers = AssignmentAnswer::whereIn('assignment_id', $assignmentIds)
+            ->where('user_id', $userId)
+            ->get();
+
+        // Group by assignment_id และเอาคะแนนสูงสุดของแต่ละ assignment
+        $maxScoresByAssignment = $answers->groupBy('assignment_id')
+            ->map(function ($group) {
+                return $group->max('points') ?? 0;
+            });
+
+        return $maxScoresByAssignment->sum();
     }
 
     public function memberGradeProgress(Course $course, CourseMember $member)

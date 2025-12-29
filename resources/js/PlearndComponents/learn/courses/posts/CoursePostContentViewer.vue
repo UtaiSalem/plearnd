@@ -26,13 +26,13 @@ const privacyOptions = reactive([
 </style>
 
 <template>
-    <div>
-        <div class="flex flex-wrap w-full gap-4 border-b">
-            <div class="flex items-center gap-2 min-w-fit mb-2">
-                <img :src="post.author.avatar" class="w-12 h-12 p-[3px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500" alt="">
-                <h6 class="">{{ post.author.name }}</h6>
-                <div class="flex justify-between">
-                    <div class="flex flex-wrap items-center gap-1">
+    <div class="overflow-hidden">
+        <div class="flex flex-wrap w-full gap-2 sm:gap-4 border-b pb-2">
+            <div class="flex items-center gap-2 min-w-0 mb-2">
+                <img :src="post.author.avatar" class="w-10 h-10 sm:w-12 sm:h-12 p-[3px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500 flex-shrink-0" alt="">
+                <div class="min-w-0 flex-1">
+                    <h6 class="truncate">{{ post.author.name }}</h6>
+                    <div class="flex flex-wrap items-center gap-1 text-xs sm:text-sm">
                         <small class="text-gray-800 dark:text-secondary-600">
                             {{ props.acting == 'createpost' ? 'เขียนโพสต์' : props.acting }}
                         </small>
@@ -45,7 +45,7 @@ const privacyOptions = reactive([
                         <small class="text-gray-800 dark:text-secondary-600">
                             {{ post.diff_humans_created_at }}
                         </small>
-                        <span class="mx-2"><Icon :icon="privacyOptions[post.privacy_settings-1].icon" class="w-5 h-5"/></span>
+                        <span class="mx-1 sm:mx-2"><Icon :icon="privacyOptions[post.privacy_settings-1].icon" class="w-4 h-4 sm:w-5 sm:h-5"/></span>
                         <!-- <span class="mx-2"><Icon :icon="props.privacy_settings" class="w-5 h-5"/></span> -->
                         <!-- <span class="mx-2">{{ post.privacy_settings }}</span> -->
                     </div>
@@ -53,10 +53,10 @@ const privacyOptions = reactive([
             </div>
         </div>
 
-        <div class="bg-gray-100 mt-2 rounded-lg" v-if="post.content">
+        <div class="bg-gray-100 mt-2 rounded-lg overflow-hidden max-w-full" v-if="post.content">
 
             <Link v-if="$page.component==='Learn/Course/CourseFeeds'" :href="post.post_url">
-                <div class="line-clamp-6">
+                <div class="line-clamp-6 overflow-hidden">
                     <!-- {{ post.content }} -->
                     <Textarea 
                         :id="`course-post-content-${post.id}`" 
@@ -74,7 +74,7 @@ const privacyOptions = reactive([
                 </div>
             </Link>
 
-            <div v-else class="bg-gray-100 mt-2 rounded-lg">
+            <div v-else class="bg-gray-100 mt-2 rounded-lg overflow-hidden max-w-full">
                 <Textarea 
                     :id="`course-post-content-${post.id}`" 
                     name="postcontent" 

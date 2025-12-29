@@ -175,9 +175,24 @@ onMounted(async () => {
                         </p>
                     </div>
                 </div>
-                <div v-if="canLoadMore" class="flex items-center gap-3 text-sm font-bold text-violet-600 bg-gradient-to-r from-violet-100 to-purple-100 px-4 py-2 rounded-full border border-violet-200 shadow-md">
-                    <Icon icon="heroicons:chevron-double-down" class="h-5 w-5 animate-bounce" />
-                    <span>มีข้อมูลเพิ่มเติม</span>
+                <div class="flex items-center gap-3">
+                    <div v-if="canLoadMore" class="flex items-center gap-2 text-sm font-bold text-violet-600 bg-gradient-to-r from-violet-100 to-purple-100 px-4 py-2 rounded-full border border-violet-200 shadow-md">
+                        <Icon icon="heroicons:chevron-double-down" class="h-5 w-5 animate-bounce" />
+                        <span class="hidden sm:inline">มีข้อมูลเพิ่มเติม</span>
+                    </div>
+                    <button
+                        @click="refreshAttendances"
+                        :disabled="isLoadingAttendances"
+                        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white rounded-full hover:from-emerald-600 hover:to-green-600 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="รีโหลดข้อมูล"
+                    >
+                        <Icon 
+                            :icon="isLoadingAttendances ? 'svg-spinners:270-ring-with-bg' : 'heroicons:arrow-path'" 
+                            class="h-5 w-5" 
+                            :class="{ 'animate-spin': isLoadingAttendances }"
+                        />
+                        <span class="text-sm font-bold hidden sm:inline">{{ isLoadingAttendances ? 'กำลังโหลด...' : 'รีโหลด' }}</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -323,13 +338,5 @@ onMounted(async () => {
             <Icon v-else icon="heroicons:arrow-down-circle" class="h-6 w-6 group-hover:animate-bounce" />
             <span class="font-black text-lg">{{ isLoadingMore ? 'กำลังโหลด...' : 'โหลดเพิ่มเติม' }}</span>
         </button>
-    </div>
-
-    <!-- Enhanced End of Data Indicator -->
-    <div v-if="!canLoadMore && paginatedAttendances.length > 0" class="text-center mt-10">
-        <div class="inline-flex items-center gap-4 px-8 py-4 bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 border-2 border-green-200 rounded-2xl shadow-lg">
-            <Icon icon="heroicons:check-circle" class="h-8 w-8 text-green-600" />
-            <span class="text-lg font-black text-green-700">แสดงข้อมูลทั้งหมดแล้ว</span>
-        </div>
     </div>
 </template>

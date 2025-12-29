@@ -309,8 +309,8 @@ watch(isRequestingMember, (newVal, oldVal) => {
             </div>
 
         </div>
-        <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between w-full px-4 -mt-[52px] sm:-mt[-54-px] md:-mt-[64px] lg:-mt-[84px]">
-            <div class="flex flex-col sm:flex-row items-center w-[69%]">
+        <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between w-full px-2 sm:px-4 -mt-[52px] sm:-mt[-54-px] md:-mt-[64px] lg:-mt-[84px]">
+            <div class="flex flex-col sm:flex-row items-center w-full sm:w-[69%]">
                 <!-- <div class="relative max-w-fit w-[88px] h-[88px] sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-40 lg:h-40 flex justify-center items-center border-gray-400 border-2 rounded-full overflow-hidden"> -->
                 <div class="relative min-w-fit flex justify-center items-center border-white border-[4px] rounded-full overflow-hidden ">
                     <img class="bg-cover object-center w-[88px] h-[88px] sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-40 lg:h-40" :src="tempLogo" alt='school logo'>
@@ -386,7 +386,7 @@ watch(isRequestingMember, (newVal, oldVal) => {
             </div>
 
 
-            <div  v-if="!$page.props.isCourseAdmin" class="hidden md:block space-x-2 mx-4 w-[31%] justify-end">
+            <div  v-if="!$page.props.isCourseAdmin" class="hidden md:flex space-x-2 mx-4 w-full sm:w-[31%] justify-center sm:justify-end">
                 <!-- สถานะรอการตอบรับ -->
                 <div v-if="props.courseMemberOfAuth && props.modelData.member_status==='0'" ref="membershipDropdownRef" class="relative w-56 py-2 ml-auto cursor-pointer group">
                     <div class="flex justify-center w-full bg-yellow-500 rounded-md shadow-md hover:shadow-lg transition-all duration-200">
@@ -491,23 +491,23 @@ watch(isRequestingMember, (newVal, oldVal) => {
             </div>
         </div>
 
-        <div class="my-3 md:flex justify-center gap-4 md:!gap-14">
-            <div class="flex justify-center space-x-4 md:space-x-10">
-                <div class="flex flex-col items-center justify-center p-4 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 shadow-sm hover:shadow-md transition-all duration-300 min-w-[100px]">
-                    <div class="flex items-center justify-center w-12 h-12 mb-2 bg-blue-500 rounded-full">
-                        <Icon icon="heroicons:book-open" class="w-6 h-6 text-white" />
+        <div class="my-3 flex flex-wrap md:flex-nowrap justify-center gap-3 sm:gap-4 md:!gap-14 px-2">
+            <div class="flex justify-center space-x-3 sm:space-x-4 md:space-x-10">
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 shadow-sm hover:shadow-md transition-all duration-300 min-w-[80px] sm:min-w-[100px]">
+                    <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 mb-2 bg-blue-500 rounded-full">
+                        <Icon icon="heroicons:book-open" class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
-                    <h3 class="text-2xl font-bold text-blue-600">{{ props.modelData.lessons_count }}</h3>
-                    <p class="text-sm font-medium text-gray-600">{{ props.subModelNameTh }}</p>
+                    <h3 class="text-xl sm:text-2xl font-bold text-blue-600">{{ props.modelData.lessons_count }}</h3>
+                    <p class="text-xs sm:text-sm font-medium text-gray-600">{{ props.subModelNameTh }}</p>
                 </div>
-                <div class="flex flex-col items-center justify-center p-4 rounded-lg bg-gradient-to-br from-purple-50 to-pink-50 shadow-sm hover:shadow-md transition-all duration-300 min-w-[100px]" v-if="props.modelData.enrolled_students">
-                    <div class="flex items-center justify-center w-12 h-12 mb-2 bg-purple-500 rounded-full">
-                        <Icon icon="heroicons:users" class="w-6 h-6 text-white" />
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg bg-gradient-to-br from-purple-50 to-pink-50 shadow-sm hover:shadow-md transition-all duration-300 min-w-[80px] sm:min-w-[100px]" v-if="props.modelData.enrolled_students">
+                    <div class="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 mb-2 bg-purple-500 rounded-full">
+                        <Icon icon="heroicons:users" class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
-                    <h3 class="text-2xl font-bold text-purple-600">{{ props.modelData.enrolled_students }}</h3>
-                    <p class="text-sm font-medium text-gray-600">ผู้เรียน</p>
+                    <h3 class="text-xl sm:text-2xl font-bold text-purple-600">{{ props.modelData.enrolled_students }}</h3>
+                    <p class="text-xs sm:text-sm font-medium text-gray-600">ผู้เรียน</p>
                 </div>
-                <div class="flex flex-col items-center justify-center p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 shadow-sm hover:shadow-md transition-all duration-300 min-w-[100px]" v-if="props.modelData.groups">
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 shadow-sm hover:shadow-md transition-all duration-300 min-w-[80px] sm:min-w-[100px]" v-if="props.modelData.groups">
                     <div class="flex items-center justify-center w-12 h-12 mb-2 bg-green-500 rounded-full">
                         <Icon icon="heroicons:user-group" class="w-6 h-6 text-white" />
                     </div>

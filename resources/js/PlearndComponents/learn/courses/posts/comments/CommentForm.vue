@@ -71,12 +71,12 @@ function deleteTempPostCommentImage(index) {
 </script>
 
 <template>
-    <div class="">
-        <form @submit.prevent="handlePostCommentFormSubmit" :id="`course-post-comment-form-${postId}`" class="mt-3 relative dark:border-secondary-800 flex items-center">
-            <img :src="$page.props.auth.user.profile_photo_url" class=" absolute top-0 w-10 h-10 p-[2px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500" alt="">
+    <div class="overflow-hidden max-w-full">
+        <form @submit.prevent="handlePostCommentFormSubmit" :id="`course-post-comment-form-${postId}`" class="mt-3 relative dark:border-secondary-800 flex items-start gap-2 overflow-hidden">
+            <img :src="$page.props.auth.user.profile_photo_url" class="w-8 h-8 sm:w-10 sm:h-10 p-[2px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500 flex-shrink-0 mt-1" alt="">
             <!-- <input type="text" v-model="newCommentForm.content" :id="`course-post-comment-form-comment-input-${postId}`" placeholder="แสดงความคิดเห็น..." class="text-xs ml-2 pl-3 pr-12 py-0 w-full h-12 dark:text-gray-600 rounded-lg focus:ring-0 border-gray-400"> -->
             <Textarea :id="`course-post-comment-form-comment-input-${postId}`" 
-                class="text-sm ml-12 pl-3 pr-12 w-full h-14 dark:text-gray-600 rounded-lg focus:ring-1 focus:ring-blue-500 border-gray-300"
+                class="text-sm pl-3 pr-12 w-full min-w-0 h-14 dark:text-gray-600 rounded-lg focus:ring-1 focus:ring-blue-500 border-gray-300"
                 type="text" 
                 rows="1" 
                 autoResize 

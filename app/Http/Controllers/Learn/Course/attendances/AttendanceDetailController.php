@@ -29,6 +29,20 @@ class AttendanceDetailController extends Controller
      */
     public function store(CourseAttendance $attendance, Request $request)
     {
+        // Check if detail already exists for this member
+        $existingDetail = $attendance->details()
+            ->where('course_member_id', $request->course_member_id)
+            ->first();
+        
+        if ($existingDetail) {
+            // Return existing detail instead of creating duplicate
+            return response()->json([
+                'success' => true,
+                'attendance_detail' => new AttendanceDetailResource($existingDetail),
+                'message' => 'Already checked in'
+            ], 200);
+        }
+        
         // compute time in is late or not by compare with attendance finish time+20 minutes
         $isLate = now() > Carbon::parse($attendance->start_at)->addMinutes($attendance->late_time);
 

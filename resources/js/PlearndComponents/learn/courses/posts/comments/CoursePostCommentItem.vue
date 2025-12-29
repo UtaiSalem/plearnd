@@ -125,11 +125,11 @@ const handleDeleteComment = () => {
 };
 </script>
 <template>
-    <div class="flex gap-3 w-full justify-start border p-2 my-2 rounded-md">
+    <div class="flex gap-2 sm:gap-3 w-full justify-start border p-2 my-2 rounded-md overflow-hidden">
         <!-- <span>{{ cIndex }}</span> -->
-        <img :src="comment.user.avatar" class="w-9 h-9 p-[2px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500"
+        <img :src="comment.user.avatar" class="w-8 h-8 sm:w-9 sm:h-9 p-[2px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500 flex-shrink-0"
             alt="">
-        <div class="w-full">
+        <div class="w-full min-w-0 overflow-hidden">
             <div class="flex justify-between items-end">
                 <div class="flex items-center space-x-2">
                     <h6 class="mb-0">{{ comment.user.name }}</h6>
@@ -138,8 +138,8 @@ const handleDeleteComment = () => {
                 <CommentSettingMenu @delete-comment="handleDeleteComment" v-if="!isNotCommentOwner || isPostOwner" />
             </div>
             
-            <div v-if="comment.content" class="mt-2">
-                <form :id="`comment-form-comment-item-${comment.course_post_id}${comment.id}`">
+            <div v-if="comment.content" class="mt-2 overflow-hidden">
+                <form :id="`comment-form-comment-item-${comment.course_post_id}${comment.id}`" class="overflow-hidden">
                     <Textarea 
                         :id="`comment-form-textarea-comment-item-${comment.course_post_id}${comment.id}`"
                         type="text" 

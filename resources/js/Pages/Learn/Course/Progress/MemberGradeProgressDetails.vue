@@ -19,19 +19,25 @@ const totalAchievedScore = computed(() => {
     let assignmentScore = 0;
     let quizScore = 0;
     
-    // Calculate assignment scores
+    // Calculate assignment scores - ใช้คะแนนสูงสุดของแต่ละ Assignment
     props.course_assignments.forEach(assignment => {
-        const answer = props.member_assignments_answers.data.find(answer => answer.assignment_id === assignment.id);
-        if (answer) {
-            assignmentScore += answer.points || 0;
+        // ดึงคำตอบทั้งหมดของ assignment นี้ (อาจมีหลายคำตอบ)
+        const answers = props.member_assignments_answers.data.filter(answer => answer.assignment_id === assignment.id);
+        if (answers.length > 0) {
+            // เลือกคะแนนสูงสุดจากทุกคำตอบ
+            const maxPoints = Math.max(...answers.map(a => a.points || 0));
+            assignmentScore += maxPoints;
         }
     });
     
-    // Calculate quiz scores
+    // Calculate quiz scores - ใช้คะแนนสูงสุดของแต่ละ Quiz
     props.course_quizzes.forEach(quiz => {
-        const result = props.member_quizes_results.data.find(result => result.quiz_id === quiz.id);
-        if (result) {
-            quizScore += result.score || 0;
+        // ดึงผลลัพธ์ทั้งหมดของ quiz นี้ (อาจมีหลายครั้ง)
+        const results = props.member_quizes_results.data.filter(result => result.quiz_id === quiz.id);
+        if (results.length > 0) {
+            // เลือกคะแนนสูงสุดจากทุกผลลัพธ์
+            const maxScore = Math.max(...results.map(r => r.score || 0));
+            quizScore += maxScore;
         }
     });
     

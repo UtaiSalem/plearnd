@@ -222,11 +222,11 @@ const handleEditTopic = async (tIndex) => {
           >
           </Textarea>
 
-          <div class="lesson-images my-2" v-if="isOpenLessonDetail && $page.props.isCourseAdmin">
+          <div class="lesson-images my-2" v-if="isOpenLessonDetail && lesson.images.length">
             <div v-for="(image, imageIndex) in lesson.images" :key="image.id" class="image-item">
               <div class="relative">
                 <img :src="image.full_url" :alt="image.alt" class="w-full h-auto border rounded my-1" />
-                <button type="button" class="absolute top-2 right-2 bg-red-200 rounded-full p-1.5 flex items-center" @click="deleteImage(image.id, imageIndex)">
+                <button v-if="$page.props.isCourseAdmin" type="button" class="absolute top-2 right-2 bg-red-200 rounded-full p-1.5 flex items-center" @click="deleteImage(image.id, imageIndex)">
                   <Icon icon="uil:image-times" class=" w-5 h-5 text-red-600/80" />
                 </button>
                 <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded" v-if="isDeletingImage && targetImageIndex == imageIndex">

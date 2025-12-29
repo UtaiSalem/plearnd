@@ -15,14 +15,14 @@ function handleUpdateAssignment(updatedAsm, i) {
 
 </script>
 <template>
-    <div class="">
+    <div class="w-full">
         <div class="flex items-center justify-center bg-white border-t-4 border-blue-600 rounded-lg overflow-hidden shadow-lg">
-            <div class="tabs flex flex-col justify-center p-4">
-                <div class="tabs-header px-4 w-full flex flex-col items-center justify-center">
-                    <div class="text-xl font-medium">
+            <div class="tabs flex flex-col justify-center p-3 sm:p-4 w-full">
+                <div class="tabs-header px-2 sm:px-4 w-full flex flex-col items-center justify-center">
+                    <div class="text-base sm:text-xl font-medium text-center">
                         แบบฝึกหัด/ภาระงาน ( {{ props.assignments.length }} ) ข้อ
                     </div>
-                    <div class="text-base font-normal" v-if="props.assignments.length<1">
+                    <div class="text-sm sm:text-base font-normal text-gray-500" v-if="props.assignments.length<1">
                         (ไม่มีแบบฝึกหัด/ภาระงาน)
                     </div>
                 </div>

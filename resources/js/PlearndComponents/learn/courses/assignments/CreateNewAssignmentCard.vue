@@ -202,12 +202,12 @@ const assignGroups = () => {
 
 </script>
 <template>
-    <div class="bg-white  rounded-lg pt-4 shadow-lg mt-4 border-t-4 border-blue-600">
-        <div class=" w-full">
-            <div class="flex justify-between items-center px-4">
-                <h2 class="text-xl font-semibold text-gray-500 dark:text-white">เพิ่มแบบฝึกหัด/ภาระงานใหม่</h2>
+    <div class="bg-white rounded-lg pt-3 sm:pt-4 shadow-lg mt-4 border-t-4 border-blue-600">
+        <div class="w-full">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 px-3 sm:px-4">
+                <h2 class="text-base sm:text-xl font-semibold text-gray-500 dark:text-white">เพิ่มแบบฝึกหัด/ภาระงานใหม่</h2>
                 <button @click.prevent="showCreateNewAssignmentForm = !showCreateNewAssignmentForm"
-                    class="font-medium rounded-lg text-sm px-4 py-2.5 text-center"
+                    class="font-medium rounded-lg text-sm px-4 py-2 sm:py-2.5 text-center"
                     :class="showCreateNewAssignmentForm ? 'text-red-500 hover:text-white bg-red-300 hover:bg-red-400' : 'text-violet-600 bg-violet-300 hover:bg-violet-500 hover:text-white'"
                     >
                     <Icon v-if="showCreateNewAssignmentForm" icon="fa-solid:times" class="w-5 h-5" />
@@ -215,7 +215,7 @@ const assignGroups = () => {
                 </button>
             </div>
             <hr class="mt-2 border-[1px] border-blue-600" />
-            <form @submit.prevent="onSubmitFormHandler" class="m-4 space-y-2" v-if="showCreateNewAssignmentForm">
+            <form @submit.prevent="onSubmitFormHandler" class="m-3 sm:m-4 space-y-2" v-if="showCreateNewAssignmentForm">
                 <!-- Component: Rounded base size basic textarea -->
                 <div class="relative">
                     <Textarea id="id-01" type="text" name="id-01" v-model="form.title" autoResize placeholder="Write your message"
@@ -248,9 +248,9 @@ const assignGroups = () => {
                         </div>
                     </div>
                 </div>
-                <div class="w-full flex flex-wrap items-center sm:justify-start">
+                <div class="w-full flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-2 sm:justify-start">
                     <label for="assignment-point-input"
-                        class=" mr-4 mt-1 block text-lg font-medium text-gray-900 dark:text-white">คะแนน</label>
+                        class="block text-base sm:text-lg font-medium text-gray-900 dark:text-white">คะแนน</label>
                     <div class="flex items-center justify-center sm:justify-start">
                         <button @click.prevent="form.points <= 0 ? 0 : form.points--;"
                             class="border-violet-600 hover:bg-violet-600 active:bg-violet-700 dark:border-violet-400 flex items-center justify-center rounded-l-xl border-2 p-2 text-xl transition duration-200 hover:cursor-pointer dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:active:bg-white/20">
@@ -265,11 +265,11 @@ const assignGroups = () => {
                                 class=" hover:text-white hover:scale-150 dark:text-white" />
                         </button>
                     </div>
-                    <p class=" mt-5 block text-sm font-base text-red-500 dark:text-white"> * สำหรับคำนวณเกรด</p>
+                    <p class="text-xs sm:text-sm font-base text-red-500 dark:text-white"> * สำหรับคำนวณเกรด</p>
                 </div>
 
-                <div class="flex items-center mt-2">
-                    <div class="relative w-1/3 flex items-center justify-start h-10">
+                <div class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2">
+                    <div class="relative w-full sm:w-1/3 flex items-center justify-start min-h-[40px]">
                         <input id="asm-has-due-date-input" type="checkbox" v-model="hasDueDate"
                             class="w-4 h-4 transition-colors bg-white border-2 rounded appearance-none cursor-pointer focus-visible:outline-none peer border-slate-500 checked:border-emerald-500 checked:bg-emerald-500 checked:hover:border-emerald-600 checked:hover:bg-emerald-600 focus:outline-none checked:focus:border-emerald-700 checked:focus:bg-emerald-700 disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-slate-50" />
                         <label class="px-2 cursor-pointer text-slate-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400"
@@ -277,7 +277,7 @@ const assignGroups = () => {
                             วันที่สั่งงาน
                         </label>
                     </div>
-                    <div v-if="hasDueDate" class="w-2/3 flex flex-wrap justify-between gap-2">
+                    <div v-if="hasDueDate" class="w-full sm:w-2/3 flex flex-wrap justify-between gap-2">
                          <div v-if="hasDueDate" class="flex items-center w-full">
                             <!-- <p class="mr-2">ถึง</p> -->
                             <VueDatePicker 
@@ -293,8 +293,8 @@ const assignGroups = () => {
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center mt-2">
-                    <div class="relative w-1/3 flex items-center justify-start h-10">
+                <div class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2">
+                    <div class="relative w-full sm:w-1/3 flex items-center justify-start min-h-[40px]">
                         <input id="asm-has-starte-date-input" type="checkbox" v-model="hasStartDate"
                             class="w-4 h-4 transition-colors bg-white border-2 rounded appearance-none cursor-pointer focus-visible:outline-none peer border-slate-500 checked:border-emerald-500 checked:bg-emerald-500 checked:hover:border-emerald-600 checked:hover:bg-emerald-600 focus:outline-none checked:focus:border-emerald-700 checked:focus:bg-emerald-700 disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-slate-50" />
                         <label class="px-2 cursor-pointer text-slate-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400"
@@ -302,7 +302,7 @@ const assignGroups = () => {
                             วันที่เริ่มส่ง
                         </label>
                     </div>
-                    <div v-if="hasStartDate" class="w-2/3 flex flex-wrap justify-between gap-2">
+                    <div v-if="hasStartDate" class="w-full sm:w-2/3 flex flex-wrap justify-between gap-2">
                          <div class="flex items-center w-full">
                             <VueDatePicker 
                                 id="assigment-start-date-input"
@@ -316,8 +316,8 @@ const assignGroups = () => {
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center mt-2">
-                    <div class="relative w-1/3 flex items-center justify-start h-10">
+                <div class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2">
+                    <div class="relative w-full sm:w-1/3 flex items-center justify-start min-h-[40px]">
                         <input id="asm-has-end-date-input" type="checkbox" v-model="hasEndDate"
                             class="w-4 h-4 transition-colors bg-white border-2 rounded appearance-none cursor-pointer focus-visible:outline-none peer border-slate-500 checked:border-emerald-500 checked:bg-emerald-500 checked:hover:border-emerald-600 checked:hover:bg-emerald-600 focus:outline-none checked:focus:border-emerald-700 checked:focus:bg-emerald-700 disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-slate-50" />
                         <label class="px-2 cursor-pointer text-slate-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400"
@@ -325,7 +325,7 @@ const assignGroups = () => {
                             วันที่สิ้นสุด
                         </label>
                     </div>
-                    <div v-if="hasEndDate" class="w-2/3 flex flex-wrap justify-between gap-2">
+                    <div v-if="hasEndDate" class="w-full sm:w-2/3 flex flex-wrap justify-between gap-2">
                          <div class="flex items-center w-full">
                             <VueDatePicker 
                                 id="assigment-end-date-input"
@@ -339,8 +339,8 @@ const assignGroups = () => {
                     </div>
                 </div>
 
-                <div class="flex items-center mt-2">
-                    <div class="relative w-1/3 flex items-center justify-start h-10">
+                <div class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2">
+                    <div class="relative w-full sm:w-1/3 flex items-center justify-start min-h-[40px]">
                         <!-- <input id="is-target-group-input" type="checkbox" v-model="isGroupAssignment" disabled
                             class="w-4 h-4 transition-colors bg-white border-2 rounded appearance-none cursor-pointer focus-visible:outline-none peer border-slate-500 checked:border-emerald-500 checked:bg-emerald-500  checked:hover:bg-emerald-600 focus:outline-none checked:focus:border-emerald-700 checked:focus:bg-emerald-700 disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-slate-50" /> -->
                         <span class="px-2 cursor-pointer text-slate-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400"
@@ -348,7 +348,7 @@ const assignGroups = () => {
                             กลุ่มเป้าหมาย
                         </span>
                     </div>
-                    <div v-if="isGroupAssignment" class="w-2/3 flex flex-wrap gap-2">
+                    <div v-if="isGroupAssignment" class="w-full sm:w-2/3 flex flex-wrap gap-2">
                         <div class="flex items-center">
                             <input id="asm-target-group-all-input"
                                 type="checkbox" 
@@ -377,18 +377,20 @@ const assignGroups = () => {
                     </div>
                 </div>
 
-                <div class=" flex-wrap items-center mt-2">
-                    <div class="relative flex items-center justify-start h-10">
+                <div class="flex-wrap items-center mt-2">
+                    <div class="relative flex flex-wrap items-center justify-start min-h-[40px] gap-2">
                         <input id="asm-increase-personal-point-input" type="checkbox" v-model="increasePPWhenCorrect"
                             class="w-4 h-4 transition-colors bg-white border-2 rounded appearance-none cursor-pointer focus-visible:outline-none peer border-slate-500 checked:border-emerald-500 checked:bg-emerald-500 checked:hover:border-emerald-600 checked:hover:bg-emerald-600 focus:outline-none checked:focus:border-emerald-700 checked:focus:bg-emerald-700 disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-slate-50" />
                         <label for="asm-increase-personal-point-input"
-                            class="px-2 cursor-pointer text-slate-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400">
+                            class="cursor-pointer text-slate-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400">
                             เพิ่มแต้มสะสมเมื่อตอบถูก <span></span>
                         </label>
 
-                        <input v-if="increasePPWhenCorrect" type="number" v-model="increasePoints" id="pp-increased-when-แorrect-input"
-                            class="rounded-lg border-2 border-violet-500 w-24">
-                        <span v-if="increasePPWhenCorrect" class="mx-1 text-slate-500">แต้ม</span>
+                        <div v-if="increasePPWhenCorrect" class="flex items-center">
+                            <input type="number" v-model="increasePoints" id="pp-increased-when-แorrect-input"
+                                class="rounded-lg border-2 border-violet-500 w-24">
+                            <span class="mx-1 text-slate-500">แต้ม</span>
+                        </div>
 
                     </div>
                 </div>
@@ -396,18 +398,20 @@ const assignGroups = () => {
                     <span class="text-sm text-red-400">*แต้มสะสมเมื่อตอบถูก จะหักจากแต้มสะสมของรายวิชา(ถ้ามีพอ)</span>
                 </div>
 
-                <div class=" flex-wrap items-center mt-2">
-                    <div class="relative flex items-center justify-start h-10">
+                <div class="flex-wrap items-center mt-2">
+                    <div class="relative flex flex-wrap items-center justify-start min-h-[40px] gap-2">
                         <input id="asm-decrease-personal-point-input" type="checkbox" v-model="decreasePPWhenWrong"
                             class="w-4 h-4 transition-colors bg-white border-2 rounded appearance-none cursor-pointer focus-visible:outline-none peer border-slate-500 checked:border-emerald-500 checked:bg-emerald-500 checked:hover:border-emerald-600 checked:hover:bg-emerald-600 focus:outline-none checked:focus:border-emerald-700 checked:focus:bg-emerald-700 disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-slate-50" />
                         <label for="asm-decrease-personal-point-input"
-                            class="px-2 cursor-pointer text-slate-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400">
+                            class="cursor-pointer text-slate-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400">
                             ตัดแต้มสะสมเมื่อตอบผิด/เกินกำหนด
                         </label>
 
-                        <input v-if="decreasePPWhenWrong" type="number" v-model="decreasePoints" id="pp-decreased-when-wrong-input"
-                            class="rounded-lg border-2 border-violet-500 w-24"> 
-                        <span v-if="decreasePPWhenWrong" class="mx-1 text-slate-500">แต้ม</span>
+                        <div v-if="decreasePPWhenWrong" class="flex items-center">
+                            <input type="number" v-model="decreasePoints" id="pp-decreased-when-wrong-input"
+                                class="rounded-lg border-2 border-violet-500 w-24"> 
+                            <span class="mx-1 text-slate-500">แต้ม</span>
+                        </div>
                     </div>
                 </div>
                 <div class="">

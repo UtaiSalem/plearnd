@@ -32,8 +32,18 @@ class CourseController extends Controller
         // $courses = $activities = $this->getMoreCourses();
         $courses =  $this->getMoreCourses();
         
+        // Get courses where auth user is a member
+        $authMemberCourseIds = CourseMember::where('user_id', auth()->id())
+            ->where('status', 'active')
+            ->pluck('course_id')
+            ->all();
+        $memberedCourses = CourseResource::collection(
+            Course::whereIn('id', $authMemberCourseIds)->latest()->get()
+        );
+        
         return Inertia::render('Learn/Course/Courses', [
-            'courses'       => $courses->original['courses'],
+            'courses'           => $courses->original['courses'],
+            'memberedCourses'   => $memberedCourses,
         ]);
     }
 

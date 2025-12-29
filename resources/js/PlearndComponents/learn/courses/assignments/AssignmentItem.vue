@@ -254,7 +254,7 @@ function handleEndDateSelection(endDateData){
 
 <template>
     <div class="relative bg-white border-t-4 border-blue-600 rounded-lg overflow-auto shadow-lg">
-        <div class="absolute top-1 right-2 overflow-visible" v-if="$page.props.isCourseAdmin">
+        <div class="absolute top-1 right-2 overflow-visible z-10" v-if="$page.props.isCourseAdmin">
             <DotsDropdownMenu 
                 @edit-model="showEditAsmForm=true"
                 @delete-model="handleDeleteAssignment(props.asmIndex, props.assignment.id)"
@@ -267,22 +267,22 @@ function handleEndDateSelection(endDateData){
                 </template>
             </DotsDropdownMenu>
         </div>
-        <div class="tabs flex flex-col justify-center ">
-            <div class="font-medium p-4 border-b-2 border-blue-600">
-                <span class="text-gray-800 text-xl ">
+        <div class="tabs flex flex-col justify-center">
+            <div class="font-medium p-3 sm:p-4 border-b-2 border-blue-600">
+                <span class="text-gray-800 text-base sm:text-xl">
                     แบบฝึกหัด/ภาระงานที่ {{ props.asmIndex+1 }}
                 </span> <br />
-                <span class="text-blue-500 font-semibold text-xl ">{{ form.points }} คะแนน</span>
-                <span class=" font-semibold text-sm" v-if="asmEndDate"
+                <span class="text-blue-500 font-semibold text-base sm:text-xl">{{ form.points }} คะแนน</span>
+                <span class="font-semibold text-xs sm:text-sm block sm:inline" v-if="asmEndDate"
                     :class="new Date() > asmEndDate ? 'text-red-500':'text-green-500'"
                 > ( กำหนดส่ง @ {{ asmEndDate.toLocaleString() }} )
                 </span>  <br />
-                <span class=" font-semibold text-sm" v-if="asmEndDate && assignment.decrease_points>0"
+                <span class="font-semibold text-xs sm:text-sm" v-if="asmEndDate && assignment.decrease_points>0"
                     :class="'text-red-500'"
                 > ( เกินกำหนดส่ง  {{ asmEndDate.toLocaleString() }} )
                 </span>
             </div>
-            <div class=" p-3 w-full border-b-2 border-blue-400">
+            <div class="p-2 sm:p-3 w-full border-b-2 border-blue-400">
                 <div class="mb-2">
                     <form :id="`comment-form-${props.assignment.id}`" v-if="$page.props.isCourseAdmin && showEditAsmForm"
                         class="mt-3 relative dark:border-secondary-800 flex flex-col space-y-2 items-center w-full">
@@ -326,27 +326,29 @@ function handleEndDateSelection(endDateData){
                         />
                     </button>
                 </div>
-                <div v-if="$page.props.isCourseAdmin && showEditAsmForm" class="flex justify-start">
+                <div v-if="$page.props.isCourseAdmin && showEditAsmForm" class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                     <label for="assignment-point-input"
-                        class=" mr-4 mt-1 block text-lg font-medium text-gray-900 dark:text-white">คะแนน</label>
-                    <button @click.prevent="form.points<=0? 0: form.points--;"
-                        class="border-violet-500 hover:bg-violet-600 active:bg-violet-700 dark:border-violet-400 flex items-center justify-center rounded-l-xl border-2 p-2 text-xl  transition duration-200 hover:cursor-pointer dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:active:bg-white/20">
-                        <Icon icon="heroicons-solid:minus-sm"
-                            class="hover:text-white hover:scale-150 dark:text-white" />
-                    </button>
-                    <input type="number" v-model="form.points" id="assignment-point-input"
-                        class="w-20 border-x-0 border-y-2 border-violet-500">
-                    <button @click.prevent="form.points++"
-                        class="border-violet-500 hover:bg-violet-600 active:bg-violet-700 dark:border-violet-400 flex items-center justify-center rounded-r-xl border-2 p-2 text-xl  transition duration-200 hover:cursor-pointer dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:active:bg-white/20">
-                        <Icon icon="heroicons-solid:plus-sm"
-                            class=" hover:text-white hover:scale-150 dark:text-white" />
-                    </button>
-                    <p class=" mt-5 block text-sm font-base text-red-500 dark:text-white"> * สำหรับคำนวณเกรด</p>
+                        class="block text-base sm:text-lg font-medium text-gray-900 dark:text-white">คะแนน</label>
+                    <div class="flex items-center">
+                        <button @click.prevent="form.points<=0? 0: form.points--;"
+                            class="border-violet-500 hover:bg-violet-600 active:bg-violet-700 dark:border-violet-400 flex items-center justify-center rounded-l-xl border-2 p-2 text-xl  transition duration-200 hover:cursor-pointer dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:active:bg-white/20">
+                            <Icon icon="heroicons-solid:minus-sm"
+                                class="hover:text-white hover:scale-150 dark:text-white" />
+                        </button>
+                        <input type="number" v-model="form.points" id="assignment-point-input"
+                            class="w-20 border-x-0 border-y-2 border-violet-500">
+                        <button @click.prevent="form.points++"
+                            class="border-violet-500 hover:bg-violet-600 active:bg-violet-700 dark:border-violet-400 flex items-center justify-center rounded-r-xl border-2 p-2 text-xl  transition duration-200 hover:cursor-pointer dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:active:bg-white/20">
+                            <Icon icon="heroicons-solid:plus-sm"
+                                class=" hover:text-white hover:scale-150 dark:text-white" />
+                        </button>
+                    </div>
+                    <p class="text-xs sm:text-sm font-base text-red-500 dark:text-white"> * สำหรับคำนวณเกรด</p>
                 </div>
 
                 <div  v-if="$page.props.isCourseAdmin && showEditAsmForm" class="flex-wrap items-center mt-2">
-                    <div class="flex items-center mt-2">
-                        <div class="relative w-1/3 flex items-center justify-start h-10">
+                    <div class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2">
+                        <div class="relative w-full sm:w-1/3 flex items-center justify-start min-h-[40px]">
                             <input :id="`asm-has-due-date-input-${assignment.id}`" type="checkbox" v-model="hasDueDate"
                                 class="w-4 h-4 transition-colors bg-white border-2 rounded appearance-none cursor-pointer focus-visible:outline-none peer border-slate-500 checked:border-emerald-500 checked:bg-emerald-500 checked:hover:border-emerald-600 checked:hover:bg-emerald-600 focus:outline-none checked:focus:border-emerald-700 checked:focus:bg-emerald-700 disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-slate-50" />
                             <label class="px-2 cursor-pointer text-slate-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400"
@@ -354,7 +356,7 @@ function handleEndDateSelection(endDateData){
                                 วันที่สั่งงาน
                             </label>
                         </div>
-                        <div v-if="hasDueDate" class="w-2/3 flex flex-wrap justify-between gap-2">
+                        <div v-if="hasDueDate" class="w-full sm:w-2/3 flex flex-wrap justify-between gap-2">
                             <div v-if="hasDueDate" class="flex items-center w-full">
                                 <VueDatePicker 
                                     id="assigment-due-date-datepicker-input"
@@ -369,8 +371,8 @@ function handleEndDateSelection(endDateData){
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center mt-2">
-                        <div class="relative w-1/3 flex items-center justify-start h-10">
+                    <div class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2">
+                        <div class="relative w-full sm:w-1/3 flex items-center justify-start min-h-[40px]">
                             <input :id="`asm-has-starte-date-input-${props.assignment.id}`" type="checkbox" v-model="hasStartDate"
                                 class="w-4 h-4 transition-colors bg-white border-2 rounded appearance-none cursor-pointer focus-visible:outline-none peer border-slate-500 checked:border-emerald-500 checked:bg-emerald-500 checked:hover:border-emerald-600 checked:hover:bg-emerald-600 focus:outline-none checked:focus:border-emerald-700 checked:focus:bg-emerald-700 disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-slate-50" />
                             <label class="px-2 cursor-pointer text-slate-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400"
@@ -378,7 +380,7 @@ function handleEndDateSelection(endDateData){
                                 วันที่เริ่มส่ง
                             </label>
                         </div>
-                        <div v-if="hasStartDate" class="w-2/3 flex flex-wrap justify-between gap-2">
+                        <div v-if="hasStartDate" class="w-full sm:w-2/3 flex flex-wrap justify-between gap-2">
                             <div class="flex items-center w-full">
                                 <VueDatePicker 
                                     id="assigment-start-date-datepicker-input"
@@ -392,8 +394,8 @@ function handleEndDateSelection(endDateData){
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center mt-2">
-                        <div class="relative w-1/3 flex items-center justify-start h-10">
+                    <div class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2">
+                        <div class="relative w-full sm:w-1/3 flex items-center justify-start min-h-[40px]">
                             <input :id="`asm-has-end-date-input-${assignment.id}`" type="checkbox" v-model="hasEndDate"
                                 class="w-4 h-4 transition-colors bg-white border-2 rounded appearance-none cursor-pointer focus-visible:outline-none peer border-slate-500 checked:border-emerald-500 checked:bg-emerald-500 checked:hover:border-emerald-600 checked:hover:bg-emerald-600 focus:outline-none checked:focus:border-emerald-700 checked:focus:bg-emerald-700 disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-slate-50" />
                             <label class="px-2 cursor-pointer text-slate-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400"
@@ -401,7 +403,7 @@ function handleEndDateSelection(endDateData){
                                 วันที่สิ้นสุด
                             </label>
                         </div>
-                        <div v-if="hasEndDate" class="w-2/3 flex flex-wrap justify-between gap-2">
+                        <div v-if="hasEndDate" class="w-full sm:w-2/3 flex flex-wrap justify-between gap-2">
                             <div class="flex items-center w-full">
                                 <VueDatePicker 
                                     id="assigment-end-date-datepicker-input"
@@ -416,14 +418,14 @@ function handleEndDateSelection(endDateData){
                     </div>
                 </div>
 
-                <div v-if="$page.props.isCourseAdmin && showEditAsmForm" class="flex items-center mt-2">
-                    <div class="relative w-1/3 flex items-center justify-start h-10">
+                <div v-if="$page.props.isCourseAdmin && showEditAsmForm" class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2">
+                    <div class="relative w-full sm:w-1/3 flex items-center justify-start min-h-[40px]">
                         <span class="px-2 cursor-pointer text-slate-500 peer-disabled:cursor-not-allowed peer-disabled:text-slate-400"
                         >
                             กลุ่มเป้าหมาย
                         </span>
                     </div>
-                    <div v-if="isGroupAssignment" class="w-2/3 flex flex-wrap gap-2">
+                    <div v-if="isGroupAssignment" class="w-full sm:w-2/3 flex flex-wrap gap-2">
                             <div class="flex items-center">
                                 <input id="asm-target-group-all-input"
                                     type="checkbox" 
@@ -452,8 +454,8 @@ function handleEndDateSelection(endDateData){
                     </div>
                 </div>
 
-                <div v-if="$page.props.isCourseAdmin && showEditAsmForm" class="flex items-center mt-2">
-                    <div class="relative flex items-center justify-start h-10">
+                <div v-if="$page.props.isCourseAdmin && showEditAsmForm" class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2">
+                    <div class="relative flex flex-wrap items-center justify-start min-h-[40px] gap-2">
                         <input 
                             :id="'edit-asm-increase-personal-point-input'+props.assignment.id" 
                             type="checkbox" 
@@ -473,8 +475,8 @@ function handleEndDateSelection(endDateData){
                 <div v-if="$page.props.isCourseAdmin && showEditAsmForm" class="">
                     <span class="text-sm text-red-400">*แต้มสะสมเมื่อตอบถูก จะหักจากแต้มสะสมของรายวิชา</span>
                 </div>
-                <div v-if="$page.props.isCourseAdmin && showEditAsmForm" class="flex items-center mt-2">
-                    <div class="relative flex items-center justify-start h-10">
+                <div v-if="$page.props.isCourseAdmin && showEditAsmForm" class="flex flex-col sm:flex-row sm:items-center mt-2 gap-2">
+                    <div class="relative flex flex-wrap items-center justify-start min-h-[40px] gap-2">
                         <input 
                             :id="'edit-asm-decrease-personal-point-input'+props.assignment.id" 
                             type="checkbox" 

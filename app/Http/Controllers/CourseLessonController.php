@@ -16,14 +16,14 @@ class CourseLessonController extends Controller
 {
     public function index(Course $course)
     {
-        return Inertia::render('Learn/Course/Lesson/Lessons',[
-            'course'        => new CourseResource($course),
-            'lessons'       => LessonResource::collection($course->courseLessons()->orderBy('order')->paginate()),
+        return Inertia::render('Learn/Course/Lesson/Lessons', [
+            'course' => new CourseResource($course),
+            'lessons' => LessonResource::collection($course->courseLessons()->orderBy('order')->paginate()),
             'isCourseAdmin' => $course->user_id === auth()->id(),
-            'courseMemberOfAuth'=> $course->courseMembers()->where('user_id', auth()->id())->first(),
+            'courseMemberOfAuth' => $course->courseMembers()->where('user_id', auth()->id())->first(),
 
             // 'groups'       => CourseGroupResource::collection($course->courseGroups()->orderBy('order')->get()),
-            'groups'       => $course->courseGroups()->get(['id', 'name']),
+            'groups' => $course->courseGroups()->get(['id', 'name']),
         ]);
     }
 
@@ -40,16 +40,18 @@ class CourseLessonController extends Controller
 
             $lesson->increment('view_count');
 
-            if (!$isCourseAdmin) { auth()->user()->decrement('pp', $lesson->point_tuition_fee); }
+            if (!$isCourseAdmin) {
+                auth()->user()->decrement('pp', $lesson->point_tuition_fee);
+            }
 
             $course->increment('points', $lesson->point_tuition_fee);
 
-            return Inertia::render('Learn/Course/Lesson/Lesson',[
-                'course'                => new CourseResource($course),
-                'lesson'                => new LessonResource($lesson),
-                'isCourseAdmin'         => $lesson->user_id === auth()->id(),
-                'courseMemberOfAuth'    => $course->courseMembers()->where('user_id', auth()->id())->first(),
-                'authUserPP'            => auth()->user()->pp,
+            return Inertia::render('Learn/Course/Lesson/Lesson', [
+                'course' => new CourseResource($course),
+                'lesson' => new LessonResource($lesson),
+                'isCourseAdmin' => $lesson->user_id === auth()->id(),
+                'courseMemberOfAuth' => $course->courseMembers()->where('user_id', auth()->id())->first(),
+                'authUserPP' => auth()->user()->pp,
             ]);
 
         } catch (\Exception $e) {
@@ -60,38 +62,38 @@ class CourseLessonController extends Controller
         }
     }
 
-        /**
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Course $course, Request $request)
     {
-        $validated  = $request->validate([
-            'title'             => 'required',
-            'description'       => 'nullable',
-            'content'           => 'nullable',
-            'youtube_url'       => 'nullable',
-            'order'             => 'required',
-            'min_read'          => 'required',
+        $validated = $request->validate([
+            'title' => 'required',
+            'description' => 'nullable',
+            'content' => 'nullable',
+            'youtube_url' => 'nullable',
+            'order' => 'required',
+            'min_read' => 'required',
             'point_tuition_fee' => 'required||numeric||min:0',
-            'status'            => 'required',
+            'status' => 'required',
         ]);
 
         $validated['user_id'] = auth()->id();
 
         // $lesson = $course->CourseLessons()->create($validated);
         $lesson = $course->CourseLessons()->create([
-            'user_id'           =>  auth()->id(),
-            'title'             =>  $validated['title'],
-            'description'       =>  $validated['description'],
-            'content'           =>  $validated['content'],
-            'youtube_url'       =>  $validated['youtube_url'],
-            'order'             =>  $validated['order'],
-            'min_read'          =>  $validated['min_read'],
+            'user_id' => auth()->id(),
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'content' => $validated['content'],
+            'youtube_url' => $validated['youtube_url'],
+            'order' => $validated['order'],
+            'min_read' => $validated['min_read'],
             'point_tuition_fee' => $validated['point_tuition_fee'],
-            'status'            =>  $validated['status'],
+            'status' => $validated['status'],
         ]);
 
-        if($request->hasFile('images')) {
+        if ($request->hasFile('images')) {
             $images = $request->file('images');
             foreach ($images as $image) {
                 $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
@@ -103,7 +105,9 @@ class CourseLessonController extends Controller
             }
         }
 
-        if($lesson){ $course->increment('lessons');}
+        if ($lesson) {
+            $course->increment('lessons');
+        }
 
         return response()->json([
             'success' => true,
@@ -118,9 +122,9 @@ class CourseLessonController extends Controller
             if ($course->user_id !== auth()->id()) {
                 return to_route('course.lessons.index', $course->id, $lesson->id);
             }
-            return Inertia::render('Learn/Course/Lesson/EditLesson',[
-                'isCourseAdmin'         => $lesson->user_id === auth()->id(),
-                'courseMemberOfAuth'    => $course->courseMembers()->where('user_id', auth()->id())->first(),
+            return Inertia::render('Learn/Course/Lesson/EditLesson', [
+                'isCourseAdmin' => $lesson->user_id === auth()->id(),
+                'courseMemberOfAuth' => $course->courseMembers()->where('user_id', auth()->id())->first(),
                 'course' => new CourseResource($course),
                 'lesson' => new LessonResource($lesson),
             ]);
@@ -145,45 +149,58 @@ class CourseLessonController extends Controller
                 ], 401);
             }
 
-            $validated = $request->validate([
-                'title'             => 'required',
-                'description'       => 'nullable',
-                'content'           => 'required',
-                'youtube_url'       => 'nullable',
-                'min_read'          => 'required',
-                'order'             => 'required',
-                'point_tuition_fee' => 'required||numeric||min:0',
-                'status'            => 'required',
-                'images.*'          => 'image|mimes:jpeg,png,jpg,gif,svg|nullable',
-            ]);
-
-    
-            if($request->hasFile('images')) {
-                $images = $request->file('images');
-                $fileNames = [];
-                foreach ($images as $image) {
-                    $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
-                    $image_url = Storage::disk('public')->putFileAs('images/courses/lessons', $image, $fileName);
-                    // $fileNames[] = $fileName;
-    
-                    $lessonImages[] = $lesson->images()->create([
-                        'filename' => $image_url
-                    ]);
+            try {
+                // Log file details before validation
+                if ($request->hasFile('images')) {
+                    $files = $request->file('images');
+                    foreach ($files as $index => $file) {
+                        \Log::info("File $index details", [
+                            'original_name' => $file->getClientOriginalName(),
+                            'mime_type' => $file->getMimeType(),
+                            'size' => $file->getSize(),
+                            'size_kb' => round($file->getSize() / 1024, 2),
+                            'extension' => $file->getClientOriginalExtension(),
+                            'is_valid' => $file->isValid(),
+                            'error' => $file->getError(),
+                        ]);
+                    }
                 }
+
+                $validated = $request->validate([
+                    'title' => 'required',
+                    'description' => 'nullable',
+                    'content' => 'nullable',
+                    'youtube_url' => 'nullable',
+                    'min_read' => 'required',
+                    'order' => 'required',
+                    'point_tuition_fee' => 'required|numeric|min:0',
+                    'status' => 'required',
+                    'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:8192',
+                ]);
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                \Log::error('Validation failed', [
+                    'errors' => $e->errors(),
+                    'has_images' => $request->hasFile('images'),
+                    'files' => $request->allFiles(),
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed: ' . json_encode($e->errors())
+                ], 422);
             }
 
             $lesson->update([
-                'title'             => $request->title,
-                'description'       => $validated['description'] === "null" ? null : $validated['description'],
-                'content'           => $validated['content'] === "null" ? null : $validated['content'],
-                'youtube_url'       => $validated['youtube_url'] === "null" ? null : $validated['youtube_url'],
-                'min_read'          => $validated['min_read'],
-                'order'             => $validated['order'],
+                'title' => $validated['title'],
+                'description' => $validated['description'] === "null" ? null : $validated['description'],
+                'content' => $validated['content'] === "null" ? null : $validated['content'],
+                'youtube_url' => $validated['youtube_url'] === "null" ? null : $validated['youtube_url'],
+                'min_read' => $validated['min_read'],
+                'order' => $validated['order'],
                 'point_tuition_fee' => $validated['point_tuition_fee'],
-                'status'            => $validated['status']
+                'status' => $validated['status']
             ]);
 
-            if($request->hasFile('images')) {
+            if ($request->hasFile('images')) {
                 $images = $request->file('images');
                 foreach ($images as $image) {
                     $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
@@ -201,10 +218,14 @@ class CourseLessonController extends Controller
             ], 200);
 
         } catch (\Exception $e) {
+            \Log::error('Lesson update failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], 404);
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -219,8 +240,8 @@ class CourseLessonController extends Controller
             if ($lesson->comments->count() > 0) {
                 foreach ($lesson->comments as $comment) {
                     if ($comment->lessonCommentImages->count() > 0) {
-                            foreach ($comment->lessonCommentImages() as $comment_image) {
-                            Storage::disk('public')->delete('images/courses/lessons/comments/'. $comment_image->filename);
+                        foreach ($comment->lessonCommentImages() as $comment_image) {
+                            Storage::disk('public')->delete('images/courses/lessons/comments/' . $comment_image->filename);
                             $comment_image->delete();
                         }
                     }
@@ -235,7 +256,7 @@ class CourseLessonController extends Controller
                 foreach ($lesson->topics as $topic) {
                     if ($topic->images->count() > 0) {
                         foreach ($topic->images as $topic_image) {
-                            Storage::disk('public')->delete('images/courses/lessons/topics/'. $topic_image->filename);
+                            Storage::disk('public')->delete('images/courses/lessons/topics/' . $topic_image->filename);
                             $topic_image->delete();
                         }
                     }
@@ -245,7 +266,7 @@ class CourseLessonController extends Controller
 
             if ($lesson->images->count() > 0) {
                 foreach ($lesson->images as $lesson_image) {
-                    Storage::disk('public')->delete('images/courses/lessons/'. $lesson_image->filename);
+                    Storage::disk('public')->delete('images/courses/lessons/' . $lesson_image->filename);
                     $lesson_image->delete();
                 }
             }

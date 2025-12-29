@@ -2,6 +2,7 @@
 import { ref, reactive, computed } from 'vue';
 import { usePage } from "@inertiajs/vue3";
 import { Icon } from '@iconify/vue';
+import { useAttendanceStore } from '@/stores/attendance.js';
 
 const props = defineProps({
     attendance: Object,
@@ -14,6 +15,7 @@ const props = defineProps({
     authMemberAttendance: Object,
 });
 
+const attendanceStore = useAttendanceStore();
 const refAuthMemberAttendanceStatus = ref(props.authMemberAttendance ? props.authMemberAttendance.status : null);
 const isLoadingMemberAttendanceDetail = ref(false);
 
@@ -91,6 +93,10 @@ const shouldShowStatus = computed(() => {
 });
 
 const load = async () => {
+    // Prevent double submission
+    if (isLoadingMemberAttendanceDetail.value) return;
+    if (hasStatus.value) return;
+    
     isLoadingMemberAttendanceDetail.value = true;
     try {
         const response = await axios.post(`/attendances/${props.attendance.id}/details`, {
@@ -101,10 +107,29 @@ const load = async () => {
         });
         
         if (response.data && response.data.success) {
-            refAuthMemberAttendanceStatus.value = response.data.attendance_detail.status;
+            const status = response.data.attendance_detail.status;
+            refAuthMemberAttendanceStatus.value = status;
+            // Update store immediately so other components reflect the change
+            attendanceStore.updateAuthAttendanceStatus(props.attendance.id, response.data.attendance_detail);
+        } else {
+            console.error('Attendance submission failed:', response.data);
         }
     } catch (error) {
         console.error('Failed to submit attendance:', error);
+        // If it's a duplicate entry error, try to fetch current status
+        if (error.response?.status === 422 || error.response?.status === 409) {
+            try {
+                // Refresh to get the actual status
+                await attendanceStore.fetchGroupAttendances(
+                    usePage().props.course.data.id,
+                    props.attendance.group_id,
+                    usePage().props.isCourseAdmin,
+                    true // force refresh
+                );
+            } catch (refreshError) {
+                console.error('Failed to refresh:', refreshError);
+            }
+        }
     } finally {
         isLoadingMemberAttendanceDetail.value = false;
     }

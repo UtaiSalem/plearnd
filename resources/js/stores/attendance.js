@@ -318,6 +318,16 @@ export const useAttendanceStore = defineStore('attendance', () => {
         });
     };
     
+    // New action to update authAttendanceStatus after student checks in
+    const updateAuthAttendanceStatus = (attendanceId, attendanceDetail) => {
+        Object.keys(attendances.value).forEach(groupId => {
+            const attendanceIndex = attendances.value[groupId].findIndex(a => a.id === attendanceId);
+            if (attendanceIndex !== -1) {
+                attendances.value[groupId][attendanceIndex].authAttendanceStatus = attendanceDetail;
+            }
+        });
+    };
+    
     return {
         // State
         attendances,
@@ -355,5 +365,6 @@ export const useAttendanceStore = defineStore('attendance', () => {
         submitMemberAttendance,
         fetchMemberJoinStatus,
         updateMemberStatusInAttendance,
+        updateAuthAttendanceStatus,
     };
 });

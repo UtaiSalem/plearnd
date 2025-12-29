@@ -100,7 +100,7 @@ const handleDeletePostRequest = () => {
 
 <template>
     <div class="my-4">
-        <div class="bg-white shadow-lg rounded-lg dark:bg-dark-card py-2 relative " v-if="activity"> 
+        <div class="bg-white shadow-lg rounded-lg dark:bg-dark-card py-2 relative overflow-hidden max-w-full" v-if="activity"> 
             <div class="absolute flex w-full justify-end pr-4 pt-2">
                 <CoursePagePostSettingMenuItem
                     :activity 
@@ -113,11 +113,11 @@ const handleDeletePostRequest = () => {
             <LoadingPage v-if="isDeleting" />
 
             <div v-if="!isPostCreation">
-                <div  class="px-4 pt-4 flex justify-between">
-                    <div class="flex justify-center gap-4">
-                        <img :src="activity.action_by.avatar" class="w-12 h-12 p-[3px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500" alt="">
-                        <div>
-                            <div class="flex items-center gap-4 mb-2">
+                <div class="px-3 sm:px-4 pt-4 flex justify-between">
+                    <div class="flex justify-start gap-3 sm:gap-4">
+                        <img :src="activity.action_by.avatar" class="w-10 h-10 sm:w-12 sm:h-12 p-[3px] rounded-full ring-1 ring-blue-600 dark:ring-gray-500 flex-shrink-0" alt="">
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center gap-2 sm:gap-4 mb-2">
                                 <h6 class="">{{ activity.action_by.name }}</h6>
                                 <small class="text-gray-800 mt-1 dark:text-secondary-600">
                                     {{ activity.action }}
@@ -132,9 +132,9 @@ const handleDeletePostRequest = () => {
                 </div>
             </div>
             
-            <div :class="!isPostCreation ? 'm-2 border-[1.5px] border-gray-200 rounded-lg':''" class="px-4">
+            <div :class="!isPostCreation ? 'm-2 border-[1.5px] border-gray-200 rounded-lg':''" class="px-4 overflow-hidden">
 
-                <div class="text-gray-700 text-base rounded-lg">
+                <div class="text-gray-700 text-base rounded-lg overflow-hidden max-w-full">
                     <CoursePostContentViewer
                         :post="activity.target_resource" 
                         :action_to_id="activity.action_to_id"

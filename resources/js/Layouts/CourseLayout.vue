@@ -8,6 +8,14 @@ import CourseProfileCover from '@/PlearndComponents/learn/courses/CourseProfileC
 import SingleCoursePageNavbarTab from '@/PlearndComponents/learn/courses/SingleCoursePageNavbarTab.vue';
 import { useCourseProfileStore } from '@/stores/courseProfile.js';
 
+// Sidebar Widgets
+import CourseQuickNav from '@/PlearndComponents/learn/courses/widgets/CourseQuickNav.vue';
+import CourseStatsWidget from '@/PlearndComponents/learn/courses/widgets/CourseStatsWidget.vue';
+import RecentLessonsWidget from '@/PlearndComponents/learn/courses/widgets/RecentLessonsWidget.vue';
+import UpcomingAssignmentsWidget from '@/PlearndComponents/learn/courses/widgets/UpcomingAssignmentsWidget.vue';
+import CourseMembersWidget from '@/PlearndComponents/learn/courses/widgets/CourseMembersWidget.vue';
+import MyMembershipWidget from '@/PlearndComponents/learn/courses/widgets/MyMembershipWidget.vue';
+
 const props = defineProps({
     course: Object,
     groups: Object,
@@ -126,39 +134,60 @@ async function handleRequestToBeUnMember(memberId) {
             />
 
             <SingleCoursePageNavbarTab
-                :course
-                :courseMemberOfAuth
-                :isCourseAdmin
-                :activeTab
+                :course="course"
+                :courseMemberOfAuth="courseMemberOfAuth"
+                :isCourseAdmin="isCourseAdmin"
+                :activeTab="activeTab"
             />
         </template>
 
-        <template #flashSidebarLeft>
-            <div class="top-16 left-0">
-                
-            </div>
-        </template>
-
+        <!-- Left Sidebar Widget -->
         <template #leftSideWidget>
             <div class="space-y-4">
-                <!-- <CourseCardWidget :course="$page.props.course.data"/> -->
-
-                <!-- <CourseGroupProfileWidget /> -->
-                <!-- <NavigationWidgets /> -->
+                <MyMembershipWidget
+                    :course="course"
+                    :courseMemberOfAuth="courseMemberOfAuth"
+                    :isCourseAdmin="isCourseAdmin"
+                />
+                <CourseQuickNav
+                    :course="course"
+                    :isCourseAdmin="isCourseAdmin"
+                    :courseMemberOfAuth="courseMemberOfAuth"
+                    :activeTab="activeTab"
+                />
+                <CourseStatsWidget
+                    :course="course"
+                    :isCourseAdmin="isCourseAdmin"
+                />
             </div>
         </template>
 
         <template #mainContent>
-            <div class="mt-4">
+            <div class="mt-2 sm:mt-4">
                 <div v-if="$slots.courseContent">
                     <slot name="courseContent"></slot>
                 </div>
             </div>
         </template>
 
+        <!-- Right Sidebar Widget -->
         <template #rightSideWidget>
-            <div>
-                <!-- <CourseCardWidget :course="$page.props.course.data"/> -->
+            <div class="space-y-4">
+                <RecentLessonsWidget
+                    :course="course"
+                    :lessons="lessons?.data || []"
+                    :isCourseAdmin="isCourseAdmin"
+                />
+                <UpcomingAssignmentsWidget
+                    :course="course"
+                    :assignments="course?.data?.assignments || []"
+                    :isCourseAdmin="isCourseAdmin"
+                />
+                <CourseMembersWidget
+                    :course="course"
+                    :members="course?.data?.members || []"
+                    :isCourseAdmin="isCourseAdmin"
+                />
             </div>
         </template>
     </MainLayout>
