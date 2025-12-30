@@ -170,42 +170,42 @@ const exportTableToExcel = () => {
             <table ref="membersProgressTable" class="w-screen text-sm text-left rtl:text-right text-gray-700">
                 <thead class="text-xs font-bold text-gray-800">
                     <tr class="text-center">
-                        <th scope="col" class="w-12 px-1 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
+                        <th scope="col" class="w-12 px-3 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
                             เลขที่
                         </th>
-                        <th scope="col" class="w-20 px-1 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
+                        <th scope="col" class="w-20 px-3 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
                             รหัส
                         </th>
-                        <th scope="col" class="pl-2 py-3 border border-slate-300 min-w-48 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
+                        <th scope="col" class="px-3 py-3 border border-slate-300 min-w-48 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
                             ชื่อ - สกุล
                         </th>
-                        <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-purple-100 to-purple-200 shadow-sm"
+                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-purple-100 to-purple-200 shadow-sm min-w-16 w-16"
                             v-for="(assignment, index) in page.props.assignments?.data" :key="assignment.id">
                             {{ '@' + (index + 1) + '(' + assignment.points +')'  }}
                         </th>
-                        <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-cyan-100 to-cyan-200 shadow-sm"
+                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-cyan-100 to-cyan-200 shadow-sm min-w-16 w-16"
                             v-for="(quiz, index) in page.props.quizzes?.data" :key="quiz.id">
                             {{ '#' + (index + 1) + '(' + quiz.total_score +')' }}
                         </th>
-                        <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-yellow-100 to-yellow-200 shadow-sm">
+                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-yellow-100 to-yellow-200 shadow-sm">
                             {{ 'คะแนนเก็บ (' + page.props.course?.data?.total_score +')' }}
                         </th>
-                        <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-green-100 to-green-200 shadow-sm">
+                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-green-100 to-green-200 shadow-sm">
                             คะแนนพิเศษ
                         </th>
-                        <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-indigo-100 to-indigo-200 shadow-sm">
+                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-indigo-100 to-indigo-200 shadow-sm">
                             คะแนน (ได้/เต็ม)
                         </th>
-                        <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-pink-100 to-pink-200 shadow-sm">
+                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-pink-100 to-pink-200 shadow-sm">
                             คะแนนรวม
                         </th>
-                        <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-emerald-100 to-emerald-200 shadow-sm">
+                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-emerald-100 to-emerald-200 shadow-sm">
                             เกรดที่ทำได้
                         </th>
-                        <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
+                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
                             เกรดที่แก้ได้
                         </th>
-                        <th scope="col" class="px-2 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
+                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
                             หมายเหตุ
                         </th>
                     </tr>

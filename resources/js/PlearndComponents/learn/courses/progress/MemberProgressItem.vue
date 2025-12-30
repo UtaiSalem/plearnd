@@ -271,7 +271,7 @@ const navigateToMemberSettings = (courseId, memberId) => {
 
 <template>
     <td scope="row" :class="gradeStatus ? gradeProgress(gradePercentage).lightGradient : 'bg-gradient-to-r from-red-50 to-red-100'"
-        class="border border-slate-300 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center shadow-sm">
+        class="px-3 py-1 border border-slate-300 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center shadow-sm">
         <div v-if="!isCourseAdmin" class="w-12 min-w-fit">
             {{ member.order_number }}
         </div>
@@ -285,7 +285,7 @@ const navigateToMemberSettings = (courseId, memberId) => {
         </form>
     </td>
     <td :class="gradeStatus ? gradeProgress(gradePercentage).lightGradient : 'bg-gradient-to-r from-red-50 to-red-100'"
-        class="px-1 py-1 border border-slate-300 text-center shadow-sm">
+        class="px-3 py-1 border border-slate-300 text-center shadow-sm">
         <div v-if="!isCourseAdmin" class="flex justify-center items-center">
             <a 
                 :href="`/courses/${member.course_id}/members/${member.id}/member-grade-progress`"
@@ -307,7 +307,7 @@ const navigateToMemberSettings = (courseId, memberId) => {
     </td>
 
     <td :class="gradeStatus ? gradeProgress(gradePercentage).lightGradient : 'bg-gradient-to-r from-red-50 to-red-100'"
-        class="pl-2 py-1 border border-slate-300 text-start w-48 shadow-sm">
+        class="px-3 py-1 border border-slate-300 text-start w-48 shadow-sm">
         <a 
             :href="`/courses/${member.course_id}/members/${member.id}/member-grade-progress`"
             target="_blank" 
@@ -320,7 +320,7 @@ const navigateToMemberSettings = (courseId, memberId) => {
 
     <td :class="gradeStatus ? 'bg-gradient-to-r from-purple-50 to-purple-100' : 'bg-gradient-to-r from-red-50 to-red-100'"
         v-for="(assignment, asmIndx) in $page.props.assignments.data" :key="assignment.id"
-        class="px-2 py-1 border border-slate-300 text-center w-8 shadow-sm"
+        class="px-3 py-1 border border-slate-300 text-center w-8 shadow-sm"
     >
         <MemberAssignmentsAnswerProgress
             :member_info="member"
@@ -333,7 +333,7 @@ const navigateToMemberSettings = (courseId, memberId) => {
 
     <td :class="gradeStatus ? 'bg-gradient-to-r from-cyan-50 to-cyan-100' : 'bg-gradient-to-r from-red-50 to-red-100'"
         v-for="(quiz, qzIndx) in $page.props.quizzes.data" :key="quiz.id"
-        class="px-2 py-1 border border-slate-300 text-center w-8 shadow-sm">
+        class="px-3 py-1 border border-slate-300 text-center w-8 shadow-sm">
         <MemberQuizzesAnswerProgress
             :quiz="quiz"
             :member_id="member.user.id"
@@ -342,12 +342,12 @@ const navigateToMemberSettings = (courseId, memberId) => {
     </td>
 
     <td :class="gradeStatus ? 'bg-gradient-to-r from-yellow-50 to-yellow-100' : 'bg-gradient-to-r from-red-50 to-red-100'"
-        class="px-2 py-0 border border-slate-300 text-center shadow-sm">
+        class="px-3 py-0 border border-slate-300 text-center shadow-sm">
         <span class="font-semibold">{{ member.achieved_score }}</span>
     </td>
 
     <td :class="gradeStatus ? 'bg-gradient-to-r from-green-50 to-green-100' : 'bg-gradient-to-r from-red-50 to-red-100'"
-        class="px-2 py-0 border border-slate-300 text-center shadow-sm">
+        class="px-3 py-0 border border-slate-300 text-center shadow-sm">
         <form @submit.prevent="handleBonusPointsInputSubmit" class="flex items-center justify-center">
             <span class="mr-2 font-semibold">{{ refBonusPoints }}</span>
             <input type="number" name="bonusPoints" v-model="bonusPointsForm.bonusPoints" :id="`member-${member.id}-bonus-points`" autocomplete="bonus-points" class="block w-16 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
@@ -360,17 +360,17 @@ const navigateToMemberSettings = (courseId, memberId) => {
     </td>
 
     <td :class="gradeStatus ? 'bg-gradient-to-r from-indigo-50 to-indigo-100' : 'bg-gradient-to-r from-red-50 to-red-100'"
-        class="px-2 py-0 border border-slate-300 text-center shadow-sm">
+        class="px-3 py-0 border border-slate-300 text-center shadow-sm">
         <span class="font-semibold">{{ totalMemberScore + '/' + $page.props.course.data.total_score }}</span>
     </td>
 
     <td :class="gradeStatus ? 'bg-gradient-to-r from-pink-50 to-pink-100' : 'bg-gradient-to-r from-red-50 to-red-100'"
-        class="px-2 py-0 border border-slate-300 text-center shadow-sm">
+        class="px-3 py-0 border border-slate-300 text-center shadow-sm">
         <span class="font-semibold">{{ gradePercentage }}</span>
     </td>
 
     <td :class="gradeStatus ? gradeProgress(gradePercentage).lightGradient : 'bg-gradient-to-r from-red-50 to-red-100'"
-        class="px-2 py-0 border border-slate-300 text-center text-lg font-bold shadow-sm">
+        class="px-3 py-0 border border-slate-300 text-center text-lg font-bold shadow-sm">
         <span class="rounded-md px-3 py-1 shadow-md" v-if="gradeStatus"
             :class="gradeProgress(gradePercentage).gradient + ' text-white'">
             {{  gradeProgress(gradePercentage).grade }}

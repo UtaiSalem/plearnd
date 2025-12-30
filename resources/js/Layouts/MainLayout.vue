@@ -330,20 +330,20 @@
         <!-- Main content -->
         <div :class="$slots.flashSidebarLeft ? 'ml-64' : ''" class="flex flex-col justify-between px-1 sm:px-2 md:mx-4 pt-16 md:pt-16 rounded-lg">
 
-            <div v-if="$slots.coverProfileCard" class="w-full" >
+            <div v-if="$slots.coverProfileCard" class="w-full mt-4" >
                 <slot name="coverProfileCard"></slot>
             </div>
 
-            <div class="flex justify-center gap-2 sm:gap-4 md:justify-between" >
+            <div class="flex justify-center gap-4 md:gap-6 mt-4" >
 
                 <!-- Sidebar start - hidden on mobile, only render on md+ -->
-                <div v-if="$slots.leftSideWidget" class="hidden md:block lg:w-[22%] md:w-[28%] flex-shrink-0 mt-4">
+                <div v-if="$slots.leftSideWidget" class="hidden lg:block lg:w-[22%] flex-shrink-0">
                     <slot name="leftSideWidget" />
                 </div>
                 <!-- Sidebar end -->
 
                 <!-- content -->
-                <div class="w-full max-w-full mb-4">
+                <div class="flex-1 min-w-0">
                     <main>
                         <slot name="mainContent"></slot>
                     </main>
@@ -351,7 +351,7 @@
                 <!-- End content -->
 
                 <!-- right sidebar - hidden on mobile, only render on lg+ -->
-                <div v-if="$slots.rightSideWidget" class="hidden lg:block w-[22%] flex-shrink-0 mt-4">
+                <div v-if="$slots.rightSideWidget" class="hidden lg:block lg:w-[22%] flex-shrink-0">
                     <slot name="rightSideWidget" />
                 </div>
                 <!--End right sidebar -->

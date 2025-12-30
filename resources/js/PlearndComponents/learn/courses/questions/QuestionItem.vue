@@ -49,7 +49,12 @@ const deletingOptionImageIndex = ref(null);
 
 const showEditModal = ref(false);
 const isOpen = ref(!props.isCourseOwner);
-const showEditAnswerButton = computed(() => canEditAnswer.value && !showConfirmAnswerButton.value);
+// ปรับให้สามารถแก้ไขคำตอบได้ตลอดเวลา แม้จะตอบครบทุกข้อแล้ว
+const showEditAnswerButton = computed(() => {
+    // เดิม: canEditAnswer.value && !showConfirmAnswerButton.value
+    // ใหม่: สามารถแก้ไขได้ถ้ามีแต้มสะสมเพียงพอ
+    return canEditAnswer.value && usePage().props.auth.user.pp >= props.question.pp_fine;
+});
 
 // ใช้ Pinia Store สำหรับจัดการ state ของคำตอบ
 const questionAnswersStore = useQuestionAnswersStore();
@@ -442,8 +447,8 @@ const deleteOptionImage = async (questionOptionIndex, optionImageIndex)=> {
 
         <EditQuestionModal 
             v-if="props.isCourseOwner"
-            :question
-            :questionApiRoute
+            :question="question"
+            :questionApiRoute="questionApiRoute"
             :images="question.images"
             :isVisible="showEditModal"
             :isCourseOwner="props.isCourseOwner"

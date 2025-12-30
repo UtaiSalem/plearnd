@@ -45,19 +45,19 @@ const handleLoadingPage = (option) => {
             </div>
 
             <!-- Banner - Mobile version -->
-            <div class="flex md:hidden items-center justify-center max-w-7xl mx-auto mt-2 mb-3 py-3 px-4 shadow-md bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg">
+            <div class="flex md:hidden items-center justify-center mt-4 mb-4 py-3 px-4 shadow-md bg-gradient-to-r from-cyan-600 to-blue-600 rounded-lg">
                 <Icon icon="fluent-mdl2:publish-course" class="w-6 h-6 text-white mr-2" />
                 <p class="text-lg font-bold text-white">รวมรายวิชา</p>
             </div>
 
             <!-- Banner - Desktop version -->
-            <div class="hidden md:flex items-center max-w-7xl mx-auto mt-2 mb-4 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg">
+            <div class="hidden md:flex items-center mt-4 mb-4 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg">
                 <img class="section-banner-icon" :src="'/storage/images/banner/forums-icon.png'" alt="forums-icon">
                 <p class="text-xl lg:text-4xl font-bold text-white">รวมรายวิชา</p>
             </div>
 
             <!-- Navigation Tabs -->
-            <div class="w-full mx-auto mt-2 sm:mt-4 overflow-hidden bg-white rounded-lg shadow-xl max-w-7xl border border-gray-100">
+            <div class="w-full overflow-hidden bg-white rounded-lg shadow-xl border border-gray-100">
                 <!-- Scrollable container for mobile -->
                 <div class="relative">
                     <!-- Scroll hint gradient on right side (mobile only) -->
@@ -148,10 +148,16 @@ const handleLoadingPage = (option) => {
             </div>
         </template>
 
+        <template #leftSideWidget>
+            <slot name="leftSideWidget"></slot>
+        </template>
+
+        <template #rightSideWidget>
+            <slot name="rightSideWidget"></slot>
+        </template>
+
         <template #mainContent>
-            <div class="max-w-7xl mx-auto">
-                <slot name="coursesMainContent"></slot>
-            </div>
+            <slot name="coursesMainContent"></slot>
         </template>
     </MainLayout>
 </template>

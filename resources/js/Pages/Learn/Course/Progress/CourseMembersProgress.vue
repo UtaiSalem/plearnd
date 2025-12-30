@@ -53,7 +53,7 @@ const activeGroupMembers = computed(() => {
             :activeTab="10"
         >
             <template #courseContent>
-                <div class=" md:-ml-4 md:mr-4">
+                <div class="">
                     <section class="" aria-multiselectable="false">
                         <ul v-if="$page.props.isCourseAdmin"
                             class="flex flex-wrap items-center border-b plearnd-card bg-gradient-to-r from-blue-50 via-green-50 to-yellow-50" role="tablist">

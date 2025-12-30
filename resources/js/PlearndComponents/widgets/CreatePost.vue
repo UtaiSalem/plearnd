@@ -171,7 +171,7 @@ const privacyOptions = reactive([
 </script>
 
 <template>
-    <div class="relative hs-accordion-group bg-white rounded-lg mt-4 md:mt-0 shadow-lg p-2  border-t-4 border-blue-500">
+    <div class="relative hs-accordion-group bg-white rounded-lg shadow-lg p-2 border-t-4 border-blue-500">
         <div class="hs-accordion active" id="hs-basic-with-title-and-arrow-stretched-heading-one">
             <button class="hs-accordion-toggle hs-accordion-active:text-blue-600 group py-2 inline-flex items-center justify-between gap-x-3 w-full font-base text-left text-gray-800 transition hover:text-gray-500 dark:hs-accordion-active:text-blue-500 dark:text-gray-200 dark:hover:text-gray-400" aria-controls="hs-basic-with-title-and-arrow-stretched-collapse-one">
                 <div class="flex items-center space-x-6">

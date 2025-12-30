@@ -75,7 +75,7 @@ const handleLinkToPage = (href) => {
     <div class="">
         <MainLayout title="Newsfeed">
             <template #coverProfileCard>
-                <div class="hidden md:flex items-center mx-auto mt-2 mb-4 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg">
+                <div class="hidden md:flex items-center mx-auto mt-4 mb-2 shadow-lg bg-[url('/storage/images/banner/banner-bg.png')] bg-cover bg-no-repeat rounded-lg">
                     <img class="section-banner-icon " :src="'/storage/images/banner/forums-icon.png'" alt="forums-icon">
                     <p class="text-white font-bold text-xl">กระดานข่าว</p>
                 </div>

@@ -41,9 +41,15 @@ class CourseController extends Controller
             Course::whereIn('id', $authMemberCourseIds)->latest()->get()
         );
         
+        // Get courses where auth user is the owner/admin
+        $myCourses = CourseResource::collection(
+            Course::where('user_id', auth()->id())->latest()->get()
+        );
+        
         return Inertia::render('Learn/Course/Courses', [
             'courses'           => $courses->original['courses'],
             'memberedCourses'   => $memberedCourses,
+            'myCourses'         => $myCourses,
         ]);
     }
 

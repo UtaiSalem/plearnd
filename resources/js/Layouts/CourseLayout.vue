@@ -163,7 +163,7 @@ async function handleRequestToBeUnMember(memberId) {
         </template>
 
         <template #mainContent>
-            <div class="mt-2 sm:mt-4">
+            <div>
                 <div v-if="$slots.courseContent">
                     <slot name="courseContent"></slot>
                 </div>
