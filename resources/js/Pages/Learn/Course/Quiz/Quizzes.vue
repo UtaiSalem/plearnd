@@ -80,7 +80,7 @@ function handleUpdateQuizData(updatedQuiz) {
             :activeTab="3"
         >
             <template #courseContent>
-                <div class="mt-4">
+                <div>
                     <!-- Use computed property for optimized reactivity -->
                     <QuizzesListViewer
                         :quizzes="quizzesComputed"

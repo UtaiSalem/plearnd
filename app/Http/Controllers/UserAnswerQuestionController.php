@@ -90,8 +90,28 @@ class UserAnswerQuestionController extends Controller
     /**
      * Update an existing user answer for a question.
      */
-    public function update(CourseQuiz $quiz, Question $question, UserAnswerQuestion $answer, Request $request)
+    public function update(CourseQuiz $quiz, Question $question, ?UserAnswerQuestion $answer, Request $request)
     {
+        // Check if route model binding failed (answer not found)
+        if (!$answer) {
+            Log::error('UserAnswerQuestion not found', [
+                'quiz_id' => $quiz->id,
+                'question_id' => $question->id,
+                'requested_answer_id' => $request->route('answer'),
+                'user_id' => auth()->id(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'ไม่พบข้อมูลคำตอบที่ต้องการแก้ไข (ID: ' . $request->route('answer') . ')',
+                'debug' => [
+                    'quiz_id' => $quiz->id,
+                    'question_id' => $question->id,
+                    'answer_id_sent' => $request->route('answer'),
+                ]
+            ], 404);
+        }
+
         // Validate request data
         $validator = Validator::make($request->all(), [
             'answer_id' => 'required|exists:question_options,id',
@@ -139,7 +159,13 @@ class UserAnswerQuestionController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'แก้ไขคำตอบเรียบร้อยแล้ว',
-                'authAnswerQuestion' => $answer->id,
+                'authAnswerQuestion' => [
+                    'id' => $answer->id,
+                    'question_option_id' => $answer->answer_id,
+                    'answer_id' => $answer->answer_id,
+                    'points' => $answer->points,
+                    'edit_count' => $answer->edit_count,
+                ],
                 'points' => $answer->points,
                 'is_correct' => $isNewAnswerCorrect,
             ], 200);
@@ -225,7 +251,7 @@ class UserAnswerQuestionController extends Controller
 
         $courseMember->achieved_score = $totalAchievedScore;
         $courseMember->save();
-        
+
         return $courseMember;
     }
 
@@ -242,11 +268,11 @@ class UserAnswerQuestionController extends Controller
         $courseQuizResult->correct_answers = $quiz_user_answers->filter(function ($answer) {
             return $answer->correct_option_id === $answer->answer_id;
         })->count();
-        
+
         $courseQuizResult->incorrect_answers = $quiz_user_answers->filter(function ($answer) {
             return $answer->correct_option_id !== $answer->answer_id;
         })->count();
-  
+
         $courseQuizResult->score = $quiz_user_answers->sum('points');
         $courseQuizResult->percentage = $this->calculatePercentage($quiz->total_score, $courseQuizResult->score);
         $courseQuizResult->status = $courseQuizResult->percentage >= $quiz->passing_score
@@ -274,11 +300,11 @@ class UserAnswerQuestionController extends Controller
         $courseQuizResult->correct_answers = $quiz_user_answers->filter(function ($answer) {
             return $answer->correct_option_id === $answer->answer_id;
         })->count();
-        
+
         $courseQuizResult->incorrect_answers = $quiz_user_answers->filter(function ($answer) {
             return $answer->correct_option_id !== $answer->answer_id;
         })->count();
-  
+
         // Don't recalculate score as it's already updated in the calling method
         $courseQuizResult->percentage = $this->calculatePercentage($quiz->total_score, $courseQuizResult->score);
         $courseQuizResult->status = $courseQuizResult->percentage >= $quiz->passing_score
@@ -330,7 +356,13 @@ class UserAnswerQuestionController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'บันทึกคำตอบเรียบร้อยแล้ว',
-                'authAnswerQuestion' => $userAnswerQuestion->id,
+                'authAnswerQuestion' => [
+                    'id' => $userAnswerQuestion->id,
+                    'question_option_id' => $userAnswerQuestion->answer_id,
+                    'answer_id' => $userAnswerQuestion->answer_id,
+                    'points' => $userAnswerQuestion->points,
+                    'edit_count' => $userAnswerQuestion->edit_count ?? 0,
+                ],
                 'points' => $points,
                 'is_correct' => $points > 0,
             ], 200);

@@ -130,14 +130,34 @@ const debouncedHandleConfirmAnswer = debounce(async function() {
                 return;
             }
             
-            // Get the existing answer ID
-            const existingAnswer = questionAnswersStore.getAnswerForQuestion(props.quizId, props.question.id);
-            const userAnswerQuestionId = existingAnswer ? existingAnswer.id : (props.question.authAnswerQuestion ? props.question.authAnswerQuestion.id : null);
+            // Get the existing answer ID - check props first, then store
+            let userAnswerQuestionId = null;
+            
+            // First, try to get from props.question.authAnswerQuestion (most reliable source)
+            if (props.question.authAnswerQuestion && props.question.authAnswerQuestion.id) {
+                userAnswerQuestionId = props.question.authAnswerQuestion.id;
+            } else {
+                // Fallback: try to get from store
+                const existingAnswer = questionAnswersStore.getAnswerForQuestion(props.quizId, props.question.id);
+                if (existingAnswer && typeof existingAnswer === 'object' && existingAnswer.id) {
+                    userAnswerQuestionId = existingAnswer.id;
+                } else if (existingAnswer && typeof existingAnswer === 'number') {
+                    // If store only has the option ID, we can't proceed with edit
+                    console.warn('Store only contains option ID, not full answer object');
+                }
+            }
 
             if (!userAnswerQuestionId) {
-                Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถแก้ไขคำตอบได้เนื่องจากไม่พบข้อมูลคำตอบเดิม', 'error');
+                console.error('Cannot find UserAnswerQuestion ID', {
+                    quizId: props.quizId,
+                    questionId: props.question.id,
+                    authAnswerQuestion: props.question.authAnswerQuestion,
+                    storeAnswer: questionAnswersStore.getAnswerForQuestion(props.quizId, props.question.id)
+                });
+                Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถแก้ไขคำตอบได้เนื่องจากไม่พบข้อมูลคำตอบเดิม กรุณาโหลดหน้าใหม่', 'error');
                 return;
             }
+
 
             resultResp = await axios.patch(`/quizs/${props.question.questionable_id}/questions/${props.question.id}/answers/${userAnswerQuestionId}`,
             {

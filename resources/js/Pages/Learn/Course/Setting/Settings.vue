@@ -55,7 +55,7 @@ async function onUpdateCourseHandler(courseData){
             :courseMemberOfAuth
         >
             <template #courseContent>
-                <div v-if="props.isCourseAdmin" class=" mt-4">
+                <div v-if="props.isCourseAdmin" class="">
                     <CourseSettings 
                         :course="props.course.data" 
                         :isCourseAdmin="props.isCourseAdmin"

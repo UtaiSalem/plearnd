@@ -176,7 +176,7 @@ try {
 
 <template>
     <div class="w-full mx-auto ">
-        <div class="plearnd-card my-4 font-bold uppercase text-2xl bg-blue-500 text-white">
+        <div class="plearnd-card mb-4 font-bold uppercase text-2xl bg-blue-500 text-white">
             การตั้งค่ารายวิชา
         </div>
 

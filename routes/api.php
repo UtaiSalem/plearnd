@@ -23,11 +23,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Home Visit API Routes
 Route::prefix('home-visit')->group(function () {
     Route::post('/{homeVisit}/update', [TeacherController::class, 'updateHomeVisitWithImages'])->name('api.home-visit.update');
-    Route::post('/image/{imageId}/update-description', function(Request $request, $imageId) {
+    Route::post('/image/{imageId}/update-description', function (Request $request, $imageId) {
         // TODO: Implement image description update
         return response()->json(['success' => true, 'message' => 'Image description updated']);
     })->name('api.home-visit.image.update-description');
-    
+
     // Admin Reports API
     Route::prefix('admin')->group(function () {
         Route::get('/visits', [AdminController::class, 'getAllVisits'])->name('api.home-visit.admin.visits');
@@ -39,3 +39,6 @@ Route::prefix('home-visit')->group(function () {
 
 // Course V2 API Routes
 // require __DIR__.'/learn/courseV2.php';
+
+// Widget API Routes
+require __DIR__ . '/api_widgets.php';

@@ -36,7 +36,7 @@ const emit = defineEmits([
 const courseProfileStore = useCourseProfileStore();
 
 // Get course groups from Inertia props with ref for proper reactivity
-const courseGroups = ref(usePage().props.courseGroups || []);
+const courseGroups = ref(usePage().props.course?.data?.groups || []);
 
 // Check if groups are available and has content
 const hasGroups = computed(() => courseGroups.value && courseGroups.value.length > 0);
@@ -438,7 +438,7 @@ watch(isRequestingMember, (newVal, oldVal) => {
                                     <Icon v-if="isRequestingMember" icon="eos-icons:loading" class="w-5 h-5 animate-spin mr-2" />
                                     <Icon v-else icon="heroicons-outline:user-add" class="w-5 h-5 mr-2" />
                                     ขอเป็นสมาชิก
-                                    <span class="ml-1 text-xs opacity-75">({{ courseGroups.value?.length || 0 }})</span>
+                                    <span class="ml-1 text-xs opacity-75">({{ courseGroups?.length || 0 }})</span>
                                 </span>
                                 <Icon
                                     icon="heroicons:chevron-down"
@@ -507,11 +507,11 @@ watch(isRequestingMember, (newVal, oldVal) => {
                     <h3 class="text-xl sm:text-2xl font-bold text-purple-600">{{ props.modelData.enrolled_students }}</h3>
                     <p class="text-xs sm:text-sm font-medium text-gray-600">ผู้เรียน</p>
                 </div>
-                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 shadow-sm hover:shadow-md transition-all duration-300 min-w-[80px] sm:min-w-[100px]" v-if="props.modelData.groups">
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 shadow-sm hover:shadow-md transition-all duration-300 min-w-[80px] sm:min-w-[100px]" v-if="courseGroups?.length">
                     <div class="flex items-center justify-center w-12 h-12 mb-2 bg-green-500 rounded-full">
                         <Icon icon="heroicons:user-group" class="w-6 h-6 text-white" />
                     </div>
-                    <h3 class="text-2xl font-bold text-green-600">{{ props.modelData.groups }}</h3>
+                    <h3 class="text-2xl font-bold text-green-600">{{ courseGroups?.length || 0 }}</h3>
                     <p class="text-sm font-medium text-gray-600">กลุ่ม/ห้อง</p>
                 </div>
             </div>

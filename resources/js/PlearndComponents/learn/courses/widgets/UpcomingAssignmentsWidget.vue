@@ -2,24 +2,31 @@
 import { ref, computed, onMounted } from 'vue';
 import { Icon } from '@iconify/vue';
 import { router } from '@inertiajs/vue3';
+import axios from 'axios';
 
 const props = defineProps({
     course: Object,
-    assignments: Array,
     isCourseAdmin: Boolean,
 });
 
 const isExpanded = ref(true);
 const isLoading = ref(false);
 const upcomingAssignments = ref([]);
+const isFetchingAssignments = ref(false);
 
-// Get upcoming assignments (not past due, limit to 5)
-onMounted(() => {
-    if (props.assignments && props.assignments.length > 0) {
-        const now = new Date();
-        upcomingAssignments.value = props.assignments
-            .filter(a => !a.due_date || new Date(a.due_date) >= now)
-            .slice(0, 5);
+// Fetch assignments when component mounts
+onMounted(async () => {
+    try {
+        isFetchingAssignments.value = true;
+        const response = await axios.get(`/api/courses/${props.course.data.id}/assignments/upcoming`);
+        if (response.data && response.data.data) {
+            upcomingAssignments.value = response.data.data.slice(0, 5);
+        }
+    } catch (error) {
+        console.error('Error fetching upcoming assignments:', error);
+        // Silently fail - widget will show "ไม่มีงานที่ต้องทำ"
+    } finally {
+        isFetchingAssignments.value = false;
     }
 });
 
@@ -96,7 +103,7 @@ const getDueDateColor = (dateString) => {
                         </p>
                     </div>
                     <div class="flex-shrink-0 text-xs text-gray-500">
-                        {{ assignment.max_score || 100 }} คะแนน
+                        {{ assignment.points || 100 }} คะแนน
                     </div>
                 </button>
             </template>

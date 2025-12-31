@@ -54,6 +54,7 @@ function computeIsPending() {
     return now < finishTime && statusNotSet;
 }
 
+
 // Watch for props.status changes to update refStatus
 watch(() => props.status, (newStatus) => {
     if (newStatus !== null && newStatus !== undefined) {
@@ -125,54 +126,34 @@ const isCourseAdmin = computed(() => {
     return usePage().props.isCourseAdmin || false;
 });
 
-// Function to check attendance status from backend
+// Function to check attendance status from backend (Manual check only)
 const checkAttendanceStatus = async () => {
-    // Only check if attendance is still active and status is not set
-    if (!isPending.value || isCheckingStatus.value) return;
+    if (isCheckingStatus.value) return;
     
     isCheckingStatus.value = true;
     hasError.value = false;
     errorMessage.value = '';
     
     try {
-        // Use the attendance store to fetch member join status
         const status = await attendanceStore.fetchMemberJoinStatus(props.attendance.id, props.memberId);
         
-        // Update status if it has changed
         if (status !== null && status !== undefined && status !== refStatus.value) {
             refStatus.value = status;
-            // Update isPending based on new status
             isPending.value = false;
-            
-            // Also update the status in the store for consistency
             attendanceStore.updateMemberStatusInAttendance(props.attendance.id, props.memberId, status);
         }
     } catch (error) {
-        // Handle errors with better user feedback
         if (error.response?.status === 404) {
-            // Attendance or member data not found - stop polling to prevent spam
-            console.warn('Attendance data not found - stopping auto-refresh');
-            errorMessage.value = 'ไม่พบข้อมูลการเช็คชื่อ';
-            hasError.value = true;
-            isPending.value = false;
-            cleanup();
+             errorMessage.value = 'ไม่พบข้อมูลการเช็คชื่อ';
+             hasError.value = true;
+             isPending.value = false;
         } else if (error.response?.status === 403) {
-            // Permission denied - stop polling
-            console.warn('Permission denied - stopping auto-refresh');
-            errorMessage.value = 'ไม่มีสิทธิ์เข้าถึงข้อมูล';
-            hasError.value = true;
-            isPending.value = false;
-            cleanup();
-        } else if (error.code === 'NETWORK_ERROR' || !navigator.onLine) {
-            // Network connectivity issues
-            errorMessage.value = 'การเชื่อมต่อขัดข้อง';
-            hasError.value = true;
-            // Don't stop polling for network errors - might be temporary
+             errorMessage.value = 'ไม่มีสิทธิ์เข้าถึงข้อมูล';
+             hasError.value = true;
+             isPending.value = false;
         } else {
-            // Other unexpected errors
-            errorMessage.value = 'เกิดข้อผิดพลาดในการตรวจสอบสถานะ';
-            hasError.value = true;
-            console.error('Unexpected error in checkAttendanceStatus:', error);
+             errorMessage.value = 'เกิดข้อผิดพลาดในการตรวจสอบสถานะ';
+             hasError.value = true;
         }
     } finally {
         isCheckingStatus.value = false;
@@ -186,139 +167,6 @@ const handlePendingClick = async () => {
     }
 };
 
-// Toggle status menu for course admin
-const toggleStatusMenu = (event) => {
-    if (isCourseAdmin.value) {
-        event?.stopPropagation();
-        showStatusMenu.value = !showStatusMenu.value;
-    }
-};
-
-// Close status menu when clicking outside
-const closeStatusMenu = () => {
-    if (!isUpdatingStatus.value) {
-        showStatusMenu.value = false;
-    }
-};
-
-// Update attendance status by admin
-const updateStatusByAdmin = async (newStatus, event) => {
-    if (!isCourseAdmin.value || isUpdatingStatus.value) return;
-    
-    // ป้องกัน event bubbling
-    event?.stopPropagation();
-    
-    // ถ้าเลือกสถานะเดิม ให้ปิด menu เลย
-    if (refStatus.value === newStatus) {
-        showStatusMenu.value = false;
-        return;
-    }
-    
-    // ถ้าเลือก status 0 (ขาด) ให้ลบ record ออก
-    // status อื่นๆ (1=มา, 2=สาย, 3=ลา) จะสร้างหรืออัพเดท record
-    
-    isUpdatingStatus.value = true;
-    hasError.value = false;
-    errorMessage.value = '';
-    
-    try {
-        // Call API to update status
-        await axios.post(`/attendances/${props.attendance.id}/member/${props.memberId}/update-status`, {
-            status: newStatus
-        });
-        
-        // Update local status
-        refStatus.value = newStatus;
-        isPending.value = false;
-        
-        // Update store
-        attendanceStore.updateMemberStatusInAttendance(props.attendance.id, props.memberId, newStatus);
-        
-        // ปิด menu หลังอัพเดทสำเร็จ
-        await nextTick();
-        showStatusMenu.value = false;
-        
-    } catch (error) {
-        hasError.value = true;
-        
-        if (error.response?.status === 403) {
-            errorMessage.value = 'ไม่มีสิทธิ์แก้ไขสถานะ';
-        } else if (error.response?.status === 404) {
-            errorMessage.value = 'ไม่พบข้อมูลการเข้าร่วม';
-        } else {
-            errorMessage.value = 'เกิดข้อผิดพลาดในการอัพเดทสถานะ';
-        }
-        
-        console.error('Error updating status:', error);
-        
-        // ถ้า error ก็ปิด menu
-        showStatusMenu.value = false;
-    } finally {
-        isUpdatingStatus.value = false;
-    }
-};
-
-// Available status options for admin
-const statusOptions = [
-    { value: 1, label: 'มา', icon: 'heroicons-outline:check-circle', color: 'text-green-600', bgColor: 'hover:bg-green-50' },
-    { value: 2, label: 'สาย', icon: 'heroicons-outline:clock', color: 'text-yellow-600', bgColor: 'hover:bg-yellow-50' },
-    { value: 3, label: 'ลา', icon: 'heroicons-outline:document-text', color: 'text-blue-600', bgColor: 'hover:bg-blue-50' },
-    { value: 0, label: 'ขาด', icon: 'heroicons-outline:x-circle', color: 'text-red-600', bgColor: 'hover:bg-red-50' },
-];
-
-// Set up auto-refresh interval with exponential backoff for errors
-const setupAutoRefresh = () => {
-    // Only set up auto-refresh for pending attendances
-    if (isPending.value) {
-        // สุ่มเวลาระหว่าง 1,000 - 6,000 มิลลิวินาที (1-6 วินาที)
-        // เพื่อป้องกันการโหลดข้อมูลพร้อมกันทั้งหมด
-        let baseInterval = Math.floor(Math.random() * (6000 - 1000 + 1)) + 1000;
-        
-        // If we had errors, use exponential backoff
-        if (hasError.value) {
-            baseInterval = Math.min(baseInterval * 2, 30000); // Cap at 30 seconds
-        }
-        
-        refreshInterval.value = setInterval(() => {
-            checkAttendanceStatus();
-        }, baseInterval);
-        
-        // console.log(`Auto-refresh ตั้งค่าทุก ${baseInterval / 1000} วินาที`);
-    }
-};
-
-// Clean up interval when component is unmounted
-const cleanup = () => {
-    if (refreshInterval.value) {
-        clearInterval(refreshInterval.value);
-        refreshInterval.value = null;
-    }
-};
-
-// Set up auto-refresh when component mounts
-onMounted(() => {
-    setupAutoRefresh();
-});
-
-// Clean up when component unmounts
-onUnmounted(() => {
-    cleanup();
-});
-
-// Watch for changes in isPending to start/stop auto-refresh
-const stopWatcher = watch(isPending, (newValue) => {
-    cleanup();
-    if (newValue) {
-        setupAutoRefresh();
-    }
-});
-
-// Clean up watcher when component unmounts
-onUnmounted(() => {
-    if (stopWatcher) {
-        stopWatcher();
-    }
-});
 
 </script>
 
@@ -350,8 +198,8 @@ onUnmounted(() => {
             <div class="relative">
                 <Icon
                     icon="heroicons-outline:clock"
-                    width="36"
-                    height="36"
+                    width="28"
+                    height="28"
                     :class="[
                         'transition-all duration-300',
                         isCheckingStatus ? 'text-amber-600 animate-pulse' : 'text-amber-500 group-hover:text-amber-600'
@@ -376,8 +224,8 @@ onUnmounted(() => {
             <div class="relative">
                 <Icon
                     icon="heroicons-outline:clock"
-                    width="36"
-                    height="36"
+                    width="28"
+                    height="28"
                     :class="[
                         'transition-colors duration-300',
                         isCheckingStatus ? 'text-blue-600 animate-pulse' : 'text-blue-500'
@@ -479,7 +327,7 @@ onUnmounted(() => {
         <!-- Status display with admin edit button -->
         <div class="relative inline-flex items-center gap-1">
             <div
-                class="inline-flex items-center gap-2 rounded-xl text-sm font-bold shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105 px-3 py-2"
+                class="inline-flex items-center gap-2 rounded-xl text-sm font-bold shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105 px-2 py-1.5"
                 :class="[
                     attendanceStatus.bgColor,
                     attendanceStatus.color === 'text-green-500' ? 'border border-green-200' :
@@ -492,8 +340,8 @@ onUnmounted(() => {
             >
                 <Icon
                     :icon="attendanceStatus.icon"
-                    width="32"
-                    height="32"
+                    width="24"
+                    height="24"
                     :class="attendanceStatus.color"
                     aria-hidden="true"
                 />

@@ -180,7 +180,6 @@ async function handleRequestToBeUnMember(memberId) {
                 />
                 <UpcomingAssignmentsWidget
                     :course="course"
-                    :assignments="course?.data?.assignments || []"
                     :isCourseAdmin="isCourseAdmin"
                 />
                 <CourseMembersWidget

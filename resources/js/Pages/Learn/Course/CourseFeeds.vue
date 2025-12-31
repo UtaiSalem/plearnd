@@ -72,7 +72,7 @@ const handleAddNewActivity = (newActivity) => {
         :activeTab="11"
     >
         <template #courseContent>
-            <div class="mt-4">
+            <div>
                 <CreateCoursePost v-if="courseMemberOfAuth" 
                     :course_id="props.course.data.id" 
                     @add-new-post="(newActivity) => handleAddNewActivity(newActivity)"

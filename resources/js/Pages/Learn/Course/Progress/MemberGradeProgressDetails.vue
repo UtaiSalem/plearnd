@@ -374,28 +374,28 @@ const toggleExpanded = (id, type) => {
                         งานที่ได้รับมอบหมาย
                     </h2>
                     
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto overflow-y-auto max-h-[500px]">
                         <table class="w-full">
-                            <thead>
+                            <thead class="sticky top-0 z-20">
                                 <tr class="border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-                                    <th class="text-left py-4 px-4 font-bold text-gray-700">ลำดับ</th>
-                                    <th class="text-left py-4 px-4 font-bold text-gray-700">หัวข้อ</th>
-                                    <th class="text-center py-4 px-4 font-bold text-gray-700">คะแนน</th>
-                                    <th class="text-center py-4 px-4 font-bold text-gray-700">เปอร์เซ็นต์</th>
-                                    <th class="text-center py-4 px-4 font-bold text-gray-700">สถานะ</th>
+                                    <th class="text-left py-3 px-3 font-bold text-gray-700 sticky left-0 z-30 bg-gradient-to-r from-gray-50 to-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">ลำดับ</th>
+                                    <th class="text-left py-3 px-3 font-bold text-gray-700 sticky left-[70px] z-30 bg-gradient-to-r from-gray-50 to-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">หัวข้อ</th>
+                                    <th class="text-center py-3 px-3 font-bold text-gray-700">คะแนน</th>
+                                    <th class="text-center py-3 px-3 font-bold text-gray-700">เปอร์เซ็นต์</th>
+                                    <th class="text-center py-3 px-3 font-bold text-gray-700">สถานะ</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(assignment, index) in props.course_assignments" :key="assignment.id"
                                     class="border-b border-gray-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200">
-                                    <td class="py-4 px-4">
-                                        <span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 text-white rounded-full font-bold shadow-lg">
+                                    <td class="py-3 px-3 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-indigo-400 to-purple-500 text-white rounded-full font-bold shadow-lg">
                                             {{ index + 1 }}
                                         </span>
                                     </td>
-                                    <td class="py-4 px-4">
-                                        <div class="max-w-md">
-                                            <p class="font-semibold text-gray-800 text-lg">
+                                    <td class="py-3 px-3 sticky left-[70px] z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                                        <div class="max-w-sm">
+                                            <p class="font-semibold text-gray-800 text-base">
                                                 {{ expandedAssignments[assignment.id] ? assignment.title : truncateText(assignment.title, 50).text }}
                                             </p>
                                             <button
@@ -407,12 +407,12 @@ const toggleExpanded = (id, type) => {
                                             </button>
                                         </div>
                                     </td>
-                                    <td class="py-4 px-4 text-center">
+                                    <td class="py-3 px-3 text-center">
                                         <span class="font-bold text-gray-700 text-lg">
                                             {{ props.member_assignments_answers.data.find(answer => answer.assignment_id === assignment.id)?.points || 0 }}/{{ assignment.points }}
                                         </span>
                                     </td>
-                                    <td class="py-4 px-4 text-center">
+                                    <td class="py-3 px-3 text-center">
                                         <div class="flex items-center justify-center">
                                             <div class="w-20 bg-gray-200 rounded-full h-3 mr-3 shadow-inner">
                                                 <div :class="`h-3 rounded-full shadow-sm transition-all duration-300 ${getItemProgressColor(((props.member_assignments_answers.data.find(answer => answer.assignment_id === assignment.id)?.points || 0) / assignment.points) * 100)}`"
@@ -423,7 +423,7 @@ const toggleExpanded = (id, type) => {
                                             </span>
                                         </div>
                                     </td>
-                                    <td class="py-4 px-4 text-center">
+                                    <td class="py-3 px-3 text-center">
                                         <span v-if="props.member_assignments_answers.data.find(answer => answer.assignment_id === assignment.id)"
                                               :class="`px-4 py-2 rounded-full text-sm font-bold shadow-md transition-all duration-200 ${getStatusBadgeStyle(true, 'assignment')}`">
                                             ส่งแล้ว
@@ -449,28 +449,28 @@ const toggleExpanded = (id, type) => {
                         แบบทดสอบในหลักสูตร
                     </h2>
                     
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto overflow-y-auto max-h-[500px]">
                         <table class="w-full">
-                            <thead>
+                            <thead class="sticky top-0 z-20">
                                 <tr class="border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-                                    <th class="text-left py-4 px-4 font-bold text-gray-700">ลำดับ</th>
-                                    <th class="text-left py-4 px-4 font-bold text-gray-700">หัวข้อแบบทดสอบ</th>
-                                    <th class="text-center py-4 px-4 font-bold text-gray-700">คะแนน</th>
-                                    <th class="text-center py-4 px-4 font-bold text-gray-700">เปอร์เซ็นต์</th>
-                                    <th class="text-center py-4 px-4 font-bold text-gray-700">สถานะ</th>
+                                    <th class="text-left py-3 px-3 font-bold text-gray-700 sticky left-0 z-30 bg-gradient-to-r from-gray-50 to-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">ลำดับ</th>
+                                    <th class="text-left py-3 px-3 font-bold text-gray-700 sticky left-[70px] z-30 bg-gradient-to-r from-gray-50 to-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">หัวข้อแบบทดสอบ</th>
+                                    <th class="text-center py-3 px-3 font-bold text-gray-700">คะแนน</th>
+                                    <th class="text-center py-3 px-3 font-bold text-gray-700">เปอร์เซ็นต์</th>
+                                    <th class="text-center py-3 px-3 font-bold text-gray-700">สถานะ</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(quizze, index) in props.course_quizzes" :key="quizze.id"
                                     class="border-b border-gray-100 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200">
-                                    <td class="py-4 px-4">
-                                        <span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 text-white rounded-full font-bold shadow-lg">
+                                    <td class="py-3 px-3 sticky left-0 z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-indigo-400 to-purple-500 text-white rounded-full font-bold shadow-lg">
                                             {{ index + 1 }}
                                         </span>
                                     </td>
-                                    <td class="py-4 px-4">
-                                        <div class="max-w-md">
-                                            <p class="font-semibold text-gray-800 text-lg">
+                                    <td class="py-3 px-3 sticky left-[70px] z-10 bg-white shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                                        <div class="max-w-sm">
+                                            <p class="font-semibold text-gray-800 text-base">
                                                 {{ expandedQuizzes[quizze.id] ? quizze.title : truncateText(quizze.title, 50).text }}
                                             </p>
                                             <button
@@ -482,12 +482,12 @@ const toggleExpanded = (id, type) => {
                                             </button>
                                         </div>
                                     </td>
-                                    <td class="py-4 px-4 text-center">
+                                    <td class="py-3 px-3 text-center">
                                         <span class="font-bold text-gray-700 text-lg">
                                             {{ props.member_quizes_results.data.find(result => result.quiz_id === quizze.id)?.score || 0 }}/{{ quizze.total_score }}
                                         </span>
                                     </td>
-                                    <td class="py-4 px-4 text-center">
+                                    <td class="py-3 px-3 text-center">
                                         <div class="flex items-center justify-center">
                                             <div class="w-20 bg-gray-200 rounded-full h-3 mr-3 shadow-inner">
                                                 <div :class="`h-3 rounded-full shadow-sm transition-all duration-300 ${getItemProgressColor(((props.member_quizes_results.data.find(result => result.quiz_id === quizze.id)?.score || 0) / quizze.total_score) * 100)}`"
@@ -498,7 +498,7 @@ const toggleExpanded = (id, type) => {
                                             </span>
                                         </div>
                                     </td>
-                                    <td class="py-4 px-4 text-center">
+                                    <td class="py-3 px-3 text-center">
                                         <span v-if="props.member_quizes_results.data.find(result => result.quiz_id === quizze.id)"
                                               :class="`px-4 py-2 rounded-full text-sm font-bold shadow-md transition-all duration-200 ${getStatusBadgeStyle(true, 'quiz')}`">
                                             ทำแล้ว

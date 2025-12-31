@@ -36,7 +36,7 @@ provide('isLoadingPage', {
         >
             <template #courseContent>
                 <LoadingPage v-if="isLoadingPage" />
-                <div class="mt-2 sm:mt-4 space-y-3 sm:space-y-4">
+                <div class="space-y-3 sm:space-y-4">
                     <AssignmentListViewer
                         :assignmentableType="'courses'"
                         :assignmentableId="props.course.data.id"

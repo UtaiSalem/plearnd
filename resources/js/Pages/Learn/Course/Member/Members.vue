@@ -24,7 +24,7 @@ const props = defineProps({
         :activeTab="4"
      >
         <template #courseContent>
-            <div class="mt-4">
+            <div>
                 <staggered-fade :duration="50" tag="ul" class="flex flex-col w-full ">
                     <GroupedMemberList :groups="props.groups.data" />
                 </staggered-fade>

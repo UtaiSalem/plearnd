@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
 import { usePage } from "@inertiajs/vue3";
 import { Icon } from '@iconify/vue';
 import Swal from 'sweetalert2';
@@ -168,51 +168,109 @@ const preDeleteAttendance = () => {
     handleCancleCreateNewAttendance();
 }
 
-const refreshAllAttendanceStatuses = async () => {
-    if (!usePage().props.isCourseAdmin) return;
+
+const isAutoRefreshEnabled = ref(false);
+const refreshInterval = ref(null);
+
+const toggleAutoRefresh = () => {
+    isAutoRefreshEnabled.value = !isAutoRefreshEnabled.value;
     
-    isRefreshingAllStatuses.value = true;
+    if (isAutoRefreshEnabled.value) {
+        // Start auto refresh - every 15 seconds
+        refreshInterval.value = setInterval(() => {
+            refreshAllAttendanceStatuses(true); // true = silent mode (no loading indicator)
+        }, 15000);
+        
+        // Also trigger one immediately
+        refreshAllAttendanceStatuses(true);
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'เปิดการอัปเดตอัตโนมัติ',
+            text: 'ระบบจะตรวจสอบสถานะทุกๆ 15 วินาที',
+            timer: 2000,
+            showConfirmButton: false
+        });
+    } else {
+        // Stop auto refresh
+        if (refreshInterval.value) {
+            clearInterval(refreshInterval.value);
+            refreshInterval.value = null;
+        }
+        
+        // Swal.fire({
+        //     icon: 'info',
+        //     title: 'ปิดการอัปเดตอัตโนมัติ',
+        //     timer: 1500,
+        //     showConfirmButton: false
+        // });
+    }
+};
+
+// Clean up interval on unmount
+onUnmounted(() => {
+    if (refreshInterval.value) {
+        clearInterval(refreshInterval.value);
+    }
+});
+
+const refreshAllAttendanceStatuses = async (silent = false) => {
+    if (!usePage().props.isCourseAdmin && !isAutoRefreshEnabled.value) return;
+    
+    if (!silent) {
+        isRefreshingAllStatuses.value = true;
+    }
     
     try {
         // Get all attendances that are still active (not finished)
         const activeAttendances = groupAttendances.value.filter(attendance => {
+            // Check if attendance is active (finish_at is in future or null?)
+            // Based on previous logic: now < finish_at
             return new Date() < new Date(attendance.finish_at);
         });
         
-        // For each active attendance, check all members' status
-        for (const attendance of activeAttendances) {
-            for (const member of activeGroupMembers.value) {
-                try {
-                    const status = await attendanceStore.fetchMemberJoinStatus(attendance.id, member.id);
-                    if (status !== null && status !== undefined) {
-                        attendanceStore.updateMemberStatusInAttendance(attendance.id, member.id, status);
-                    }
-                } catch (error) {
-                    console.error(`Failed to refresh status for member ${member.id} in attendance ${attendance.id}:`, error);
-                }
-            }
-        }
+        // If no active attendances and auto-refresh is on, maybe we should stop it?
+        // But the user might want to keep it on for when they create new ones.
+        // For now, let's just proceed.
+
+        // Optimization: Instead of fetchMemberJoinStatus for every member/attendance pair (N*M requests),
+        // we should ideally have a bulk endpoint or just reload the group attendances which contains statuses.
+        // However, given the current store structure, let's stick to the store action but maybe optimize.
+        // Actually, loadGroupAttendances(activeGroupTab.value) refreshes the whole list including statuses.
+        // This is much more efficient than N*M individual requests if the backend supports it.
         
-        // Show success message
-        Swal.fire({
-            icon: 'success',
-            title: 'อัปเดตสถานะสำเร็จ',
-            text: 'สถานะการเข้าเรียนทั้งหมดได้รับการอัปเดตเรียบร้อยแล้ว',
-            timer: 2000,
-            showConfirmButton: false
-        });
+        // Let's use loadGroupAttendances but silently
+        await attendanceStore.fetchGroupAttendances(usePage().props.course.data.id, props.groups[activeGroupTab.value].id, usePage().props.isCourseAdmin);
+        
+        if (!silent) {
+            // Show success message only for manual refresh
+            Swal.fire({
+                icon: 'success',
+                title: 'อัปเดตสถานะสำเร็จ',
+                text: 'สถานะการเข้าเรียนทั้งหมดได้รับการอัปเดตเรียบร้อยแล้ว',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
         
     } catch (error) {
         console.error('Failed to refresh attendance statuses:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'เกิดข้อผิดพลาด',
-            text: 'ไม่สามารถอัปเดตสถานะการเข้าเรียนได้ กรุณาลองใหม่',
-        });
+        if (!silent) {
+            Swal.fire({
+                icon: 'error',
+                title: 'เกิดข้อผิดพลาด',
+                text: 'ไม่สามารถอัปเดตสถานะการเข้าเรียนได้ กรุณาลองใหม่',
+            });
+        }
+        // If auto-refresh is on and we get critical error, maybe turn it off?
+        // For now, keep trying.
     } finally {
-        isRefreshingAllStatuses.value = false;
+        if (!silent) {
+            isRefreshingAllStatuses.value = false;
+        }
     }
 };
+
 
 </script>
 
@@ -306,19 +364,38 @@ const refreshAllAttendanceStatuses = async () => {
             <!-- Enhanced Attendance Resource Display -->
             <div v-if="showAttendanceResource" class="mt-6">
                 <!-- Enhanced Refresh button for course admins -->
-                <div v-if="$page.props.isCourseAdmin" class="mb-6 flex justify-end">
+                <div v-if="$page.props.isCourseAdmin" class="mb-6 flex justify-end gap-2 items-center bg-white p-2 rounded-xl shadow-sm border border-gray-100 w-fit ml-auto">
+                    <!-- Auto Refresh Toggle -->
+                    <div class="flex items-center gap-3 px-4 py-2 border-r border-gray-100 mr-2">
+                        <span class="text-sm font-medium text-gray-600">อัปเดตอัตโนมัติ</span>
+                        <button 
+                            @click="toggleAutoRefresh"
+                            class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-2"
+                            :class="isAutoRefreshEnabled ? 'bg-violet-600' : 'bg-gray-200'"
+                            role="switch"
+                            :aria-checked="isAutoRefreshEnabled"
+                        >
+                            <span
+                                aria-hidden="true"
+                                class="pointer-events-none inline-block h-5 w-5 transforms rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                                :class="isAutoRefreshEnabled ? 'translate-x-5' : 'translate-x-0'"
+                            />
+                        </button>
+                        <span v-if="isAutoRefreshEnabled" class="text-xs text-violet-600 font-bold animate-pulse">15s</span>
+                    </div>
+
                     <button
-                        @click="refreshAllAttendanceStatuses"
+                        @click="refreshAllAttendanceStatuses(false)"
                         :disabled="isRefreshingAllStatuses"
-                        class="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:scale-105 font-bold"
+                        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow hover:shadow-md transform hover:scale-105 font-bold text-sm"
                     >
                         <Icon
                             :icon="isRefreshingAllStatuses ? 'eos-icons:loading' : 'heroicons:arrow-path'"
-                            class="h-5 w-5"
+                            class="h-4 w-4"
                             :class="{ 'animate-spin': isRefreshingAllStatuses }"
                         />
                         <span>
-                            {{ isRefreshingAllStatuses ? 'กำลังอัปเดตสถานะ...' : 'โหลดใหม่' }}
+                            {{ isRefreshingAllStatuses ? 'กำลังอัปเดต...' : 'โหลดใหม่' }}
                         </span>
                     </button>
                 </div>
@@ -326,22 +403,22 @@ const refreshAllAttendanceStatuses = async () => {
                 <div id="tab-panel-1a" aria-hidden="false" role="tabpanel" aria-labelledby="tab-label-1a" tabindex="-1">
                     <staggered-fade :duration="50" tag="ul" class="flex flex-col w-full">
                         <div class="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-                            <div class="relative overflow-x-auto">
+                            <div class="relative overflow-x-auto overflow-y-auto max-h-[600px]">
                                 <table class="w-full">
                                     <!-- Enhanced Table Header -->
-                                    <thead class="bg-gradient-to-r from-gray-50 via-gray-100 to-slate-100 border-b-2 border-gray-200">
+                                    <thead class="bg-gradient-to-r from-gray-50 via-gray-100 to-slate-100 border-b-2 border-gray-200 sticky top-0 z-20">
                                         <tr class="text-center">
-                                            <th scope="col" class="px-6 py-4 border border-slate-300 font-black text-gray-800 bg-white min-w-[280px]">
+                                            <th scope="col" class="px-4 py-3 border border-slate-300 font-black text-gray-800 bg-white min-w-[220px] sticky left-0 z-30 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                                                 <div class="flex items-center justify-center gap-3">
-                                                    <div class="w-10 h-10 bg-gradient-to-br from-violet-100 to-purple-100 rounded-xl flex items-center justify-center shadow-sm">
-                                                        <Icon icon="heroicons:user-group" class="w-5 h-5 text-violet-600" />
+                                                    <div class="w-8 h-8 bg-gradient-to-br from-violet-100 to-purple-100 rounded-xl flex items-center justify-center shadow-sm">
+                                                        <Icon icon="heroicons:user-group" class="w-4 h-4 text-violet-600" />
                                                     </div>
                                                     <span class="uppercase tracking-wide">สมาชิก</span>
                                                 </div>
                                             </th>
 
                                             <th scope="col" v-for="(attendance, index) in groupAttendances" :key="attendance.id"
-                                                class="px-3 py-4 border border-slate-300 min-w-[80px]">
+                                                class="px-2 py-3 border border-slate-300 min-w-[80px]">
                                                 <button
                                                     @click.prevent="handleShowAttendance(index)"
                                                     class="flex justify-center items-center mx-auto text-sm font-bold text-green-600 hover:text-green-700 hover:bg-green-50 rounded-xl px-3 py-2 transition-all duration-300 transform hover:scale-105 shadow-sm hover:shadow-md"

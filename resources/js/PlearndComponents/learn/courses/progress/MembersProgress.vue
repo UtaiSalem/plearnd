@@ -166,66 +166,68 @@ const exportTableToExcel = () => {
 
 <template>
     <div>
-        <div class="relative overflow-x-auto rounded-lg">
-            <table ref="membersProgressTable" class="w-screen text-sm text-left rtl:text-right text-gray-700">
-                <thead class="text-xs font-bold text-gray-800">
+        <div class="relative overflow-auto rounded-lg shadow-md max-h-[80vh] border border-gray-200">
+            <table ref="membersProgressTable" class="w-full text-sm text-left rtl:text-right text-gray-700 bg-white">
+                <thead class="text-xs font-bold text-gray-800 bg-gray-50 sticky top-0 z-20 shadow-sm">
                     <tr class="text-center">
-                        <th scope="col" class="w-12 px-3 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
+                        <th scope="col" class="w-16 px-2 py-3 border border-slate-300 bg-gray-100 sticky left-0 z-30 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
                             เลขที่
                         </th>
-                        <th scope="col" class="w-20 px-3 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
+                        <th scope="col" class="w-20 px-2 py-3 border border-slate-300 bg-gray-100 sticky left-16 z-20">
                             รหัส
                         </th>
-                        <th scope="col" class="px-3 py-3 border border-slate-300 min-w-48 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
+                        <th scope="col" class="min-w-[200px] px-2 py-3 border border-slate-300 bg-gray-100 z-10">
                             ชื่อ - สกุล
                         </th>
-                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-purple-100 to-purple-200 shadow-sm min-w-16 w-16"
+                        <th scope="col" class="w-16 min-w-[4rem] px-2 py-3 border border-slate-300 bg-purple-50"
                             v-for="(assignment, index) in page.props.assignments?.data" :key="assignment.id">
                             {{ '@' + (index + 1) + '(' + assignment.points +')'  }}
                         </th>
-                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-cyan-100 to-cyan-200 shadow-sm min-w-16 w-16"
+                        <th scope="col" class="w-16 min-w-[4rem] px-2 py-3 border border-slate-300 bg-cyan-50"
                             v-for="(quiz, index) in page.props.quizzes?.data" :key="quiz.id">
                             {{ '#' + (index + 1) + '(' + quiz.total_score +')' }}
                         </th>
-                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-yellow-100 to-yellow-200 shadow-sm">
+                        <th scope="col" class="min-w-[100px] px-2 py-3 border border-slate-300 bg-yellow-50">
                             {{ 'คะแนนเก็บ (' + page.props.course?.data?.total_score +')' }}
                         </th>
-                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-green-100 to-green-200 shadow-sm">
+                        <th scope="col" class="min-w-[80px] px-2 py-3 border border-slate-300 bg-green-50">
                             คะแนนพิเศษ
                         </th>
-                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-indigo-100 to-indigo-200 shadow-sm">
+                        <th scope="col" class="min-w-[100px] px-2 py-3 border border-slate-300 bg-indigo-50">
                             คะแนน (ได้/เต็ม)
                         </th>
-                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-pink-100 to-pink-200 shadow-sm">
+                        <th scope="col" class="min-w-[80px] px-2 py-3 border border-slate-300 bg-pink-50">
                             คะแนนรวม
                         </th>
-                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-emerald-100 to-emerald-200 shadow-sm">
+                        <th scope="col" class="min-w-[80px] px-2 py-3 border border-slate-300 bg-emerald-50">
                             เกรดที่ทำได้
                         </th>
-                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
+                        <th scope="col" class="min-w-[80px] px-2 py-3 border border-slate-300 bg-gray-50">
                             เกรดที่แก้ได้
                         </th>
-                        <th scope="col" class="px-3 py-3 border border-slate-300 bg-gradient-to-r from-gray-100 to-gray-200 shadow-sm">
+                        <th scope="col" class="min-w-[150px] px-2 py-3 border border-slate-300 bg-gray-50">
                             หมายเหตุ
                         </th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-200">
                     <tr v-for="member in members.sort(function (a, b) { return a.order_number - b.order_number }).filter((member)=> member.order_number !== null)"
-                        :key="member.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        :key="member.id" class="bg-white hover:bg-gray-50 transition-colors">
                         <MemberProgressItem :member="member" :isCourseAdmin="isCourseAdmin" />
                     </tr>
                     <tr v-for="member in members.sort(function (a, b) { return a.order_number - b.order_number }).filter((member)=> member.order_number === null)"
-                        :key="member.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        :key="member.id" class="bg-white hover:bg-gray-50 transition-colors">
                         <MemberProgressItem :member="member" :isCourseAdmin="isCourseAdmin" />
                     </tr>
                 </tbody>
             </table>
-            <div class="flex w-full justify-end my-4">
-                <button ref="downloadButton" @click.prevent="exportTableToExcel" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded shadow-md hover:from-blue-600 hover:to-blue-700 transition-all duration-200">
-                    ดาวน์โหลด Excel
-                </button>
-            </div>
+        </div>
+        
+        <div class="flex w-full justify-end mt-4">
+            <button ref="downloadButton" @click.prevent="exportTableToExcel" class="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl shadow-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 font-bold text-sm">
+                <Icon icon="file-icons:microsoft-excel" class="w-5 h-5" />
+                <span>ดาวน์โหลด Excel</span>
+            </button>
         </div>
     </div>
 </template>

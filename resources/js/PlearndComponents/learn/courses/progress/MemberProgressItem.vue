@@ -271,7 +271,7 @@ const navigateToMemberSettings = (courseId, memberId) => {
 
 <template>
     <td scope="row" :class="gradeStatus ? gradeProgress(gradePercentage).lightGradient : 'bg-gradient-to-r from-red-50 to-red-100'"
-        class="px-3 py-1 border border-slate-300 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center shadow-sm">
+        class="px-3 py-1 border border-slate-300 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center shadow-sm sticky left-0 z-20">
         <div v-if="!isCourseAdmin" class="w-12 min-w-fit">
             {{ member.order_number }}
         </div>
@@ -285,7 +285,7 @@ const navigateToMemberSettings = (courseId, memberId) => {
         </form>
     </td>
     <td :class="gradeStatus ? gradeProgress(gradePercentage).lightGradient : 'bg-gradient-to-r from-red-50 to-red-100'"
-        class="px-3 py-1 border border-slate-300 text-center shadow-sm">
+        class="px-3 py-1 border border-slate-300 text-center shadow-sm sticky left-16 z-10">
         <div v-if="!isCourseAdmin" class="flex justify-center items-center">
             <a 
                 :href="`/courses/${member.course_id}/members/${member.id}/member-grade-progress`"

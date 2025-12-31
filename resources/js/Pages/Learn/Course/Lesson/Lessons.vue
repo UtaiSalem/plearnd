@@ -37,7 +37,7 @@ const isLoadingPage = ref(false);
 
                 <div class=" space-y-2">
                     <div v-if="!props.lessons.data.length"
-                        class="p-4 my-4 text-base text-gray-600 bg-white border-t-4 border-blue-500 rounded-lg shadow-lg ">
+                        class="p-4 mb-4 text-base text-gray-600 bg-white border-t-4 border-blue-500 rounded-lg shadow-lg ">
                         <div class="text-center">
                             <p>ยังไม่มีบทเรียนในรายวิชานี้</p>
                         </div>

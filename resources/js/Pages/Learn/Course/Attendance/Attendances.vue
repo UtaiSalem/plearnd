@@ -25,11 +25,11 @@ const props = defineProps({
         >
             <template #courseContent>
 
-                <div class=" mt-4" v-if="props.isCourseAdmin">
+                <div class="" v-if="props.isCourseAdmin">
                     <CourseAttendance :groups="props.groups.data" />
                 </div>
                 
-                <div class=" mt-4" v-else-if="props.courseMemberOfAuth">
+                <div class="" v-else-if="props.courseMemberOfAuth">
                     <!-- Show warning if member has no group -->
                     <div v-if="!props.courseMemberOfAuth.group_id" class="bg-gradient-to-r from-amber-50 via-orange-50 to-yellow-50 border-l-4 border-amber-500 rounded-xl p-8 mb-6 shadow-lg">
                         <div class="flex items-center justify-between">

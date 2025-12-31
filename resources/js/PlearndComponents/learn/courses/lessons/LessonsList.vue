@@ -66,7 +66,7 @@ const toggleLesson = (lessonId) => {
     <div class="">
         <LoadingPage v-if="isLoadingPage" />
         
-        <div class=" border-t-[3px] border-blue-500 p-3 my-4 text-xl shadow-lg bg-white rounded-lg flex justify-between items-center">
+        <div class=" border-t-[3px] border-blue-500 p-3 mb-4 text-xl shadow-lg bg-white rounded-lg flex justify-between items-center">
             <span>
                 บทเรียนในรายวิชา {{ lessons.length }} บทเรียน
             </span>
