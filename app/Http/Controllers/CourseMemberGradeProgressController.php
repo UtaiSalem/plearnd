@@ -92,6 +92,13 @@ class CourseMemberGradeProgressController extends Controller
 
     public function processGrades($courseId, $memberId)
     {
+        $course = Course::find($courseId);
+        if (!$course) {
+             return response()->json(['error' => 'Course not found'], 404);
+        }
+
+        $this->authorize('manageMembers', $course);
+
         DB::beginTransaction();
 
         try {
@@ -235,6 +242,8 @@ class CourseMemberGradeProgressController extends Controller
 
     public function memberGradeProgress(Course $course, CourseMember $member)
     {
+        $this->authorize('viewProgress', $course);
+
         $courseAssignments = $course->courseAssignments;
 
         $user_assignments_answers = AssignmentAnswer::with([

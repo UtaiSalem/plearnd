@@ -6,7 +6,7 @@ import CourseInfomation from '@/PlearndComponents/learn/courses/info/CourseInfom
 const props = defineProps({
     course: Object,
     // lessons: Object,
-    // groups: Object,
+    groups: Object,
     isCourseAdmin: Boolean,
     courseMemberOfAuth: Object,
 });
@@ -17,6 +17,7 @@ const props = defineProps({
     <div>
         <CourseLayout 
             :course 
+            :groups="props.groups"
             :isCourseAdmin
             :activeTab="12"
             :courseMemberOfAuth

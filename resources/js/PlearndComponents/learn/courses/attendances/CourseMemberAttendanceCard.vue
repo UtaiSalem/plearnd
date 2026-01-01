@@ -204,7 +204,7 @@ onMounted(async () => {
                     <!-- Enhanced Table Header -->
                     <thead class="bg-gradient-to-r from-gray-50 via-gray-100 to-slate-100 border-b-2 border-gray-200">
                         <tr>
-                            <th class="px-6 py-5 text-left">
+                            <th class="px-6 py-5 text-left hidden sm:table-cell">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 bg-gradient-to-br from-violet-100 to-purple-100 rounded-xl flex items-center justify-center shadow-sm">
                                         <Icon icon="heroicons:hashtag" class="h-5 w-5 text-violet-600" />
@@ -228,7 +228,7 @@ onMounted(async () => {
                                     <span class="text-sm font-black text-gray-700 uppercase tracking-wide">เวลาเริ่ม</span>
                                 </div>
                             </th>
-                            <th class="px-6 py-5 text-left">
+                            <th class="px-6 py-5 text-left hidden md:table-cell">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 bg-gradient-to-br from-red-100 to-pink-100 rounded-xl flex items-center justify-center shadow-sm">
                                         <Icon icon="heroicons:clock" class="h-5 w-5 text-red-600" />
@@ -236,7 +236,7 @@ onMounted(async () => {
                                     <span class="text-sm font-black text-gray-700 uppercase tracking-wide">เวลาสิ้นสุด</span>
                                 </div>
                             </th>
-                            <th class="px-6 py-5 text-left">
+                            <th class="px-6 py-5 text-left hidden lg:table-cell">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 bg-gradient-to-br from-indigo-100 to-blue-100 rounded-xl flex items-center justify-center shadow-sm">
                                         <Icon icon="heroicons:document-text" class="h-5 w-5 text-indigo-600" />
@@ -262,7 +262,7 @@ onMounted(async () => {
                             :key="attendance.id"
                             class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 transform hover:scale-[1.01]"
                         >
-                            <td class="px-6 py-5">
+                            <td class="px-6 py-5 hidden sm:table-cell">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 bg-gradient-to-br from-violet-100 to-purple-100 rounded-xl flex items-center justify-center shadow-sm">
                                         <span class="text-violet-600 font-black text-lg">{{ aIndx + 1 }}</span>
@@ -289,7 +289,7 @@ onMounted(async () => {
                                     </span>
                                 </div>
                             </td>
-                            <td class="px-6 py-5">
+                            <td class="px-6 py-5 hidden md:table-cell">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 bg-gradient-to-br from-red-100 to-pink-100 rounded-lg flex items-center justify-center">
                                         <Icon icon="heroicons:stop-circle" class="h-5 w-5 text-red-600" />
@@ -299,7 +299,7 @@ onMounted(async () => {
                                     </span>
                                 </div>
                             </td>
-                            <td class="px-6 py-5">
+                            <td class="px-6 py-5 hidden lg:table-cell">
                                 <div v-if="attendance.description" class="max-w-xs">
                                     <p class="text-sm text-gray-700 font-medium line-clamp-2 bg-gray-50 rounded-lg p-2">{{ attendance.description }}</p>
                                 </div>

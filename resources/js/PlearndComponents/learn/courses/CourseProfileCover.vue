@@ -19,6 +19,7 @@ const props = defineProps({
     subModelNameTh: String,
 
     courseMemberOfAuth: Object,
+    groups: { type: [Array, Object], default: null },
 });
 
 const emit = defineEmits([
@@ -35,8 +36,18 @@ const emit = defineEmits([
 // Initialize store
 const courseProfileStore = useCourseProfileStore();
 
-// Get course groups from Inertia props with ref for proper reactivity
-const courseGroups = ref(usePage().props.course?.data?.groups || []);
+// Get course groups from props or Inertia props
+const courseGroups = computed(() => {
+    if (props.groups) {
+        if (Array.isArray(props.groups)) {
+            return props.groups;
+        }
+        if (props.groups.data && Array.isArray(props.groups.data)) {
+            return props.groups.data;
+        }
+    }
+    return usePage().props.course?.data?.groups || [];
+});
 
 // Check if groups are available and has content
 const hasGroups = computed(() => courseGroups.value && courseGroups.value.length > 0);

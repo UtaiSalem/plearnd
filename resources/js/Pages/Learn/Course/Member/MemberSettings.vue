@@ -25,7 +25,7 @@ const props = defineProps({
             :courseMemberOfAuth
         >
             <template #courseContent>
-                <div class=" mt-4">
+                <div class="">
                     <CourseMemberSetting :member_info="props.member.data" />
                 </div>
             </template>

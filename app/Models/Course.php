@@ -81,8 +81,11 @@ class Course extends Model
         return $this->hasMany(CourseMember::class);
     }
 
-    public function isMember(User $user)
+    public function isMember(?User $user)
     {
+        if (!$user) {
+            return false;
+        }
         return $this->members->contains($user);
     }
 

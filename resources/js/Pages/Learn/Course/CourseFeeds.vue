@@ -67,6 +67,7 @@ const handleAddNewActivity = (newActivity) => {
 <template>
     <CourseLayout
         :course 
+        :groups="courseGroups"
         :isCourseAdmin
         :courseMemberOfAuth
         :activeTab="11"

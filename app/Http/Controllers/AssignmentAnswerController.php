@@ -65,9 +65,7 @@ class AssignmentAnswerController extends Controller
     public function update(Assignment $assignment, AssignmentAnswer $answer, Request $request)
     {
         // Verify that the user owns this answer or is an admin
-        if ($answer->user_id !== auth()->id() && !$request->user()->isCourseAdmin($request->course_id)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
+        $this->authorize('update', $answer);
 
         try {
             DB::beginTransaction();

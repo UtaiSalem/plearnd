@@ -124,6 +124,7 @@ async function handleRequestToBeUnMember(memberId) {
                 :subModelNameTh="'บทเรียน'"
 
                 :courseMemberOfAuth="props.courseMemberOfAuth"
+                :groups="props.groups"
 
                 @update:coverImage="handleCoverUpdate"
                 @update:logoImage="handleLogoUpdate"

@@ -35,8 +35,10 @@ class CourseMemberController extends Controller
 
     public function show(Course $course, CourseGroup $group, CourseMember $member)
     {
+        $this->authorize('view', $member);
+
         return Inertia::render('Learn/Course/Member/Member', [
-            'isCourseAdmin' => $course->user_id === auth()->id(),
+            'isCourseAdmin' => $course->user_id === auth()->id() || $course->courseMembers()->where('user_id', auth()->id())->where('role', 4)->exists(),
             'course'        => new CourseResource($course),
             'lessons'       => LessonResource::collection($course->courseLessons),
             'groups'        => CourseGroupResource::collection($course->courseGroups),
@@ -133,13 +135,22 @@ class CourseMemberController extends Controller
     //function update
     public function update(Course $course, CourseMember $member, Request $request)
     {
-        $member->update([
+        $isSelf = $member->user_id === auth()->id();
+        $canUpdateAsAdmin = auth()->user()->can('update', $member);
+
+        if (!$isSelf && !$canUpdateAsAdmin) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $data = [
             'member_name'   => $request->member_name,
             'order_number'  => $request->order_number,
             'member_code'   => $request->member_code,
-        ]);
+        ];
 
-        if($member->user_id === auth()->id()){
+        $member->update($data);
+
+        if($isSelf){
             $member->update([
                 'notes_comments' => null,
             ]);
@@ -154,6 +165,7 @@ class CourseMemberController extends Controller
     // function delete course's member
     public function deleteCourseMember(Course $course, CourseMember $member)
     {
+        $this->authorize('delete', $member);
         
         try {
             $member_group = CourseGroupMember::where('course_id', $course->id)
@@ -196,6 +208,8 @@ class CourseMemberController extends Controller
     //function update member bonus points
     public function updateBonusPoints(Course $course, CourseMember $member, Request $request)
     {
+        $this->authorize('update', $member);
+
         $member->increment('bonus_points', $request->bonus_points);
 
         $member->update([
@@ -231,6 +245,8 @@ class CourseMemberController extends Controller
 
     public function updateGradeProgress(Course $course, CourseMember $member, Request $request)
     {
+        $this->authorize('update', $member);
+
         $member->update([
             'grade_progress' => $request->grade_progress,
         ]);
@@ -242,6 +258,8 @@ class CourseMemberController extends Controller
 
     public function updateNotesComments(Course $course, CourseMember $member, Request $request)
     {
+        $this->authorize('update', $member);
+
         $member->update([
             'notes_comments' => $request->notes_comments,
         ]);
@@ -254,6 +272,8 @@ class CourseMemberController extends Controller
 
     public function getMembersRequesters(Course $course)
     {
+        $this->authorize('manageMembers', $course);
+
         $members = $course->courseMembers()->where('course_member_status', 0)->latest()->paginate();
 
         return Inertia::render('Learn/Course/CourseMemberRequesters', [
@@ -267,6 +287,8 @@ class CourseMemberController extends Controller
 
     public function memberSettings(Course $course, CourseMember $course_member)
     {
+        $this->authorize('manageMembers', $course);
+
         // โหลด assignments พร้อมกับ answers ของ member คนนั้นๆ พร้อม relationships ที่จำเป็น
         $assignments = $course->courseAssignments()
             ->with([
@@ -300,6 +322,8 @@ class CourseMemberController extends Controller
 
     public function memberProgress(Course $course, CourseMember $course_member)
     {
+        $this->authorize('viewProgress', $course);
+
         // โหลด assignments พร้อมกับ answers ของ member คนนั้นๆ พร้อม relationships ที่จำเป็น
         $assignments = $course->courseAssignments()
             ->with([
@@ -333,6 +357,8 @@ class CourseMemberController extends Controller
 
     public function updateOrderNumber(Course $course, CourseMember $member, Request $request)
     {
+        $this->authorize('updateOrderNumber', $member);
+
         $member->update([
             'order_number' => $request->order_number,
         ]);
@@ -348,6 +374,8 @@ class CourseMemberController extends Controller
      */
     public function processMemberScores(Course $course)
     {
+        $this->authorize('manageMembers', $course);
+
         // Get all course members
         $courseMembers = $course->courseMembers()->with('user')->get();
         

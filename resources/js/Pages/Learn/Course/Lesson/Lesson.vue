@@ -8,6 +8,7 @@ const props = defineProps({
     isCourseAdmin: Boolean,
     courseMemberOfAuth: Object,
     authUserPP: Number,
+    groups: Object,
 });
 
 </script>
@@ -16,6 +17,7 @@ const props = defineProps({
     <div>
      <CourseLayout
         :course="props.course"
+        :groups="props.groups"
         :isCourseAdmin="props.isCourseAdmin"
         :activeTab="1"
      >

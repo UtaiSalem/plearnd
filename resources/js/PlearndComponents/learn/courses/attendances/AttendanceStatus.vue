@@ -44,6 +44,8 @@ const hasError = ref(false);
 const errorMessage = ref('');
 const showStatusMenu = ref(false);
 const isUpdatingStatus = ref(false);
+const menuButtonRef = ref(null);
+const dropdownPosition = ref({ top: 0, left: 0 });
 
 // Helper function to compute pending status
 function computeIsPending() {
@@ -110,6 +112,13 @@ const attendanceStatus = computed(()=>{
     }
 });
 
+const statusOptions = [
+    { value: 1, label: 'มา', icon: 'heroicons-outline:check-circle', color: 'text-green-500', bgColor: 'bg-green-50' },
+    { value: 2, label: 'สาย', icon: 'heroicons-outline:clock', color: 'text-yellow-500', bgColor: 'bg-yellow-50' },
+    { value: 3, label: 'ลา', icon: 'heroicons-outline:document-text', color: 'text-blue-500', bgColor: 'bg-blue-50' },
+    { value: 0, label: 'ขาด', icon: 'heroicons-outline:x-circle', color: 'text-red-500', bgColor: 'bg-red-50' },
+];
+
 // Accessibility text for screen readers
 const accessibilityText = computed(() => {
     if (hasError.value) {
@@ -157,6 +166,63 @@ const checkAttendanceStatus = async () => {
         }
     } finally {
         isCheckingStatus.value = false;
+    }
+};
+
+const toggleStatusMenu = () => {
+    if (isUpdatingStatus.value) return;
+    
+    if (!showStatusMenu.value && menuButtonRef.value) {
+        const rect = menuButtonRef.value.getBoundingClientRect();
+        dropdownPosition.value = {
+            top: rect.bottom + 8,
+            left: rect.right - 192 // 192px is w-48
+        };
+    }
+    
+    showStatusMenu.value = !showStatusMenu.value;
+};
+
+const closeStatusMenu = () => {
+    showStatusMenu.value = false;
+};
+
+const updateStatusByAdmin = async (newStatus, event) => {
+    if (isUpdatingStatus.value) return;
+    
+    // Close menu immediately
+    showStatusMenu.value = false;
+    
+    isUpdatingStatus.value = true;
+    
+    try {
+        await attendanceStore.updateMemberStatusInAttendance(props.attendance.id, props.memberId, newStatus);
+        refStatus.value = newStatus;
+        isPending.value = false;
+        
+        // Show success toast
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true
+        });
+        
+        Toast.fire({
+            icon: 'success',
+            title: 'อัปเดตสถานะเรียบร้อย'
+        });
+        
+    } catch (error) {
+        console.error('Failed to update status:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'เกิดข้อผิดพลาด',
+            text: 'ไม่สามารถอัปเดตสถานะได้ กรุณาลองใหม่',
+        });
+    } finally {
+        isUpdatingStatus.value = false;
     }
 };
 
@@ -242,6 +308,7 @@ const handlePendingClick = async () => {
         <!-- Admin edit button for pending status -->
         <button
             v-if="isCourseAdmin"
+            ref="menuButtonRef"
             @click.stop="toggleStatusMenu"
             :disabled="isUpdatingStatus"
             class="p-2 rounded-lg transition-all duration-200 hover:bg-gray-100 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
@@ -263,115 +330,7 @@ const handlePendingClick = async () => {
         </button>
         
         <!-- Status menu dropdown for pending -->
-        <Transition
-            enter-active-class="transition ease-out duration-200"
-            enter-from-class="opacity-0 scale-95"
-            enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition ease-in duration-150"
-            leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-95"
-        >
-            <div
-                v-if="showStatusMenu && isCourseAdmin"
-                v-click-outside="closeStatusMenu"
-                class="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
-                role="menu"
-                aria-orientation="vertical"
-                aria-labelledby="status-menu-button"
-                @click.stop
-            >
-                <div class="py-1">
-                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide border-b border-gray-100">
-                        เลือกสถานะ
-                    </div>
-                    <button
-                        v-for="option in statusOptions"
-                        :key="option.value"
-                        @click.stop="updateStatusByAdmin(option.value, $event)"
-                        :disabled="refStatus === option.value || isUpdatingStatus"
-                        class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors duration-150"
-                        :class="[
-                            option.bgColor,
-                            option.color,
-                            refStatus === option.value 
-                                ? 'bg-gray-100 cursor-default opacity-60' 
-                                : 'hover:shadow-sm cursor-pointer',
-                            isUpdatingStatus ? 'opacity-50 cursor-not-allowed' : ''
-                        ]"
-                        type="button"
-                        role="menuitem"
-                    >
-                        <Icon
-                            :icon="option.icon"
-                            width="20"
-                            height="20"
-                            aria-hidden="true"
-                        />
-                        <span class="flex-1 text-left">{{ option.label }}</span>
-                        <Icon
-                            v-if="refStatus === option.value"
-                            icon="heroicons-outline:check"
-                            width="16"
-                            height="16"
-                            class="text-gray-400"
-                            aria-hidden="true"
-                        />
-                    </button>
-                </div>
-            </div>
-        </Transition>
-    </div>
-    
-    <!-- Confirmed status display with enhanced styling -->
-    <div v-else class="relative group" :aria-label="accessibilityText">
-        <!-- Status display with admin edit button -->
-        <div class="relative inline-flex items-center gap-1">
-            <div
-                class="inline-flex items-center gap-2 rounded-xl text-sm font-bold shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105 px-2 py-1.5"
-                :class="[
-                    attendanceStatus.bgColor,
-                    attendanceStatus.color === 'text-green-500' ? 'border border-green-200' :
-                    attendanceStatus.color === 'text-red-500' ? 'border border-red-200' :
-                    attendanceStatus.color === 'text-yellow-500' ? 'border border-yellow-200' :
-                    attendanceStatus.color === 'text-blue-500' ? 'border border-blue-200' :
-                    'border border-gray-200'
-                ]"
-                role="status"
-            >
-                <Icon
-                    :icon="attendanceStatus.icon"
-                    width="24"
-                    height="24"
-                    :class="attendanceStatus.color"
-                    aria-hidden="true"
-                />
-                <span class="sr-only">{{ attendanceStatus.label }}</span>
-            </div>
-            
-            <!-- Admin edit button - แสดงเสมอสำหรับ course admin -->
-            <button
-                v-if="isCourseAdmin"
-                @click.stop="toggleStatusMenu"
-                :disabled="isUpdatingStatus"
-                class="p-2 rounded-lg transition-all duration-200 hover:bg-gray-100 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
-                :class="{ 'opacity-50 cursor-not-allowed': isUpdatingStatus }"
-                type="button"
-                title="แก้ไขสถานะการเข้าร่วม"
-                aria-label="แก้ไขสถานะการเข้าร่วม"
-            >
-                <Icon
-                    :icon="isUpdatingStatus ? 'heroicons-outline:arrow-path' : 'heroicons-outline:pencil'"
-                    width="20"
-                    height="20"
-                    :class="[
-                        'transition-all duration-200',
-                        isUpdatingStatus ? 'text-blue-500 animate-spin' : 'text-gray-600 hover:text-blue-600'
-                    ]"
-                    aria-hidden="true"
-                />
-            </button>
-            
-            <!-- Status menu dropdown -->
+        <Teleport to="body">
             <Transition
                 enter-active-class="transition ease-out duration-200"
                 enter-from-class="opacity-0 scale-95"
@@ -381,9 +340,10 @@ const handlePendingClick = async () => {
                 leave-to-class="opacity-0 scale-95"
             >
                 <div
-                    v-if="showStatusMenu && isCourseAdmin"
+                    v-if="showStatusMenu && isCourseAdmin && isPending"
                     v-click-outside="closeStatusMenu"
-                    class="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden"
+                    class="fixed w-48 bg-white rounded-xl shadow-2xl border border-gray-200 z-[9999] overflow-hidden"
+                    :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }"
                     role="menu"
                     aria-orientation="vertical"
                     aria-labelledby="status-menu-button"
@@ -429,6 +389,120 @@ const handlePendingClick = async () => {
                     </div>
                 </div>
             </Transition>
+        </Teleport>
+    </div>
+    
+    <!-- Confirmed status display with enhanced styling -->
+    <div v-else class="relative group" :aria-label="accessibilityText">
+        <!-- Status display with admin edit button -->
+        <div class="relative inline-flex items-center gap-1">
+            <div
+                class="inline-flex items-center gap-2 rounded-xl text-sm font-bold shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105 px-2 py-1.5"
+                :class="[
+                    attendanceStatus.bgColor,
+                    attendanceStatus.color === 'text-green-500' ? 'border border-green-200' :
+                    attendanceStatus.color === 'text-red-500' ? 'border border-red-200' :
+                    attendanceStatus.color === 'text-yellow-500' ? 'border border-yellow-200' :
+                    attendanceStatus.color === 'text-blue-500' ? 'border border-blue-200' :
+                    'border border-gray-200'
+                ]"
+                role="status"
+            >
+                <Icon
+                    :icon="attendanceStatus.icon"
+                    width="24"
+                    height="24"
+                    :class="attendanceStatus.color"
+                    aria-hidden="true"
+                />
+                <span class="sr-only">{{ attendanceStatus.label }}</span>
+            </div>
+            
+            <!-- Admin edit button - แสดงเสมอสำหรับ course admin -->
+            <button
+                v-if="isCourseAdmin"
+                ref="menuButtonRef"
+                @click.stop="toggleStatusMenu"
+                :disabled="isUpdatingStatus"
+                class="p-2 rounded-lg transition-all duration-200 hover:bg-gray-100 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+                :class="{ 'opacity-50 cursor-not-allowed': isUpdatingStatus }"
+                type="button"
+                title="แก้ไขสถานะการเข้าร่วม"
+                aria-label="แก้ไขสถานะการเข้าร่วม"
+            >
+                <Icon
+                    :icon="isUpdatingStatus ? 'heroicons-outline:arrow-path' : 'heroicons-outline:pencil'"
+                    width="20"
+                    height="20"
+                    :class="[
+                        'transition-all duration-200',
+                        isUpdatingStatus ? 'text-blue-500 animate-spin' : 'text-gray-600 hover:text-blue-600'
+                    ]"
+                    aria-hidden="true"
+                />
+            </button>
+            
+            <!-- Status menu dropdown -->
+            <Teleport to="body">
+                <Transition
+                    enter-active-class="transition ease-out duration-200"
+                    enter-from-class="opacity-0 scale-95"
+                    enter-to-class="opacity-100 scale-100"
+                    leave-active-class="transition ease-in duration-150"
+                    leave-from-class="opacity-100 scale-100"
+                    leave-to-class="opacity-0 scale-95"
+                >
+                    <div
+                        v-if="showStatusMenu && isCourseAdmin && !isPending"
+                        v-click-outside="closeStatusMenu"
+                        class="fixed w-48 bg-white rounded-xl shadow-2xl border border-gray-200 z-[9999] overflow-hidden"
+                        :style="{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }"
+                        role="menu"
+                        aria-orientation="vertical"
+                        aria-labelledby="status-menu-button"
+                        @click.stop
+                    >
+                        <div class="py-1">
+                            <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide border-b border-gray-100">
+                                เลือกสถานะ
+                            </div>
+                            <button
+                                v-for="option in statusOptions"
+                                :key="option.value"
+                                @click.stop="updateStatusByAdmin(option.value, $event)"
+                                :disabled="refStatus === option.value || isUpdatingStatus"
+                                class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors duration-150"
+                                :class="[
+                                    option.bgColor,
+                                    option.color,
+                                    refStatus === option.value 
+                                        ? 'bg-gray-100 cursor-default opacity-60' 
+                                        : 'hover:shadow-sm cursor-pointer',
+                                    isUpdatingStatus ? 'opacity-50 cursor-not-allowed' : ''
+                                ]"
+                                type="button"
+                                role="menuitem"
+                            >
+                                <Icon
+                                    :icon="option.icon"
+                                    width="20"
+                                    height="20"
+                                    aria-hidden="true"
+                                />
+                                <span class="flex-1 text-left">{{ option.label }}</span>
+                                <Icon
+                                    v-if="refStatus === option.value"
+                                    icon="heroicons-outline:check"
+                                    width="16"
+                                    height="16"
+                                    class="text-gray-400"
+                                    aria-hidden="true"
+                                />
+                            </button>
+                        </div>
+                    </div>
+                </Transition>
+            </Teleport>
         </div>
         
         <!-- Add a subtle glow effect for confirmed status -->

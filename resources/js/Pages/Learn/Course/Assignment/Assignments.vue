@@ -30,6 +30,7 @@ provide('isLoadingPage', {
     <div class="relative">
         <CourseLayout 
             :course
+            :groups="props.groups"
             :isCourseAdmin
             :courseMemberOfAuth
             :activeTab="2"

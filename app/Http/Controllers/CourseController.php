@@ -201,6 +201,8 @@ class CourseController extends Controller
      */
     public function update(Course $course, Request $request )
     {
+        $this->authorize('update', $course);
+
         $validated = $request->validate([
             'user_id'           => 'nullable',
             'instructor_id'     => 'nullable',
@@ -260,6 +262,8 @@ class CourseController extends Controller
      */
     public function destroy(Course $course)
     {
+        $this->authorize('delete', $course);
+
         $lessons = $course->lessons;
         if ($lessons) {
             foreach ($lessons as $lesson) {
@@ -283,6 +287,7 @@ class CourseController extends Controller
     //function to process all member progrss and grade
     public function progress(Course $course)
     {
+        $this->authorize('viewProgress', $course);
 
         $assignments = $course->courseAssignments()
             ->with([
@@ -294,7 +299,7 @@ class CourseController extends Controller
             ->get();
         
         return Inertia::render('Learn/Course/Progress/CourseMembersProgress', [
-            'isCourseAdmin' => $course->user_id === auth()->id(),
+            'isCourseAdmin' => $isCourseOwner || $isCourseAdmin,
             'course'        => new CourseResource($course),
             'groups'        => CourseGroupResource::collection($course->courseGroups),
             'assignments'       => AssignmentResource::collection($assignments),      
@@ -307,18 +312,27 @@ class CourseController extends Controller
 
     public function settings(Course $course)
     {
+        $this->authorize('update', $course);
+
         return Inertia::render('Learn/Course/Setting/Settings', [
             'course'                => new CourseResource($course),
-            'isCourseAdmin'         => $course->user_id === auth()->id(),
+            'isCourseAdmin'         => true,
             'courseMemberOfAuth'   => $course->courseMembers()->where('user_id', auth()->id())->first(),
         ]);
     }
 
     public function basicInfo(Course $course){
+        $isCourseOwner = $course->user_id === auth()->id();
+        $isCourseAdmin = $course->courseMembers()
+                            ->where('user_id', auth()->id())
+                            ->where('role', 4)
+                            ->exists();
+
         return Inertia::render('Learn/Course/Basic/BasicInfo', [
             'course'                => new CourseResource($course),
-            'isCourseAdmin'         => $course->user_id === auth()->id(),
+            'isCourseAdmin'         => $isCourseOwner || $isCourseAdmin,
             'courseMemberOfAuth'    => $course->courseMembers()->where('user_id', auth()->id())->first(),
+            'groups'                => $course->courseGroups()->get(['id', 'name']),
         ]);
     }
 
@@ -328,12 +342,7 @@ class CourseController extends Controller
     public function updateCover(Course $course, Request $request)
     {
         // Check if user is authorized to update the course
-        if ($course->user_id !== auth()->id()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
-        }
+        $this->authorize('update', $course);
 
         try {
             $request->validate([
@@ -377,12 +386,7 @@ class CourseController extends Controller
     public function updateLogo(Course $course, Request $request)
     {
         // Check if user is authorized to update the course
-        if ($course->user_id !== auth()->id()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
-        }
+        $this->authorize('update', $course);
 
         try {
             $request->validate([
@@ -426,12 +430,7 @@ class CourseController extends Controller
     public function updateHeader(Course $course, Request $request)
     {
         // Check if user is authorized to update the course
-        if ($course->user_id !== auth()->id()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
-        }
+        $this->authorize('update', $course);
 
         try {
             $request->validate([
@@ -462,12 +461,7 @@ class CourseController extends Controller
     public function updateSubheader(Course $course, Request $request)
     {
         // Check if user is authorized to update the course
-        if ($course->user_id !== auth()->id()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ], 403);
-        }
+        $this->authorize('update', $course);
 
         try {
             $request->validate([

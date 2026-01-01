@@ -124,7 +124,9 @@ class UserAnswerQuestionController extends Controller
 
         return DB::transaction(function () use ($quiz, $question, $answer, $request) {
             // Validate that the answer belongs to the user and question
-            if ($answer->user_id !== auth()->id() || $answer->question_id !== $question->id || $answer->quiz_id !== $quiz->id) {
+            $this->authorize('update', $answer);
+
+            if ($answer->question_id !== $question->id || $answer->quiz_id !== $quiz->id) {
                 return response()->json([
                     'success' => false,
                     'message' => 'ไม่สามารถแก้ไขคำตอบนี้ได้'

@@ -52,6 +52,7 @@ class CourseLessonController extends Controller
                 'isCourseAdmin' => $lesson->user_id === auth()->id(),
                 'courseMemberOfAuth' => $course->courseMembers()->where('user_id', auth()->id())->first(),
                 'authUserPP' => auth()->user()->pp,
+                'groups' => $course->courseGroups()->get(['id', 'name']),
             ]);
 
         } catch (\Exception $e) {

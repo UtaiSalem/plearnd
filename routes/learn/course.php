@@ -40,9 +40,10 @@ use App\Http\Controllers\CoursePostCommentReactionController;
 use App\Http\Controllers\CoursePostImageCommentReactionController;
 
 
+Route::get('/courses/{course}/basic-info', [CourseController::class, 'basicInfo'])->name('course.basic-info.page.show');
+
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->group(function () {
     Route::get('/courses/{course}/settings', [CourseController::class, 'settings'])->name('course.settings.page.show');
-    Route::get('/courses/{course}/basic-info', [CourseController::class, 'basicInfo'])->name('course.basic-info.page.show');
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->prefix('/courses')->group(function () {

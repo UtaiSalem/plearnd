@@ -27,6 +27,7 @@ const isLoadingPage = ref(false);
     <div>
         <CourseLayout 
             :course 
+            :groups="props.groups"
             :isCourseAdmin
             :courseMemberOfAuth
             :activeTab="1"

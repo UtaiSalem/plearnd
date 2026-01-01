@@ -13,7 +13,7 @@ class CoursePolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -21,7 +21,7 @@ class CoursePolicy
      */
     public function view(User $user, Course $course): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -29,7 +29,7 @@ class CoursePolicy
      */
     public function create(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -37,7 +37,11 @@ class CoursePolicy
      */
     public function update(User $user, Course $course): bool
     {
-        //
+        return $user->id === $course->user_id || 
+               $course->courseMembers()
+                      ->where('user_id', $user->id)
+                      ->where('role', 4)
+                      ->exists();
     }
 
     /**
@@ -45,8 +49,37 @@ class CoursePolicy
      */
     public function delete(User $user, Course $course): bool
     {
-        //
+        return $user->id === $course->user_id || 
+               $course->courseMembers()
+                      ->where('user_id', $user->id)
+                      ->where('role', 4)
+                      ->exists();
     }
+
+    /**
+     * Determine whether the user can view course progress/grades.
+     */
+    public function viewProgress(User $user, Course $course): bool
+    {
+        return $user->id === $course->user_id || 
+               $course->courseMembers()
+                      ->where('user_id', $user->id)
+                      ->where('role', 4)
+                      ->exists();
+    }
+
+    /**
+     * Determine whether the user can manage course members.
+     */
+    public function manageMembers(User $user, Course $course): bool
+    {
+        return $user->id === $course->user_id || 
+               $course->courseMembers()
+                      ->where('user_id', $user->id)
+                      ->where('role', 4)
+                      ->exists();
+    }
+
 
     /**
      * Determine whether the user can restore the model.
