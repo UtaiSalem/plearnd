@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import { Icon } from '@iconify/vue';
 import MemberProgressItem from './MemberProgressItem.vue';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';

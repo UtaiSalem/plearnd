@@ -53,6 +53,41 @@ class CourseController extends Controller
         ]);
     }
 
+    public function apiShow(Course $course)
+    {
+        // Load groups with members for attendance tab
+        $course->load(['courseGroups.members']);
+        return new CourseResource($course);
+    }
+
+    public function apiProgress(Course $course)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'groups' => $course->courseGroups->map(function ($group) {
+                    return [
+                        'id' => $group->id,
+                        'name' => $group->name,
+                        'members' => $group->members->map(function ($member) {
+                            return [
+                                'id' => $member->id,
+                                'user' => $member->user ? [
+                                    'id' => $member->user->id,
+                                    'name' => $member->user->name,
+                                    'profile_photo_url' => $member->user->profile_photo_url,
+                                ] : null,
+                                'attendance_count' => $member->attendanceRecords()->count(),
+                                'assignment_submissions' => $member->assignmentSubmissions()->count(),
+                                'quiz_attempts' => $member->quizAttempts()->count(),
+                            ];
+                        }),
+                    ];
+                }),
+            ],
+        ]);
+    }
+
     public function getMoreCourses()
     {
         return response()->json([
@@ -188,7 +223,10 @@ class CourseController extends Controller
 
     public function show(Course $course)
     {
-        return to_route('course.feeds', $course->id);
+        return Inertia::render('Learn/Course/Course', [
+            'course' => new CourseResource($course),
+            'activeTab' => 'feeds',
+        ]);
     }
 
     public function edit(Course $course)
@@ -289,50 +327,26 @@ class CourseController extends Controller
     {
         $this->authorize('viewProgress', $course);
 
-        $assignments = $course->courseAssignments()
-            ->with([
-                'answers' => function($query) {
-                    $query->with(['user', 'assignment.assignmentable']);
-                },
-                'images'
-            ])
-            ->get();
-        
-        return Inertia::render('Learn/Course/Progress/CourseMembersProgress', [
-            'isCourseAdmin' => $isCourseOwner || $isCourseAdmin,
-            'course'        => new CourseResource($course),
-            'groups'        => CourseGroupResource::collection($course->courseGroups),
-            'assignments'       => AssignmentResource::collection($assignments),      
-            'quizzes'           => CourseQuizResource::collection($course->courseQuizzes),
-            'members'           => CourseMemberResource::collection($course->courseMembers),
-            'courseMemberOfAuth'=> $course->courseMembers()->where('user_id', auth()->id())->first(),
+        return Inertia::render('Learn/Course/Course', [
+            'course' => new CourseResource($course),
+            'activeTab' => 'progress',
         ]);
-
     }
 
     public function settings(Course $course)
     {
         $this->authorize('update', $course);
 
-        return Inertia::render('Learn/Course/Setting/Settings', [
-            'course'                => new CourseResource($course),
-            'isCourseAdmin'         => true,
-            'courseMemberOfAuth'   => $course->courseMembers()->where('user_id', auth()->id())->first(),
+        return Inertia::render('Learn/Course/Course', [
+            'course' => new CourseResource($course),
+            'activeTab' => 'settings',
         ]);
     }
 
     public function basicInfo(Course $course){
-        $isCourseOwner = $course->user_id === auth()->id();
-        $isCourseAdmin = $course->courseMembers()
-                            ->where('user_id', auth()->id())
-                            ->where('role', 4)
-                            ->exists();
-
-        return Inertia::render('Learn/Course/Basic/BasicInfo', [
-            'course'                => new CourseResource($course),
-            'isCourseAdmin'         => $isCourseOwner || $isCourseAdmin,
-            'courseMemberOfAuth'    => $course->courseMembers()->where('user_id', auth()->id())->first(),
-            'groups'                => $course->courseGroups()->get(['id', 'name']),
+        return Inertia::render('Learn/Course/Course', [
+            'course' => new CourseResource($course),
+            'activeTab' => 'basic-info',
         ]);
     }
 

@@ -65,6 +65,7 @@ require __DIR__ . '/play/post.php';
 require __DIR__ . '/play/game.php';
 require __DIR__ . '/learn/academy.php';
 require __DIR__ . '/learn/course.php';
+require __DIR__ . '/apis/course_spa.php'; // Course SPA API Routes
 require __DIR__ . '/apis/v2/course.php';
 require __DIR__ . '/learn/student.php';
 require __DIR__ . '/homevisit/homevisit.php';

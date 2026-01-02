@@ -19,28 +19,10 @@ class CourseActivityController extends Controller
 
     public function index(Course $course)
     {
-        try {
-
-            $isCourseAdmin = $course->user_id == auth()->id();
-            $cma = $course->courseMembers()->where('user_id', auth()->id())->first();
-            $coursesResource = new CourseResource($course);
-    
-            $activities = Activity::whereHasMorph('activityable', [CoursePost::class], function ($query) use ($course) {
-                    $query->where('course_id', $course->id);
-            })->latest()->paginate();
-    
-            return Inertia::render('Learn/Course/CourseFeeds', [
-                'success'               => true,
-                'academy'               => $course->academy ? new AcademyResource($course->academy) : null,
-                'course'                => $coursesResource,
-                'courseGroups'          => $course->courseGroups,
-                'isCourseAdmin'         => $isCourseAdmin,
-                'courseMemberOfAuth'    => $cma,
-                'activities'            => ActivityResource::collection($activities),
-            ]);
-        } catch (\Exception $e) {
-            return back()->with('error', 'Failed to load course activity'. $e->getMessage());
-        }
+        return Inertia::render('Learn/Course/Course', [
+            'course' => new CourseResource($course),
+            'activeTab' => 'feeds',
+        ]);
     }
 
     public function getActivities(Course $course)
@@ -51,7 +33,12 @@ class CourseActivityController extends Controller
 
         return response()->json([
             'success' => true,
-            'activities' => ActivityResource::collection($activities),
+            'data' => ActivityResource::collection($activities),
+            'meta' => [
+                'current_page' => $activities->currentPage(),
+                'last_page' => $activities->lastPage(),
+                'total' => $activities->total(),
+            ]
         ]);
     }
 }

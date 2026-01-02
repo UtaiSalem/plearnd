@@ -23,13 +23,18 @@ class CourseMemberController extends Controller
 {
     public function index(Course $course)
     {
+        return Inertia::render('Learn/Course/Course', [
+            'course' => new CourseResource($course),
+            'activeTab' => 'members',
+        ]);
+    }
 
-        return Inertia::render('Learn/Course/Member/Members', [
-            'course'                => new CourseResource($course),
-            'members'               => CourseMemberResource::collection($course->courseMembers()->orderBy('order_number')->paginate()),
-            'groups'                => CourseGroupResource::collection($course->courseGroups),
-            'isCourseAdmin'         => $course->user_id === auth()->id(),
-            'courseMemberOfAuth'    => $course->courseMembers()->where('user_id', auth()->id())->first(),
+    public function apiIndex(Course $course)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => CourseMemberResource::collection($course->courseMembers()->orderBy('order_number')->get()),
+            'groups' => CourseGroupResource::collection($course->courseGroups),
         ]);
     }
 

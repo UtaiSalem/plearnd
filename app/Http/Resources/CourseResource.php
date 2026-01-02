@@ -62,6 +62,8 @@ class CourseResource extends JsonResource
             'saleable' => $this->saleable,
             // 'member_detail'     => new CourseMemberResource(),
             // 'assignments'       => AssignmentResource::collection($this->assignments),
+            'is_admin' => $this->user_id === auth()->id() || $this->courseMembers()->where('user_id', auth()->id())->where('role', 4)->exists(),
+            'auth_member' => new CourseMemberResource($this->courseMembers()->where('user_id', auth()->id())->first()),
         ];
     }
 }

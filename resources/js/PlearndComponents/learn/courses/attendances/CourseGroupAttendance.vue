@@ -14,7 +14,15 @@ const props = defineProps({
     groups: Object,
 });
 
-const activeGroupTab = ref(usePage().props.courseMemberOfAuth ? usePage().props.courseMemberOfAuth.last_accessed_group_tab : 0);
+// หา index จาก group_id ที่บันทึกไว้
+function findGroupIndexById(groupId) {
+    if (!groupId || !props.groups?.length) return 0;
+    const index = props.groups.findIndex(g => g.id === groupId);
+    return index >= 0 ? index : 0;
+}
+
+const savedGroupId = usePage().props.courseMemberOfAuth?.last_accessed_group_tab;
+const activeGroupTab = ref(findGroupIndexById(savedGroupId));
 const isLoadingAttendances = ref(false);
 const openCreateNewAttendanceForm = ref(false);
 const groupAttendances = ref([]);
@@ -46,9 +54,10 @@ async function setActiveGroupTab(tab){
     getGroupAttendances(usePage().props.course.data.id, props.groups[activeGroupTab.value].id);
 
     if (usePage().props.courseMemberOfAuth && (tab < props.groups.length)) {
-         let resp = await axios.post(`/courses/${usePage().props.course.data.id}/members/${usePage().props.courseMemberOfAuth.id}/set-active-group-tab`, {group_tab: activeGroupTab.value});
+         const selectedGroup = props.groups[tab];
+         let resp = await axios.post(`/courses/${usePage().props.course.data.id}/members/${usePage().props.courseMemberOfAuth.id}/set-active-group-tab`, {group_tab: selectedGroup.id});
          if (resp.data.success) {
-             usePage().props.courseMemberOfAuth.last_accessed_group_tab = tab;
+             usePage().props.courseMemberOfAuth.last_accessed_group_tab = selectedGroup.id;
          }
     }
 }

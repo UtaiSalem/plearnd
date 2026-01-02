@@ -9,7 +9,7 @@ use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\CoursePostController;
 use App\Http\Controllers\CourseQuizController;
 use App\Http\Controllers\TopicImageController;
-use App\Http\Controllers\CourseGroupController;
+use App\Http\Controllers\Learn\Course\groups\CourseGroupController;
 use App\Http\Controllers\LessonImageController;
 use App\Http\Controllers\CourseLessonController;
 use App\Http\Controllers\CourseMemberController;
@@ -78,11 +78,15 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',
     Route::get('/users/{user}', [CourseController::class, 'getMyCourses'])->name('api.courses.user-courses');
     Route::get('/users/{user}/my-courses', [CourseController::class, 'getMyCourses'])->name('api.courses.my-courses');
     Route::get('/users/{user}/membered', [CourseController::class, 'getAuthMemberedCourses'])->name('api.courses.member');
+
+    Route::get('/{course}', [CourseController::class, 'apiShow'])->name('api.course.show');
+    Route::get('/{course}/feeds', [CourseActivityController::class, 'getActivities'])->name('api.course.feeds');
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->prefix('/courses/{course}/groups')->group(function () {
-    Route::resource('/', CourseGroupController::class);
-    Route::patch('/{group}', [CourseGroupController::class, 'update'])->name('course.groups.update');
+    Route::get('/', [CourseGroupController::class, 'index'])->name('course.groups.index');
+    Route::post('/', [CourseGroupController::class, 'store'])->name('course.groups.store');
+    Route::put('/{groupId}', [CourseGroupController::class, 'update'])->name('course.groups.update');
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified',])->prefix('/courses/{course}/lessons')->group(function () {

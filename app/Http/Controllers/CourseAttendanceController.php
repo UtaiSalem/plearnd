@@ -21,13 +21,21 @@ class CourseAttendanceController extends Controller
      */
     public function index(Course $course, Request $request)
     {
-        $courseMemberOfAuth = $course->courseMembers()->where('user_id', auth()->id())->first();
+        return Inertia::render('Learn/Course/Course', [
+            'course' => new CourseResource($course),
+            'activeTab' => 'attendances',
+        ]);
+    }
 
-        return Inertia::render('Learn/Course/Attendance/Attendances', [
-            'course'        => new CourseResource($course),
-            'groups'        => CourseGroupResource::collection($course->courseGroups),
-            'courseMemberOfAuth'  => $courseMemberOfAuth,
-            'isCourseAdmin' => $course->user_id === auth()->id(),
+    /**
+     * API: Get all attendances for a course
+     */
+    public function apiIndex(Course $course)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => CourseAttendanceResource::collection($course->courseAttendances),
+            'groups' => CourseGroupResource::collection($course->courseGroups),
         ]);
     }
 

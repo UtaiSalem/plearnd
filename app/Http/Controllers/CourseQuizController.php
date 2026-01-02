@@ -29,13 +29,25 @@ class CourseQuizController extends Controller
 
     public function index(Course $course) 
     {
+        return Inertia::render('Learn/Course/Course', [
+            'course' => new CourseResource($course),
+            'activeTab' => 'quizzes',
+        ]);
+    }
+
+    /**
+     * API: Get all quizzes for a course
+     */
+    public function apiIndex(Course $course)
+    {
         $isCourseAdmin = $course->user_id === auth()->id();
-        return Inertia::render('Learn/Course/Quiz/Quizzes',[
-            'course'                => new CourseResource($course),
-            'quizzes'               => $isCourseAdmin ? CourseQuizResource::collection($course->courseQuizzes) : CourseQuizResource::collection($course->courseQuizzes->where('is_active', 1)),
-            // 'groups'             => CourseGroupResource::collection($course->courseGroups),
-            'isCourseAdmin'         => $isCourseAdmin,
-            'courseMemberOfAuth'    => $course->courseMembers()->where('user_id', auth()->id())->first(),
+        $quizzes = $isCourseAdmin 
+            ? CourseQuizResource::collection($course->courseQuizzes) 
+            : CourseQuizResource::collection($course->courseQuizzes->where('is_active', 1));
+            
+        return response()->json([
+            'success' => true,
+            'data' => $quizzes,
         ]);
     }
 

@@ -5,13 +5,26 @@ import { usePage } from "@inertiajs/vue3";
 import StaggeredFade from '@/PlearndComponents/accessories/StaggeredFade.vue';
 import MembersProgress from './MembersProgress.vue';
 
-const activeGroupTab = ref(usePage().props.courseMemberOfAuth.last_accessed_group_tab);
+// หา index จาก group_id ที่บันทึกไว้
+function findGroupIndexById(groupId) {
+    const groups = usePage().props.groups?.data || [];
+    if (!groupId || !groups.length) return 0;
+    const index = groups.findIndex(g => g.id === groupId);
+    return index >= 0 ? index : 0;
+}
+
+const savedGroupId = usePage().props.courseMemberOfAuth?.last_accessed_group_tab;
+const activeGroupTab = ref(findGroupIndexById(savedGroupId));
 
 async function setActiveGroupTab(tab) {
     activeGroupTab.value = tab;
-    let resp = await axios.post(`/courses/${usePage().props.course.data.id}/members/${usePage().props.courseMemberOfAuth.id}/set-active-group-tab`, {group_tab: activeGroupTab.value});
-    if (resp.data.success) {
-        usePage().props.courseMemberOfAuth.last_accessed_group_tab = tab;
+    const groups = usePage().props.groups?.data || [];
+    if (tab < groups.length) {
+        const selectedGroup = groups[tab];
+        let resp = await axios.post(`/courses/${usePage().props.course.data.id}/members/${usePage().props.courseMemberOfAuth.id}/set-active-group-tab`, {group_tab: selectedGroup.id});
+        if (resp.data.success) {
+            usePage().props.courseMemberOfAuth.last_accessed_group_tab = selectedGroup.id;
+        }
     }
 }
 

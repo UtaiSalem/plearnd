@@ -16,14 +16,17 @@ class CourseLessonController extends Controller
 {
     public function index(Course $course)
     {
-        return Inertia::render('Learn/Course/Lesson/Lessons', [
+        return Inertia::render('Learn/Course/Course', [
             'course' => new CourseResource($course),
-            'lessons' => LessonResource::collection($course->courseLessons()->orderBy('order')->paginate()),
-            'isCourseAdmin' => $course->user_id === auth()->id(),
-            'courseMemberOfAuth' => $course->courseMembers()->where('user_id', auth()->id())->first(),
+            'activeTab' => 'lessons',
+        ]);
+    }
 
-            // 'groups'       => CourseGroupResource::collection($course->courseGroups()->orderBy('order')->get()),
-            'groups' => $course->courseGroups()->get(['id', 'name']),
+    public function apiIndex(Course $course)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => LessonResource::collection($course->courseLessons()->orderBy('order')->get()),
         ]);
     }
 

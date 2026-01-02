@@ -14,12 +14,23 @@ import { useAttendanceStore } from '@/stores/attendance';
 
 const props = defineProps({
     groups: Object,
+    course: Object,           // รับจาก parent หรือ usePage
+    isCourseAdmin: Boolean,   // รับจาก parent หรือ usePage
+    courseMemberOfAuth: Object, // รับจาก parent หรือ usePage
 });
 
 // Use attendance store
 const attendanceStore = useAttendanceStore();
 
-const activeGroupTab = ref(usePage().props.courseMemberOfAuth ? usePage().props.courseMemberOfAuth.last_accessed_group_tab : 0);
+// Fallback to usePage props if not passed directly (backward compatibility)
+const courseData = computed(() => props.course || usePage().props.course?.data);
+const isAdmin = computed(() => props.isCourseAdmin ?? usePage().props.isCourseAdmin);
+const authMember = computed(() => props.courseMemberOfAuth || usePage().props.courseMemberOfAuth);
+
+// ใช้กลุ่มแรกเสมอ (เพราะ parent ส่งกลุ่มเดียวมา)
+const currentGroup = computed(() => props.groups?.[0]);
+const currentGroupId = computed(() => currentGroup.value?.id);
+
 const openCreateNewAttendanceForm = ref(false);
 const attendanceResource = ref(null);
 
@@ -30,11 +41,11 @@ const isRefreshingAllStatuses = ref(false);
 
 // Computed properties using store
 const isLoadingAttendances = computed(() => {
-    return attendanceStore.isLoading(`group_${props.groups[activeGroupTab.value]?.id}`);
+    return attendanceStore.isLoading(`group_${currentGroupId.value}`);
 });
 
 const groupAttendances = computed(() => {
-    return attendanceStore.getGroupAttendances(props.groups[activeGroupTab.value]?.id) || [];
+    return attendanceStore.getGroupAttendances(currentGroupId.value) || [];
 });
 
 const showAttendanceResource = computed(()=> {
@@ -42,34 +53,18 @@ const showAttendanceResource = computed(()=> {
 });
 
 const activeGroupMembers = computed(()=> {
-    return props.groups[activeGroupTab.value]?.members?.sort((a,b) => a.order_number - b.order_number) || [];
+    return currentGroup.value?.members?.sort((a,b) => a.order_number - b.order_number) || [];
 });
 
 const attendanceError = computed(() => {
-    return attendanceStore.getError(`group_${props.groups[activeGroupTab.value]?.id}`);
+    return attendanceStore.getError(`group_${currentGroupId.value}`);
 });
 
-async function setActiveGroupTab(tab){
-    activeGroupTab.value = tab;
-    attendanceResource.value = null;
-    
-    // Load attendances for the new group using store
-    await loadGroupAttendances(tab);
-
-    if (usePage().props.courseMemberOfAuth && (tab < props.groups.length)) {
-         let resp = await axios.post(`/courses/${usePage().props.course.data.id}/members/${usePage().props.courseMemberOfAuth.id}/set-active-group-tab`, {group_tab: activeGroupTab.value});
-         if (resp.data.success) {
-             usePage().props.courseMemberOfAuth.last_accessed_group_tab = tab;
-         }
-    }
-}
-
-async function loadGroupAttendances(tabIndex) {
-    const group = props.groups[tabIndex];
-    if (!group) return;
+async function loadGroupAttendances() {
+    if (!currentGroup.value || !courseData.value?.id) return;
     
     try {
-        await attendanceStore.fetchGroupAttendances(usePage().props.course.data.id, group.id, usePage().props.isCourseAdmin);
+        await attendanceStore.fetchGroupAttendances(courseData.value.id, currentGroup.value.id, isAdmin.value);
     } catch (error) {
         console.error('Failed to load group attendances:', error);
         Swal.fire({
@@ -81,19 +76,22 @@ async function loadGroupAttendances(tabIndex) {
 }
 
 onMounted(async ()=>{
-    await loadGroupAttendances(activeGroupTab.value);
+    await loadGroupAttendances();
 });
 
-// Watch for group changes and load data accordingly
-watch(activeGroupTab, async (newTab) => {
-    await loadGroupAttendances(newTab);
+// Watch for group changes from parent and load data accordingly
+watch(currentGroupId, async (newGroupId, oldGroupId) => {
+    if (newGroupId && newGroupId !== oldGroupId) {
+        await loadGroupAttendances();
+    }
 });
 
 const handleAddNewAttendance = async (atdn) => {
     attendanceResource.value = null;
     // Store will handle adding the attendance to the correct group
-    const groupId = props.groups[activeGroupTab.value].id;
-    attendanceStore.addAttendance(groupId, atdn);
+    if (currentGroupId.value) {
+        attendanceStore.addAttendance(currentGroupId.value, atdn);
+    }
     handleCancleCreateNewAttendance();
 }
 
@@ -215,7 +213,7 @@ onUnmounted(() => {
 });
 
 const refreshAllAttendanceStatuses = async (silent = false) => {
-    if (!usePage().props.isCourseAdmin && !isAutoRefreshEnabled.value) return;
+    if (!isAdmin.value && !isAutoRefreshEnabled.value) return;
     
     if (!silent) {
         isRefreshingAllStatuses.value = true;
@@ -236,11 +234,11 @@ const refreshAllAttendanceStatuses = async (silent = false) => {
         // Optimization: Instead of fetchMemberJoinStatus for every member/attendance pair (N*M requests),
         // we should ideally have a bulk endpoint or just reload the group attendances which contains statuses.
         // However, given the current store structure, let's stick to the store action but maybe optimize.
-        // Actually, loadGroupAttendances(activeGroupTab.value) refreshes the whole list including statuses.
+        // Actually, loadGroupAttendances() refreshes the whole list including statuses.
         // This is much more efficient than N*M individual requests if the backend supports it.
         
         // Let's use loadGroupAttendances but silently
-        await attendanceStore.fetchGroupAttendances(usePage().props.course.data.id, props.groups[activeGroupTab.value].id, usePage().props.isCourseAdmin);
+        await attendanceStore.fetchGroupAttendances(courseData.value.id, currentGroupId.value, isAdmin.value);
         
         if (!silent) {
             // Show success message only for manual refresh
@@ -288,7 +286,7 @@ const refreshAllAttendanceStatuses = async (silent = false) => {
                         <p class="text-amber-600 mt-1">กรุณาสร้างกลุ่มก่อนเพื่อจัดการข้อมูลการเข้าเรียน</p>
                     </div>
                 </div>
-                <a :href="`/courses/${$page.props.course.data.id}/groups`"
+                <a :href="`/courses/${courseData?.id}/groups`"
                    class="px-6 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-xl hover:from-amber-700 hover:to-orange-700 transition-all duration-300 text-sm font-bold flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105">
                     <Icon icon="heroicons:user-group" class="h-5 w-5" />
                     ไปที่เมนูกลุ่ม
@@ -297,38 +295,8 @@ const refreshAllAttendanceStatuses = async (silent = false) => {
         </div>
 
         <section v-else class="max-w-full" aria-multiselectable="false">
-            <!-- Enhanced Group Tabs -->
-            <div v-if="$page.props.isCourseAdmin" class="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl shadow-xl overflow-hidden p-4 border border-gray-100">
-                <div class="flex flex-wrap items-center gap-2">
-                    <div v-for="(group, index) in $page.props.groups.data" :key="index" class="flex-1 min-w-[200px]">
-                        <button @click.prevent="setActiveGroupTab(index)"
-                            class="w-full h-14 px-4 rounded-xl text-sm font-bold tracking-wide transition-all duration-300 border-2 focus-visible:outline-none whitespace-nowrap transform hover:scale-105 hover:shadow-lg relative overflow-hidden group"
-                            :class="[
-                                activeGroupTab === index
-                                    ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white border-violet-600 shadow-lg'
-                                    : 'bg-white text-violet-600 border-violet-200 hover:border-violet-400 hover:bg-violet-50',
-                                'disabled:cursor-not-allowed disabled:border-slate-500'
-                            ]"
-                            id="tab-label-1a" role="tab" aria-setsize="3" aria-posinset="1" tabindex="0"
-                            aria-controls="tab-panel-1a" aria-selected="true">
-                            <!-- Add animated background effect for active tab -->
-                            <div v-if="activeGroupTab === index" class="absolute inset-0 bg-gradient-to-r from-white to-transparent opacity-20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-all duration-700"></div>
-                            
-                            <div class="relative flex items-center justify-center gap-2">
-                                <Icon icon="heroicons:user-group" class="w-5 h-5" />
-                                <span>{{ group.name }}</span>
-                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold"
-                                      :class="activeGroupTab === index ? 'bg-white text-violet-600' : 'bg-violet-100 text-violet-600'">
-                                    {{ group.members.length }}
-                                </span>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
             <!-- Enhanced Loading State -->
-            <div v-if="isLoadingAttendances" class="mt-6 p-12 text-center bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 rounded-2xl shadow-xl border border-violet-100">
+            <div v-if="isLoadingAttendances" class="p-12 text-center bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 rounded-2xl shadow-xl border border-violet-100">
                 <div class="relative">
                     <div class="w-20 h-20 border-4 border-violet-200 border-t-violet-600 rounded-full animate-spin mx-auto"></div>
                     <div class="absolute inset-0 flex items-center justify-center">
@@ -353,7 +321,7 @@ const refreshAllAttendanceStatuses = async (silent = false) => {
                     </div>
                 </div>
                 <button
-                    @click="loadGroupAttendances(activeGroupTab)"
+                    @click="loadGroupAttendances()"
                     class="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-xl hover:from-red-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-bold"
                 >
                     <Icon icon="heroicons:arrow-path" class="h-5 w-5" />
@@ -364,7 +332,7 @@ const refreshAllAttendanceStatuses = async (silent = false) => {
             <!-- Enhanced Attendance Resource Display -->
             <div v-if="showAttendanceResource" class="mt-6">
                 <!-- Enhanced Refresh button for course admins -->
-                <div v-if="$page.props.isCourseAdmin" class="mb-6 flex justify-end gap-2 items-center bg-white p-2 rounded-xl shadow-sm border border-gray-100 w-fit ml-auto">
+                <div v-if="isAdmin" class="mb-6 flex justify-end gap-2 items-center bg-white p-2 rounded-xl shadow-sm border border-gray-100 w-fit ml-auto">
                     <!-- Auto Refresh Toggle -->
                     <div class="flex items-center gap-3 px-4 py-2 border-r border-gray-100 mr-2">
                         <span class="text-sm font-medium text-gray-600">อัปเดตอัตโนมัติ</span>
@@ -459,7 +427,7 @@ const refreshAllAttendanceStatuses = async (silent = false) => {
             <section v-if="openCreateNewAttendanceForm" class="mt-6">
                 <div class="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
                     <CreateNewCourseAttendanceForm
-                        :groupId="props.groups[activeGroupTab].id"
+                        :groupId="currentGroupId"
                         @close-form="openCreateNewAttendanceForm = false"
                         @cancle-create-new-attendance="handleCancleCreateNewAttendance"
                         @add-new-attendance="(atdn)=> handleAddNewAttendance(atdn)"
@@ -470,7 +438,7 @@ const refreshAllAttendanceStatuses = async (silent = false) => {
             <section v-if="isShowCurrentAttendance" class="mt-6">
                 <div class="bg-gradient-to-br from-white via-gray-50 to-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
                     <ShowCourseAttendanceForm
-                        :groupId="props.groups[activeGroupTab].id"
+                        :groupId="currentGroupId"
                         :attendance="currentAttendance"
                         @close-form="isShowCurrentAttendance = false"
                         @delete-attendance="preDeleteAttendance"

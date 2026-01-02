@@ -8,11 +8,22 @@ const props = defineProps({
     course: Object,
     courseMemberOfAuth: Object,
     activeTab: Number,
+    isSpa: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const isLoading = ref(false);
 
+const emit = defineEmits(['tab-change']);
+
 const setActiveTab = async (tab) => {
+    if (props.isSpa) {
+        emit('tab-change', tab);
+        return;
+    }
+
     // if(props.courseMemberOfAuth) { await axios.post(`/courses/${props.course.data.id}/members/${props.courseMemberOfAuth.id}/set-active-tab`, {tab: tab}) };
     switch (tab) {
         case 1:
@@ -72,6 +83,8 @@ const setActiveTab = async (tab) => {
             break;
     }
 };
+
+
 </script>
 
 <template>

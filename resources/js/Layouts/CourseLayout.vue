@@ -23,10 +23,17 @@ const props = defineProps({
     isCourseAdmin: Boolean,
     courseMemberOfAuth: Object,
     activeTab: Number,
+    isSpa: {
+        type: Boolean,
+        default: false
+    }
 });
+
+const emit = defineEmits(['tab-change']);
 
 // Initialize store
 const courseProfileStore = useCourseProfileStore();
+
 
 // Reactive computed properties that update from props
 const coverImage = computed(() => {
@@ -139,6 +146,8 @@ async function handleRequestToBeUnMember(memberId) {
                 :courseMemberOfAuth="courseMemberOfAuth"
                 :isCourseAdmin="isCourseAdmin"
                 :activeTab="activeTab"
+                :isSpa="isSpa"
+                @tab-change="(tab) => emit('tab-change', tab)"
             />
         </template>
 

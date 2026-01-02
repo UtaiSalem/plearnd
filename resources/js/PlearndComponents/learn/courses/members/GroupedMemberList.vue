@@ -18,10 +18,18 @@ const authGroup = computed(() => {
     return usePage().props.groups.data.find((group) => group.id === usePage().props.courseMemberOfAuth.group_id);
 });
 
-const activeGroupTab = ref(usePage().props.courseMemberOfAuth ? usePage().props.courseMemberOfAuth.last_accessed_group_tab : 0);
+// หา index จาก group_id ที่บันทึกไว้
+function findGroupIndexById(groupId) {
+    if (!groupId || !props.groups?.length) return 0;
+    const index = props.groups.findIndex(g => g.id === groupId);
+    return index >= 0 ? index : 0;
+}
+
+const savedGroupId = usePage().props.courseMemberOfAuth?.last_accessed_group_tab;
+const activeGroupTab = ref(findGroupIndexById(savedGroupId));
 const unGroupedMembers = ref(usePage().props.members.data.filter((member)=> !member.group));
 
-const groupMembers = ref(authGroup.value ? authGroup.value.members : props.groups[activeGroupTab.value].members);
+const groupMembers = ref(authGroup.value ? authGroup.value.members : props.groups[activeGroupTab.value]?.members || []);
 
 const sorting = ref(0);
 
@@ -85,9 +93,10 @@ const setActiveGroupTab = async (tab) =>{
     }
 
     if (usePage().props.courseMemberOfAuth && (tab < props.groups.length)) {
-         let resp = await axios.post(`/courses/${usePage().props.course.data.id}/members/${usePage().props.courseMemberOfAuth.id}/set-active-group-tab`, {group_tab: activeGroupTab.value});
+         const selectedGroup = props.groups[tab];
+         let resp = await axios.post(`/courses/${usePage().props.course.data.id}/members/${usePage().props.courseMemberOfAuth.id}/set-active-group-tab`, {group_tab: selectedGroup.id});
          if (resp.data.success) {
-             usePage().props.courseMemberOfAuth.last_accessed_group_tab = tab;
+             usePage().props.courseMemberOfAuth.last_accessed_group_tab = selectedGroup.id;
          }
     }
 }
@@ -104,7 +113,8 @@ const setSorting = (sort) => {
 onMounted(() => {
     if (usePage().props.courseMemberOfAuth) {
         if (usePage().props.isCourseAdmin){
-            activeGroupTab.value = usePage().props.courseMemberOfAuth.last_accessed_group_tab ?? 0 ;
+            const savedGroupId = usePage().props.courseMemberOfAuth.last_accessed_group_tab;
+            activeGroupTab.value = findGroupIndexById(savedGroupId);
             if (activeGroupTab.value < props.groups.length) {
                 groupMembers.value = props.groups[activeGroupTab.value].members.sort((a, b) => a.order_number - b.order_number);
             }else{

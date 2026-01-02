@@ -33,7 +33,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     // Course groups endpoints
     Route::get('/courses/{course}/groups', [CourseGroupController::class, 'index'])->name('api.v2.courses.groups.index');
     Route::post('/courses/{course}/groups', [CourseGroupController::class, 'store'])->name('api.v2.courses.groups.store');
-    Route::put('/groups/{groupId}', [CourseGroupController::class, 'updateV2'])->name('api.v2.groups.update');
+    Route::put('/groups/{groupId}', [CourseGroupController::class, 'update'])->name('api.v2.groups.update');
     Route::get('/groups/{groupId}/members', [CourseGroupController::class, 'members'])->name('api.v2.groups.members');
     
     // Course members endpoints

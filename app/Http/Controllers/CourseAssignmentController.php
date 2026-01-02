@@ -16,6 +16,14 @@ class CourseAssignmentController extends Controller
 {
     public function index(Course $course)
     {
+        return Inertia::render('Learn/Course/Course', [
+            'course' => new CourseResource($course),
+            'activeTab' => 'assignments',
+        ]);
+    }
+
+    public function apiIndex(Course $course)
+    {
         // Eager load relationships ที่จำเป็นทั้งหมด
         $assignments = $course->courseAssignments()
             ->with([
@@ -26,12 +34,9 @@ class CourseAssignmentController extends Controller
             ])
             ->get();
 
-        return Inertia::render('Learn/Course/Assignment/Assignments',[
-            'course'                => new CourseResource($course),
-            'assignments'           => AssignmentResource::collection($assignments),
-            'groups'                => $course->courseGroups()->get(['id', 'name']),
-            'isCourseAdmin'         => $course->user_id === auth()->id(),
-            'courseMemberOfAuth'    => $course->courseMembers()->where('user_id', auth()->id())->first(),
+        return response()->json([
+            'success' => true,
+            'data' => AssignmentResource::collection($assignments),
         ]);
     }
     
