@@ -97,7 +97,6 @@ const handlePhotoUploadToServer = async (id, studentId, file) => {
 
     const formData = new FormData()
     formData.append('photo', file)
-    formData.append('_method', 'patch')
 
     try {
         const response = await axios.post(`/student-card/admin/upload-photo/${id}`, formData, {

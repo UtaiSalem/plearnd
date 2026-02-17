@@ -154,16 +154,7 @@ class StudentCardController extends Controller
         // Validate request
         $request->validate([
             'photo' => 'required|image|mimes:jpeg,png,jpg|max:5120',
-            'admin_password' => 'required|string'
         ]);
-
-        // Verify admin password
-        if (!$this->verifyAdminPassword($request->admin_password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'รหัสผ่านแอดมินไม่ถูกต้อง'
-            ], 403);
-        }
 
         try {
             // Handle image upload
