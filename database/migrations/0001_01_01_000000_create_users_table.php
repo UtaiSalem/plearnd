@@ -13,13 +13,20 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->string('username')->unique();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['requester', 'staff', 'admin'])->default('requester');
+            $table->enum('user_type', ['student', 'employee'])->nullable();
+            $table->string('student_id')->nullable();
+            $table->string('employee_id')->nullable();
+            $table->string('faculty')->default('คณะวิทยาศาสตร์และเทคโนโลยี');
+            $table->string('department');
+            $table->string('phone')->nullable();
+            $table->string('default_advisor')->nullable();
             $table->rememberToken();
-            $table->foreignId('current_team_id')->nullable();
-            $table->string('profile_photo_path', 2048)->nullable();
             $table->timestamps();
         });
 
